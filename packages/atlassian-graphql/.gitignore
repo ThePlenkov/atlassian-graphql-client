@@ -1,0 +1,10 @@
+# Generated files - regenerate in CI/CD
+src/generated/
+dist/
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+*.tsbuildinfo
+

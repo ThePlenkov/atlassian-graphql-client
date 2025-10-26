@@ -1,0 +1,7 @@
+query RankField($cloudId: ID!) {
+  jira {
+    rankField(cloudId: $cloudId) {
+      __typename
+    }
+  }
+}

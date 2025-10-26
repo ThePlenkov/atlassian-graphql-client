@@ -1,0 +1,12 @@
+# Don't publish these
+tools/
+src/
+tsconfig.json
+*.ts
+!*.d.ts
+
+# Keep these
+dist/
+README.md
+package.json
+

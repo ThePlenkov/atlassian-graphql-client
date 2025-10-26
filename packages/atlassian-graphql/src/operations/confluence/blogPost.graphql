@@ -1,0 +1,7 @@
+query BlogPost($cloudId: ID!, $id: ID!) {
+  confluence(cloudId: $cloudId) {
+    blogPost(id: $id) {
+      __typename
+    }
+  }
+}
