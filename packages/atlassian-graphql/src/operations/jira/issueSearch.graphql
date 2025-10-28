@@ -1,7 +1,0 @@
-query IssueSearch($cloudId: ID!, $issueSearchInput: JiraIssueSearchInput!, $options: JiraIssueSearchOptions, $first: Int, $after: String, $last: Int, $before: String, $saveJQLToUserHistory: Boolean, $viewConfigInput: JiraIssueSearchViewConfigInput, $fieldSetsInput: JiraIssueSearchFieldSetsInput, $scope: JiraIssueSearchScope) {
-  jira {
-    issueSearch(cloudId: $cloudId, issueSearchInput: $issueSearchInput, options: $options, first: $first, after: $after, last: $last, before: $before, saveJQLToUserHistory: $saveJQLToUserHistory, viewConfigInput: $viewConfigInput, fieldSetsInput: $fieldSetsInput, scope: $scope) {
-      __typename
-    }
-  }
-}

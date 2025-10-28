@@ -1,0 +1,39 @@
+{
+  "name": "@atlassian-tools/cli",
+  "version": "0.1.0",
+  "description": "CLI for Atlassian APIs using GraphQL",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./utils/logger": {
+      "import": "./dist/utils/logger.js",
+      "types": "./dist/utils/logger.d.ts"
+    }
+  },
+  "bin": {
+    "atlassian": "./dist/cli.js",
+    "jira": "./dist/jira-cli.js"
+  },
+  "keywords": [
+    "atlassian",
+    "jira",
+    "confluence",
+    "cli",
+    "graphql"
+  ],
+  "dependencies": {
+    "@atlassian-tools/gql": "*",
+    "cli-oauth": "*",
+    "graphql-request": "^7.2.2",
+    "commander": "^12.1.0",
+    "chalk": "^5.4.1",
+    "ora": "^8.1.1",
+    "open": "^10.1.0"
+  }
+}
+

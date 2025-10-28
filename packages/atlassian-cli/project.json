@@ -1,0 +1,19 @@
+{
+  "name": "atlassian-cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/atlassian-cli/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/atlassian-cli/dist",
+        "main": "packages/atlassian-cli/src/cli.ts",
+        "tsConfig": "packages/atlassian-cli/tsconfig.json",
+        "rootDir": "packages/atlassian-cli/src"
+      }
+    }
+  }
+}
+

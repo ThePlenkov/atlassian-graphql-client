@@ -1,3 +1,55 @@
 {
-  "name": "graphql"
+  "name": "graphql",
+  "targets": {
+    "gen:schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/filter-schema.ts",
+        "cwd": "packages/atlassian-graphql"
+      }
+    },
+    "gen": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["gen:schema"],
+      "options": {
+        "commands": [
+          "nx run graphql:gen:schema"
+        ],
+        "parallel": false
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsdown",
+          "mkdir -p dist/generated && cp src/generated/schema.graphql dist/generated/"
+        ],
+        "cwd": "packages/atlassian-graphql",
+        "parallel": false
+      },
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "list:queries": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/list-queries.ts",
+        "cwd": "packages/atlassian-graphql"
+      }
+    },
+    "list:modules": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/list-modules.ts",
+        "cwd": "packages/atlassian-graphql"
+      }
+    },
+    "analyze": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/analyze-structure.ts",
+        "cwd": "packages/atlassian-graphql"
+      }
+    }
+  }
 }

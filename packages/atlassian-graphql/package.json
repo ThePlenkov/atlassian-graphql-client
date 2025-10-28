@@ -1,31 +1,21 @@
 {
-  "name": "@your-org/atlassian-graphql",
+  "name": "@atlassian-tools/gql",
   "version": "1.0.0",
-  "description": "Typed Jira SDK for Atlassian GraphQL API",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "gen:schema": "node scripts/filter-schema.ts",
-    "gen:operations": "node scripts/generate-operations.ts",
-    "gen:codegen": "graphql-codegen",
-    "gen": "npm run gen:schema && npm run gen:operations && npm run gen:codegen",
-    "build": "tsc",
-    "list:queries": "node scripts/list-queries.ts",
-    "list:modules": "node scripts/list-modules.ts",
-    "analyze": "node scripts/analyze-structure.ts"
-  },
+  "description": "Typed GraphQL client for Atlassian APIs (Jira, Confluence)",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "graphql": "^16.11.0",
-    "graphql-request": "^7.2.2"
+    "graphql-request": "^7.2.2",
+    "gqlb": "*"
   },
-  "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.4",
-    "@graphql-codegen/typescript": "^5.0.2",
-    "@graphql-codegen/typescript-generic-sdk": "^4.0.2",
-    "@graphql-codegen/typescript-graphql-request": "^6.3.0",
-    "@graphql-codegen/typescript-operations": "^5.0.2",
-    "@graphql-tools/load": "^8.0.2",
-    "@graphql-tools/url-loader": "^8.0.2",
-    "typescript": "^5.9.2"
-  }
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {}
 }

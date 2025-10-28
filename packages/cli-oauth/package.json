@@ -1,0 +1,32 @@
+{
+  "name": "cli-oauth",
+  "version": "0.1.0",
+  "description": "Generic OAuth 2.0 authentication for CLI applications with async file I/O and atomic writes",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "keywords": [
+    "oauth",
+    "cli",
+    "authentication",
+    "config",
+    "token-management",
+    "async",
+    "modern-node"
+  ],
+  "dependencies": {
+    "open": "^10.1.0",
+    "commander": "^12.1.0"
+  },
+  "peerDependencies": {
+    "commander": "^12.0.0"
+  }
+}
+

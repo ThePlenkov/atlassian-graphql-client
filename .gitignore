@@ -6,3 +6,13 @@ tmp/
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+# Why ignore lock files?
+# Lock files enforce consistent installs, but in monorepo/multi-package or CLI repos,
+# you may want contributors to use their own package manager and avoid merge conflicts.
+# Remove duplicates; keep each entry once.
+
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb

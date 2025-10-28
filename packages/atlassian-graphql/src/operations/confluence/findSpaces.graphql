@@ -1,7 +1,0 @@
-query FindSpaces($cloudId: ID!, $after: String, $filters: ConfluenceSpaceFilters, $first: Int) {
-  confluence(cloudId: $cloudId) {
-    findSpaces(after: $after, cloudId: $cloudId, filters: $filters, first: $first) {
-      __typename
-    }
-  }
-}
