@@ -13,6 +13,10 @@
     "./utils/logger": {
       "import": "./dist/utils/logger.js",
       "types": "./dist/utils/logger.d.ts"
+    },
+    "./auth/config": {
+      "import": "./dist/auth/config.js",
+      "types": "./dist/auth/config.d.ts"
     }
   },
   "bin": {

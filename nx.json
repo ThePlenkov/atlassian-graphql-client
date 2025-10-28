@@ -2,8 +2,20 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsdown",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/tsdown.config.ts",
+        "{workspaceRoot}/tsdown.config.mjs"
+      ],
       "outputs": ["{projectRoot}/dist"],
-      "cache": true
+      "cache": true,
+      "dependsOn": ["^build"]
     },
     "test": {
       "outputs": ["{projectRoot}/coverage"],
@@ -17,22 +29,6 @@
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
-      "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
-        "build": {
-          "targetName": "build",
-          "configName": "tsconfig.lib.json",
-          "buildDepsName": "build-deps",
-          "watchDepsName": "watch-deps"
-        }
-      },
-      "exclude": ["packages/atlassian-graphql/*"]
-    },
-    {
-      "plugin": "@nx/js/typescript",
-      "include": ["packages/atlassian-graphql/*"],
       "options": {
         "typecheck": {
           "targetName": "typecheck"

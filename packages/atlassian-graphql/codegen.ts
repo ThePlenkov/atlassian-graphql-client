@@ -15,7 +15,10 @@ const config: CodegenConfig = {
     // Generate standard TypeScript types from schema
     // These are transformed to FieldFn<> types using utility types
     'src/generated/schema-types.ts': {
-      plugins: ['@graphql-codegen/typescript'],
+      plugins: [
+        'typescript',
+        'typescript-operations'
+      ],
       config: {
         // Custom scalar mappings
         scalars: {
@@ -51,9 +54,15 @@ const config: CodegenConfig = {
         // Optimize for bundle size
         skipTypename: true,
         enumsAsTypes: true,
-        // Only generate types we need
-        onlyOperationTypes: false
+        // Generate field argument types (e.g., QueryjiraArgs, JiraQueryissueByKeyArgs)
+        addUnderscoreToArgsType: false,
+        fieldWrapperValue: '(T extends undefined ? never : T) | null | undefined'
       }
+    },
+    // Generate Args type map for optimal tree-shaking
+    // Only includes Args types present in the pruned schema
+    'src/generated/args-map.ts': {
+      plugins: ['graphql-codegen-args-map']
     }
   }
 };

@@ -56,7 +56,11 @@ import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
 import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
 import type { TypedQueryBuilder } from 'gqlb';
-import type { QueryFields, MutationFields, SubscriptionFields } from './generated/types.js';
+import type { QueryFields } from './types.js';
+
+// Placeholder types for Mutation and Subscription (not included in pruned schema)
+type MutationFields = Record<string, never>;
+type SubscriptionFields = Record<string, never>;
 
 /**
  * Re-export gqlb utilities for building queries
@@ -76,7 +80,7 @@ export type {
 /**
  * Re-export generated types for external use
  */
-export type * from './generated/types.js';
+export type * from './types.js';
 
 /**
  * Load the filtered Atlassian GraphQL schema

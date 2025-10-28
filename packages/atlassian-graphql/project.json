@@ -10,7 +10,7 @@
     },
     "gen:codegen": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:schema"],
+      "dependsOn": ["gen:schema", "argsmap:build"],
       "options": {
         "command": "graphql-codegen --config codegen.ts",
         "cwd": "packages/atlassian-graphql"
@@ -36,8 +36,7 @@
         ],
         "cwd": "packages/atlassian-graphql",
         "parallel": false
-      },
-      "outputs": ["{projectRoot}/dist"]
+      }
     },
     "list:queries": {
       "executor": "nx:run-commands",

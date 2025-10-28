@@ -4,15 +4,7 @@
   "sourceRoot": "packages/gqlb/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "packages/gqlb/dist",
-        "main": "packages/gqlb/src/index.ts",
-        "tsConfig": "packages/gqlb/tsconfig.json"
-      }
-    }
+    "build": {}
   }
 }
 

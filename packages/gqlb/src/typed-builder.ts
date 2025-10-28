@@ -66,36 +66,36 @@ export interface TypedQueryBuilder<TQuery, TMutation = unknown, TSubscription = 
    */
   query<S extends Selection<TQuery>>(
     select: (q: TQuery) => S
-  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, any>>;
 
   query<S extends Selection<TQuery>>(
     operationName: string,
     select: (q: TQuery) => S
-  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, any>>;
 
   /**
    * Build a mutation operation
    */
   mutation<S extends Selection<TMutation>>(
     select: (m: TMutation) => S
-  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, any>>;
 
   mutation<S extends Selection<TMutation>>(
     operationName: string,
     select: (m: TMutation) => S
-  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, any>>;
 
   /**
    * Build a subscription operation
    */
   subscription<S extends Selection<TSubscription>>(
     select: (s: TSubscription) => S
-  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, any>>;
 
   subscription<S extends Selection<TSubscription>>(
     operationName: string,
     select: (s: TSubscription) => S
-  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, never>>;
+  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, any>>;
 }
 
 /**

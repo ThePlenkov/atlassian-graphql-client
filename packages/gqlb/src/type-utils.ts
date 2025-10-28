@@ -79,16 +79,23 @@ export type ToFields<T> = {
 };
 
 /**
+ * Extract Args type for a field if it exists
+ * GraphQL Codegen generates Args types like: QueryFieldArgs, JiraQueryissueByKeyArgs
+ */
+type ExtractArgs<TRoot, K extends keyof TRoot> = 
+  // Look for a type named [RootTypeName][FieldName]Args in the same scope
+  // For now, we can't dynamically look up types, so we default to never
+  // Users will need to manually cast or we generate a mapping
+  never;
+
+/**
  * Transform a Query/Mutation/Subscription root type
  * 
- * This adds support for field arguments by detecting common GraphQL patterns
+ * This transforms fields to FieldFn types, but Args handling requires
+ * a different approach since GraphQL Codegen generates separate Args types
  */
 export type ToRootFields<T> = {
-  [K in keyof T]: T[K] extends (...args: infer Args) => infer R
-    ? Args extends [infer FirstArg]
-      ? FieldFn<ToFieldFn<R>, FirstArg, true>
-      : FieldFn<ToFieldFn<R>, never, false>
-    : ToFieldFn<T[K]>;
+  [K in keyof T]: ToFieldFn<T[K]>;
 };
 
 /**

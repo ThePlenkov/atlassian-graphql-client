@@ -1,35 +1,47 @@
 /**
- * SDK Configuration - Define which operations to include
- * Add/remove operations as needed
+ * SDK Configuration - defines which GraphQL operations to include
+ * 
+ * This config is used by filter-schema.ts to prune the full Atlassian schema
+ * down to only the operations we actually use, reducing bundle size.
+ * 
+ * Structure:
+ * {
+ *   Query: {
+ *     [moduleName]: {
+ *       [operationName]: true
+ *     }
+ *   },
+ *   Mutation: { ... }
+ * }
  */
 
-const config = {
+export default {
   Query: {
+    // Jira operations
     jira: {
-      // Jira queries to include in SDK
-      rankField: {},
-      issue: {},
-      issueSearch: {},
-      project: {},
-      projectSearch: {},
+      // Issue operations
+      issueByKey: true,
+      issueSearchStable: true,
+      
+      // Add more Jira operations as needed
+      // issue: true,
+      // project: true,
+      // board: true,
     },
-    confluence: {
-      // Confluence queries to include
-      blogPost: {},
-      findSpaces: {},
-    },
+    
+    // Confluence operations (add when needed)
+    // confluence: {
+    //   page: true,
+    //   space: true,
+    // },
   },
-  Mutation: {
-    jira: {
-      // Jira mutations to include
-      issueCreate: {},
-      issueUpdate: {},
-      commentCreate: {},
-    },
-  },
+  
+  // Mutations (add when needed)
+  // Mutation: {
+  //   jira: {
+  //     updateIssue: true,
+  //     createIssue: true,
+  //   }
+  // }
 };
-
-export default config;
-export type SDKConfig = typeof config;
-
 

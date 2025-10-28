@@ -47,6 +47,35 @@ export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
 }
 
 /**
+ * Normalize selections array: extract FieldSelection from callable objects
+ * Supports both:
+ * - search.totalCount (returns callable with __fieldSelection marker)
+ * - search.totalCount() (returns FieldSelection directly)
+ */
+function normalizeSelections(selections: any[]): FieldSelection[] {
+  return selections.map(sel => {
+    // If it's a callable with __fieldSelection marker (property access)
+    if (sel && typeof sel === 'function' && sel.__fieldSelection) {
+      const fieldSelection = sel.__fieldSelection;
+      // Recursively normalize nested selections
+      if (fieldSelection.selection) {
+        fieldSelection.selection = normalizeSelections(fieldSelection.selection);
+      }
+      return fieldSelection;
+    }
+    // If it's already a FieldSelection (function call)
+    if (sel && typeof sel === 'object' && 'name' in sel) {
+      // Recursively normalize nested selections
+      if (sel.selection) {
+        sel.selection = normalizeSelections(sel.selection);
+      }
+      return sel;
+    }
+    throw new Error(`Invalid selection: ${sel}`);
+  });
+}
+
+/**
  * Build a GraphQL operation (query/mutation/subscription)
  */
 function buildOperation(
@@ -63,7 +92,10 @@ function buildOperation(
   const proxy = createTypeProxy(rootType, context);
 
   // Execute selection function to collect fields
-  const selections = selectionFn(proxy);
+  const rawSelections = selectionFn(proxy);
+
+  // Normalize selections: extract FieldSelection from callable objects (property access)
+  const selections = normalizeSelections(rawSelections);
 
   // Build the operation string
   const operationString = buildOperationString(operationType, selections, context, operationName);
@@ -94,7 +126,22 @@ function createTypeProxy(type: GraphQLObjectType | GraphQLInterfaceType, context
         throw new Error(`Field "${prop}" does not exist on type "${type.name}"`);
       }
 
-      // Return a function that handles the field selection
+      // Check if field is a scalar (leaf type - no sub-selections needed)
+      const fieldType = getNamedType(field.type);
+      const isScalar = isScalarType(fieldType) || isEnumType(fieldType);
+
+      // For scalar fields, return a callable object that can be used as both:
+      // - Property: search.totalCount
+      // - Function: search.totalCount()
+      if (isScalar && field.args.length === 0) {
+        const selection = createFieldSelection(prop, field, [], context);
+        // Create a callable object
+        const callable = (() => selection) as any;
+        callable.__fieldSelection = selection; // Marker for property access
+        return callable;
+      }
+
+      // For non-scalar fields or fields with args, return a function
       return (...args: any[]): FieldSelection => {
         return createFieldSelection(prop, field, args, context);
       };

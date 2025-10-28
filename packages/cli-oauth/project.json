@@ -4,16 +4,7 @@
   "sourceRoot": "packages/cli-oauth/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "packages/cli-oauth/dist",
-        "main": "packages/cli-oauth/src/index.ts",
-        "tsConfig": "packages/cli-oauth/tsconfig.json",
-        "rootDir": "packages/cli-oauth/src"
-      }
-    }
+    "build": {}
   }
 }
 
