@@ -58,44 +58,45 @@ export type Narrow<T, S extends Selection<T>> = {
 };
 
 /**
+ * Typed operation builder that supports both function calls and proxy property access
+ * - builder.query(q => [...]) - anonymous operation
+ * - builder.query('Name', q => [...]) - named operation (backward compatible)
+ * - builder.query.Name(q => [...]) - named operation (fluent API)
+ */
+export type TypedOperationBuilder<T> = {
+  <S extends Selection<T>>(
+    select: (t: T) => S
+  ): TypedDocumentNode<Narrow<T, S>, Record<string, any>>;
+
+  <S extends Selection<T>>(
+    operationName: string,
+    select: (t: T) => S
+  ): TypedDocumentNode<Narrow<T, S>, Record<string, any>>;
+
+  // Index signature for proxy property access (builder.query.Name)
+  [operationName: string]: <S extends Selection<T>>(
+    select: (t: T) => S
+  ) => TypedDocumentNode<Narrow<T, S>, Record<string, any>>;
+};
+
+/**
  * Typed query builder interface
  */
 export interface TypedQueryBuilder<TQuery, TMutation = unknown, TSubscription = unknown> {
   /**
    * Build a query operation
    */
-  query<S extends Selection<TQuery>>(
-    select: (q: TQuery) => S
-  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, any>>;
-
-  query<S extends Selection<TQuery>>(
-    operationName: string,
-    select: (q: TQuery) => S
-  ): TypedDocumentNode<Narrow<TQuery, S>, Record<string, any>>;
+  query: TypedOperationBuilder<TQuery>;
 
   /**
    * Build a mutation operation
    */
-  mutation<S extends Selection<TMutation>>(
-    select: (m: TMutation) => S
-  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, any>>;
-
-  mutation<S extends Selection<TMutation>>(
-    operationName: string,
-    select: (m: TMutation) => S
-  ): TypedDocumentNode<Narrow<TMutation, S>, Record<string, any>>;
+  mutation: TypedOperationBuilder<TMutation>;
 
   /**
    * Build a subscription operation
    */
-  subscription<S extends Selection<TSubscription>>(
-    select: (s: TSubscription) => S
-  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, any>>;
-
-  subscription<S extends Selection<TSubscription>>(
-    operationName: string,
-    select: (s: TSubscription) => S
-  ): TypedDocumentNode<Narrow<TSubscription, S>, Record<string, any>>;
+  subscription: TypedOperationBuilder<TSubscription>;
 }
 
 /**

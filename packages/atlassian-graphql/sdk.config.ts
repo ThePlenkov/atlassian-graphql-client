@@ -36,12 +36,18 @@ export default {
     // },
   },
   
-  // Mutations (add when needed)
-  // Mutation: {
-  //   jira: {
-  //     updateIssue: true,
-  //     createIssue: true,
-  //   }
-  // }
+  // Mutations
+  Mutation: {
+    // Jira mutations
+    jira: {
+      // Issue link mutations
+      createIssueLinks: true,
+      deleteIssueLink: true,
+      
+      // Add more mutations as needed
+      // createIssue: true,
+      // updateIssue: true,
+    }
+  }
 };
 

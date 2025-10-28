@@ -8,7 +8,7 @@
  */
 
 import type { FieldFn, Variable } from 'gqlb';
-import type { Query, JiraQuery } from './generated/schema-types.js';
+import type { Query, JiraQuery, Mutation, JiraMutation } from './generated/schema-types.js';
 import type { ArgsTypeMap } from './generated/args-map.js';
 
 /**
@@ -56,6 +56,8 @@ type Selection<T> = ReadonlyArray<T[keyof T]>;
 type InferTypeName<T> =
   T extends Query ? 'Query' :
   T extends JiraQuery ? 'JiraQuery' :
+  T extends Mutation ? 'Mutation' :
+  T extends JiraMutation ? 'JiraMutation' :
   string;
 
 /**
@@ -98,10 +100,16 @@ type ToFields<T, TName extends string> = {
 export type QueryFields = ToFields<Query, 'Query'>;
 
 /**
- * Mutation and Subscription types (add when sdk.config.ts includes them)
- * Currently not generated as we only have Query.jira operations
+ * Transform Mutation root type
+ * 
+ * Args are auto-detected for Mutation fields (e.g., JiraMutationcreateIssueLinksArgs)
+ * Nested types are transformed recursively using ToFields<T, string>
  */
-// export type MutationFields = ToFields<Mutation, 'Mutation'>;
+export type MutationFields = ToFields<Mutation, 'Mutation'>;
+
+/**
+ * Subscription types (add when sdk.config.ts includes them)
+ */
 // export type SubscriptionFields = ToFields<Subscription, 'Subscription'>;
 
 /**

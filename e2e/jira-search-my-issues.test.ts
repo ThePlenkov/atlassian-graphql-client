@@ -53,7 +53,7 @@ test('Search for Jira issues assigned to me', async () => {
   const issueSearchInput = $$<any>('issueSearchInput');
   const first = $$<number>('first');
 
-  const query = builder.query('SearchMyIssues', q => [
+  const query = builder.query.SearchMyIssues(q => [
     q.jira(jira => [
       jira.issueSearchStable(
         { cloudId, issueSearchInput, first },

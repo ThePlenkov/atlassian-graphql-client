@@ -2,18 +2,16 @@
   "name": "gqlb",
   "version": "0.1.0",
   "description": "Runtime proxy-based GraphQL query builder with type safety",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
-      "import": "./dist/src/index.js",
-      "require": "./dist/src/index.js",
-      "types": "./dist/src/index.d.ts"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     },
     "./typed": {
-      "import": "./dist/src/typed-builder.js",
-      "require": "./dist/src/typed-builder.js",
-      "types": "./dist/src/typed-builder.d.ts"
+      "import": "./dist/typed-builder.mjs",
+      "types": "./dist/typed-builder.d.mts"
     },
     "./package.json": "./package.json"
   },

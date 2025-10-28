@@ -12,6 +12,7 @@
 import { Command } from 'commander';
 import { getIssue } from './commands/jira/get-issue.js';
 import { searchIssues } from './commands/jira/search-issues.js';
+import { linkIssues } from './commands/jira/link-issues.js';
 import { loginCommand } from './commands/auth/login.js';
 import { auth, clearToken, loadConfig } from './auth/config.js';
 
@@ -101,6 +102,21 @@ program
   .option('--url <url>', 'GraphQL API URL')
   .action(async (jql: string, options: any) => {
     await searchIssues(jql, options);
+  });
+
+// Link issues command
+program
+  .command('link <sourceIssueKey> <targetIssueKeys...>')
+  .description('Link Jira issues together (e.g., jira link PROJ-123 PROJ-456 PROJ-789)')
+  .option('--link-type-id <id>', 'Link type ID (if not specified, uses "Relates" type)')
+  .option('--direction <direction>', 'Link direction: INWARD or OUTWARD', 'OUTWARD')
+  .option('-v, --verbose', 'Show detailed query information')
+  .option('--json', 'Output pure JSON (no decorations, pipeable to jq)')
+  .option('--cloud-id <cloudId>', 'Atlassian Cloud ID')
+  .option('--token <token>', 'Bearer token for authentication')
+  .option('--url <url>', 'GraphQL API URL')
+  .action(async (sourceIssueKey: string, targetIssueKeys: string[], options: any) => {
+    await linkIssues(sourceIssueKey, targetIssueKeys, options);
   });
 
 // Parse arguments

@@ -15,6 +15,48 @@ import type { QueryBuilder, SelectionFn, FieldSelection, BuildContext } from './
 import { isVariable } from './variables.js';
 
 /**
+ * Create a callable proxy that supports both function calls and property access
+ * - builder.query(q => [...]) - anonymous operation
+ * - builder.query('Name', q => [...]) - named operation (backward compatible)
+ * - builder.query.Name(q => [...]) - named operation (new fluent API)
+ */
+function createOperationProxy(
+  operationType: 'query' | 'mutation' | 'subscription',
+  getRootType: () => GraphQLObjectType,
+  context: BuildContext
+): any {
+  // Base function for direct calls
+  const baseFunction = (nameOrSelectionFn: any, selectionFn?: any) => {
+    if (typeof nameOrSelectionFn === 'function') {
+      // Anonymous operation: builder.query(q => [...])
+      return buildOperation(operationType, getRootType(), nameOrSelectionFn, context);
+    }
+    // Named operation (string): builder.query('Name', q => [...])
+    return buildOperation(operationType, getRootType(), selectionFn as SelectionFn, context, nameOrSelectionFn as string);
+  };
+
+  // Create proxy to intercept property access
+  return new Proxy(baseFunction, {
+    get(target, prop: string) {
+      // Ignore symbols and built-in properties
+      if (typeof prop === 'symbol' || prop.startsWith('_')) {
+        return undefined;
+      }
+
+      // Return a function that will be called with the selection function
+      // This enables: builder.query.SearchMyIssues(q => [...])
+      return (selectionFn: SelectionFn) => {
+        return buildOperation(operationType, getRootType(), selectionFn, context, prop);
+      };
+    },
+    // Make the proxy callable
+    apply(target, thisArg, args: [any, any?]) {
+      return baseFunction.apply(thisArg, args);
+    }
+  });
+}
+
+/**
  * Create a query builder for a GraphQL schema
  */
 export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
@@ -25,24 +67,9 @@ export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
   };
 
   return {
-    query: (nameOrSelectionFn: any, selectionFn?: any) => {
-      if (typeof nameOrSelectionFn === 'function') {
-        return buildOperation('query', schema.getQueryType()!, nameOrSelectionFn, context);
-      }
-      return buildOperation('query', schema.getQueryType()!, selectionFn as SelectionFn, context, nameOrSelectionFn as string);
-    },
-    mutation: (nameOrSelectionFn: any, selectionFn?: any) => {
-      if (typeof nameOrSelectionFn === 'function') {
-        return buildOperation('mutation', schema.getMutationType()!, nameOrSelectionFn, context);
-      }
-      return buildOperation('mutation', schema.getMutationType()!, selectionFn as SelectionFn, context, nameOrSelectionFn as string);
-    },
-    subscription: (nameOrSelectionFn: any, selectionFn?: any) => {
-      if (typeof nameOrSelectionFn === 'function') {
-        return buildOperation('subscription', schema.getSubscriptionType()!, nameOrSelectionFn, context);
-      }
-      return buildOperation('subscription', schema.getSubscriptionType()!, selectionFn as SelectionFn, context, nameOrSelectionFn as string);
-    },
+    query: createOperationProxy('query', () => schema.getQueryType()!, context),
+    mutation: createOperationProxy('mutation', () => schema.getMutationType()!, context),
+    subscription: createOperationProxy('subscription', () => schema.getSubscriptionType()!, context),
   };
 }
 

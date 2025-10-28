@@ -27,15 +27,25 @@ export interface FieldSelection {
 }
 
 /**
+ * Operation builder that supports both function calls and proxy property access
+ * - builder.query(q => [...]) - anonymous operation
+ * - builder.query('Name', q => [...]) - named operation (backward compatible)
+ * - builder.query.Name(q => [...]) - named operation (fluent API)
+ */
+export type OperationBuilder<T = any> = {
+  (selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
+  (operationName: string, selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
+  // Index signature for proxy property access (builder.query.Name)
+  [operationName: string]: (selectionFn: SelectionFn<T>) => TypedDocumentNode<T, any>;
+};
+
+/**
  * Query builder interface
  */
 export interface QueryBuilder {
-  query<T = any>(selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  query<T = any>(operationName: string, selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  mutation<T = any>(selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  mutation<T = any>(operationName: string, selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  subscription<T = any>(selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  subscription<T = any>(operationName: string, selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
+  query: OperationBuilder;
+  mutation: OperationBuilder;
+  subscription: OperationBuilder;
 }
 
 /**

@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2020",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@atlassian-tools/gql": ["packages/atlassian-graphql/src/index.ts"],
+      "@atlassian-tools/cli": ["packages/atlassian-cli/src/index.ts"],
+      "@atlassian-tools/cli/*": ["packages/atlassian-cli/src/*"],
+      "gqlb": ["packages/gqlb/src/index.ts"],
+      "cli-oauth": ["packages/cli-oauth/src/index.ts"]
+    }
+  },
+  "include": ["e2e/**/*", "packages/*/src/**/*"],
+  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"]
+}
+

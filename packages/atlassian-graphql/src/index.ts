@@ -56,10 +56,9 @@ import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
 import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
 import type { TypedQueryBuilder } from 'gqlb';
-import type { QueryFields } from './types.js';
+import type { QueryFields, MutationFields } from './types.js';
 
-// Placeholder types for Mutation and Subscription (not included in pruned schema)
-type MutationFields = Record<string, never>;
+// Placeholder type for Subscription (not yet included in pruned schema)
 type SubscriptionFields = Record<string, never>;
 
 /**
@@ -81,6 +80,7 @@ export type {
  * Re-export generated types for external use
  */
 export type * from './types.js';
+export type { QueryFields, MutationFields } from './types.js';
 
 /**
  * Load the filtered Atlassian GraphQL schema
@@ -123,5 +123,16 @@ const schema = buildSchema(schemaSDL);
  * ```
  */
 export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields> {
-  return createGqlbBuilder(schema) as TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
+  return createGqlbBuilder(schema) as any as TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
 }
+
+/**
+ * Type alias for the fully-typed Atlassian query builder
+ * Use this when you need to explicitly type a builder variable
+ * 
+ * @example
+ * ```typescript
+ * const builder: AtlassianQueryBuilder = createQueryBuilder();
+ * ```
+ */
+export type AtlassianQueryBuilder = TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
