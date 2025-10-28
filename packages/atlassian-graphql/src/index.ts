@@ -2,40 +2,49 @@
  * Atlassian GraphQL SDK
  *
  * Type-safe SDK for Atlassian's GraphQL AGG (API Gateway) with dynamic field selection.
- * Built with gqlb - a runtime proxy-based query builder.
+ * Built with gqlb - a runtime proxy-based query builder with FULL TypeScript type safety.
  *
  * @example
  * ```typescript
+ * import { createQueryBuilder, $$ } from '@atlassian-tools/gql';
  * import { GraphQLClient } from 'graphql-request';
- * import { createQueryBuilder, $$ } from '@your-org/atlassian-graphql';
  * 
- * const client = new GraphQLClient('https://api.atlassian.com/graphql', {
+ * const client = new GraphQLClient('https://your-company.atlassian.net/gateway/api/graphql', {
  *   headers: {
  *     authorization: `Bearer ${process.env.ATLASSIAN_TOKEN}`,
  *   },
  * });
  * 
- * // Create query builder
+ * // Create fully-typed query builder
  * const builder = createQueryBuilder();
  * 
- * // Build queries with runtime field selection
+ * // Build queries with FULL autocomplete - TypeScript knows all fields!
  * const cloudId = $$<string>('cloudId');
- * const issueId = $$<string>('issueId');
+ * const issueKey = $$<string>('issueKey');
  * 
- * const query = builder.query(q => [
- *   q.jira(jira => [
- *     jira.issue({ id: issueId }, issue => [
- *       issue.id(),
+ * const query = builder.query('GetJiraIssue', q => [
+ *   q.jira({ cloudId }, jira => [
+ *     jira.issueByKey({ issueKey }, issue => [
  *       issue.key(),
- *       issue.webUrl()
+ *       issue.summaryField(s => [s.text()]),
+ *       issue.assigneeField(a => [
+ *         a.user(user => [
+ *           user.name()
+ *         ])
+ *       ])
  *     ])
  *   ])
  * ]);
  * 
- * // Execute with variables
+ * // Execute with variables - result is fully typed!
  * const result = await client.request(query, {
- *   issueId: '10000'
+ *   cloudId: 'your-cloud-id',
+ *   issueKey: 'PROJ-123'
  * });
+ * 
+ * // TypeScript knows the exact shape:
+ * console.log(result.jira.issueByKey.key);  // ✓ string
+ * console.log(result.jira.issueByKey.summaryField.text);  // ✓ string
  * ```
  * 
  * @packageDocumentation
@@ -46,12 +55,28 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
 import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
+import type { TypedQueryBuilder } from 'gqlb';
+import type { QueryFields, MutationFields, SubscriptionFields } from './generated/types.js';
 
 /**
  * Re-export gqlb utilities for building queries
  */
 export { $, $$ } from 'gqlb';
-export type { QueryBuilder, SelectionFn, FieldSelection, Variable } from 'gqlb';
+export type { 
+  QueryBuilder, 
+  SelectionFn, 
+  FieldSelection, 
+  Variable,
+  TypedQueryBuilder,
+  FieldFn,
+  Selection,
+  Scalar
+} from 'gqlb';
+
+/**
+ * Re-export generated types for external use
+ */
+export type * from './generated/types.js';
 
 /**
  * Load the filtered Atlassian GraphQL schema
@@ -63,28 +88,36 @@ const schemaSDL = readFileSync(schemaPath, 'utf-8');
 const schema = buildSchema(schemaSDL);
 
 /**
- * Create a query builder for Atlassian GraphQL API
+ * Create a fully-typed query builder for Atlassian GraphQL API
  * 
  * Returns a builder with `query`, `mutation`, and `subscription` methods.
- * Use the builder to construct GraphQL operations with runtime field selection.
+ * The builder provides FULL TypeScript autocomplete for all Atlassian API fields.
  * 
- * @returns A configured QueryBuilder instance for Atlassian's API
+ * @returns A fully-typed QueryBuilder instance for Atlassian's API
  * 
  * @example
  * ```typescript
  * const builder = createQueryBuilder();
- * const userId = $$<string>('userId');
+ * const cloudId = $$<string>('cloudId');
+ * const issueKey = $$<string>('issueKey');
  * 
- * const query = builder.query(q => [
- *   q.jira(jira => [
- *     jira.issue({ id: userId }, issue => [
- *       issue.id(),
- *       issue.key()
+ * // TypeScript knows ALL available fields and provides autocomplete!
+ * const query = builder.query('GetIssue', q => [
+ *   q.jira({ cloudId }, jira => [
+ *     jira.issueByKey({ issueKey }, issue => [
+ *       issue.key(),              // ✓ TypeScript knows this exists
+ *       issue.summaryField(s => [  // ✓ TypeScript knows this requires selection
+ *         s.text()                 // ✓ TypeScript knows text field exists
+ *       ])
  *     ])
  *   ])
  * ]);
+ * 
+ * // Result type is fully inferred!
+ * // TypeScript knows: result.jira.issueByKey.key is string
+ * //                  result.jira.issueByKey.summaryField.text is string
  * ```
  */
-export function createQueryBuilder() {
-  return createGqlbBuilder(schema);
+export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields> {
+  return createGqlbBuilder(schema) as TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
 }

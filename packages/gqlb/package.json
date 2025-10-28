@@ -10,6 +10,11 @@
       "require": "./dist/src/index.js",
       "types": "./dist/src/index.d.ts"
     },
+    "./typed": {
+      "import": "./dist/src/typed-builder.js",
+      "require": "./dist/src/typed-builder.js",
+      "types": "./dist/src/typed-builder.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "keywords": [
@@ -20,11 +25,7 @@
     "type-safe"
   ],
   "dependencies": {
-    "graphql": "^16.11.0",
-    "@graphql-typed-document-node/core": "^3.2.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.7.3"
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "graphql": "^16.11.0"
   }
 }
-

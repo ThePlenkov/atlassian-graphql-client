@@ -21,10 +21,11 @@
     "graphql": "^16.11.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.4",
+    "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/client-preset": "^5.1.0",
     "@graphql-codegen/near-operation-file-preset": "^3.1.0",
-    "@graphql-codegen/typed-document-node": "^5.1.1",
+    "@graphql-codegen/plugin-helpers": "^6.0.0",
+    "@graphql-codegen/typed-document-node": "^5.1.2",
     "@graphql-codegen/typescript": "^5.0.2",
     "@graphql-codegen/typescript-generic-sdk": "^4.0.2",
     "@graphql-codegen/typescript-graphql-request": "^6.3.0",

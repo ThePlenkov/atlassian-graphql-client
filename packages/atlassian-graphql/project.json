@@ -8,12 +8,21 @@
         "cwd": "packages/atlassian-graphql"
       }
     },
-    "gen": {
+    "gen:codegen": {
       "executor": "nx:run-commands",
       "dependsOn": ["gen:schema"],
       "options": {
+        "command": "graphql-codegen --config codegen.ts",
+        "cwd": "packages/atlassian-graphql"
+      }
+    },
+    "gen": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["gen:schema", "gen:codegen"],
+      "options": {
         "commands": [
-          "nx run graphql:gen:schema"
+          "nx run graphql:gen:schema",
+          "nx run graphql:gen:codegen"
         ],
         "parallel": false
       }

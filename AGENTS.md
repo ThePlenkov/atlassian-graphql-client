@@ -57,6 +57,11 @@
 ### Build Order
 Packages: `gqlb` → `atlassian-graphql` → `atlassian-cli`
 
+### Dev Dependencies
+- **All devDependencies at root level only**
+- Individual packages must NOT have their own devDependencies
+- Shared build tools (TypeScript, GraphQL Codegen, etc.) are installed once at root
+
 ### No Lock Files
 We ignore lock files to avoid conflicts. Run `npm install` after pulling.
 
