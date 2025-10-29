@@ -2,13 +2,14 @@
 
 ## 🚨 MOST IMPORTANT RULE 🚨
 
-**DO NOT CREATE NEW DOCUMENTATION (.md) FILES**
+**MAINTAIN CLEAN DOCUMENTATION STRUCTURE**
 
-We have 14 documentation files in `docs/` - that's enough. When working on docs:
+Follow the established structure (README.md + docs/). When working on docs:
 
-- ✅ UPDATE existing files
+- ✅ UPDATE existing files when content fits there
 - ✅ DELETE outdated content
-- ❌ NEVER create new .md files (unless user explicitly asks)
+- ✅ CREATE new files in the RIGHT locations (following structure below)
+- ❌ NEVER create duplicates or files in wrong locations
 
 ## Repository Focus
 
@@ -19,16 +20,16 @@ The Atlassian packages are reference implementations showing gqlb's capabilities
 
 ## Documentation
 
-### 🚨 CRITICAL POLICY: CHALLENGE BEFORE CREATING 🚨
+### 🚨 CRITICAL POLICY: THINK BEFORE CREATING 🚨
 
-**Before adding ANY new documentation:**
+**Before adding ANY new documentation file:**
 
 1. ❓ **Does this duplicate existing content?** → Update the existing doc instead
-2. ❓ **Does this conflict with existing content?** → Resolve the conflict first
-3. ❓ **Is this really needed?** → Most new docs are unnecessary
-4. ❓ **Could this be part of an existing doc?** → Add a section instead
+2. ❓ **Does this fit within an existing file's scope?** → Add a section instead
+3. ❓ **Is this in the right location per the structure below?** → Use correct directory
+4. ❓ **Does this follow the naming conventions?** → Check existing patterns
 
-**Default answer: NO new markdown files. Update existing ones.**
+**Default answer: Check existing files first, then create in the RIGHT location.**
 
 ### Documentation System
 
@@ -66,11 +67,52 @@ The Atlassian packages are reference implementations showing gqlb's capabilities
 - Can I add this to an existing document?
 - Will this create maintenance burden?
 
-**If creating a new file is truly needed:**
+**When creating a new documentation file:**
 
-- Get explicit user approval first
-- Explain why existing docs can't be updated
-- Ensure it has a clear, unique purpose
+- Ensure it follows the structure below
+- Check it doesn't duplicate existing content
+- Use appropriate naming conventions
+- Place it in the correct directory
+
+### How to Maintain Quality
+
+**For AI Agents:**
+
+1. **Before creating a .md file** - Run this checklist:
+   - [ ] Have I checked if this content fits in an existing file?
+   - [ ] Am I following the directory structure (README.md + docs/)?
+   - [ ] Does this duplicate content that already exists elsewhere?
+   - [ ] Am I using the right naming convention?
+   
+2. **Preferred locations for common content:**
+   - **User-facing API docs** → Package `README.md`
+   - **Package internals/architecture** → Package `docs/ARCHITECTURE.md`
+   - **Code examples** → `docs/examples/` (with descriptive names)
+   - **Setup/development guides** → `docs/DEVELOPMENT.md`
+   - **Comparisons with alternatives** → `docs/COMPARISON.md`
+   - **Technical deep dives** → `docs/INNOVATION.md` or new file in `docs/`
+   - **Changelog entries** → `CHANGELOG.md` (package or root)
+
+3. **Acceptable new file locations:**
+   - ✅ `docs/*.md` - New technical documentation
+   - ✅ `docs/examples/*.md` - Example documentation
+   - ✅ `packages/*/docs/*.md` - Package-specific technical docs
+   - ✅ `CHANGELOG.md`, `packages/*/CHANGELOG.md` - Version history
+   - ⚠️ `packages/*/README.md` - Must not duplicate (only one per package)
+   - ❌ Random locations - Follow the structure
+
+**For developers:**
+
+1. **Manual verification:**
+   ```bash
+   # Check for duplicate content before committing
+   grep -r "your new content topic" docs/ packages/*/README.md
+   
+   # Review documentation structure
+   ls -R docs/ packages/*/docs/
+   ```
+
+2. **Documentation reviews:** All .md file changes should be reviewed for duplicates
 
 ## Code Style
 

@@ -180,6 +180,120 @@ const query = builder.query(q => [
 ]);
 ```
 
+### Codegen Utilities
+
+`gqlb` exports type utilities and helpers for creating type-safe schema configurations.
+
+#### Type-Safe Schema Configuration
+
+Create fully typed configuration files that specify which GraphQL operations to include:
+
+```typescript
+// sdk.config.ts
+import type { Query, Mutation } from './generated/schema-types.full.ts';
+import type { SchemaConfig } from 'gqlb/codegen';
+
+// Define your configuration type
+export type SDKConfig = SchemaConfig<Query, Mutation>;
+
+// Create fully typed configuration with autocomplete!
+const config: SDKConfig = {
+  Query: {
+    users: {
+      userById: true,        // ✅ Autocompleted from schema
+      searchUsers: true,     // ✅ Autocompleted from schema
+    },
+    posts: {
+      postById: true,
+      listPosts: true,
+    }
+  },
+  Mutation: {
+    users: {
+      createUser: true,
+      updateUser: true,
+    }
+  }
+} satisfies SDKConfig;
+
+export default config;
+```
+
+#### Available Types
+
+**`SchemaConfig<TQuery, TMutation, TSubscription>`** - Main type for schema configuration:
+
+```typescript
+import type { SchemaConfig } from 'gqlb/codegen';
+import type { Query, Mutation, Subscription } from './schema-types.full.ts';
+
+type Config = SchemaConfig<Query, Mutation, Subscription>;
+```
+
+**`ModuleConfig<TRoot>`** - Configuration for a single root type:
+
+```typescript
+import type { ModuleConfig } from 'gqlb/codegen';
+import type { Query } from './schema-types.full.ts';
+
+type QueryConfig = ModuleConfig<Query>;
+```
+
+**`ModuleOperations<TModule>`** - Configuration for a module's operations:
+
+```typescript
+import type { ModuleOperations } from 'gqlb/codegen';
+import type { UsersQuery } from './schema-types.full.ts';
+
+const usersConfig: ModuleOperations<UsersQuery> = {
+  userById: true,
+  searchUsers: true,
+};
+```
+
+**`UnwrapMaybe<T>`** - Utility to unwrap `Maybe<T>` types (T | null):
+
+```typescript
+import type { UnwrapMaybe } from 'gqlb/codegen';
+
+type User = UnwrapMaybe<Maybe<UserType>>;  // UserType
+```
+
+#### Runtime Utilities
+
+**`isValidSchemaConfig(config)`** - Runtime validation for dynamically loaded configurations:
+
+```typescript
+import { isValidSchemaConfig } from 'gqlb/codegen';
+
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+if (isValidSchemaConfig(config)) {
+  processConfig(config);
+}
+```
+
+**`getEnabledOperations(moduleConfig)`** - Extract enabled operation names:
+
+```typescript
+import { getEnabledOperations } from 'gqlb/codegen';
+
+const operations = getEnabledOperations({
+  userById: true,
+  searchUsers: true,
+  listUsers: undefined,  // Not enabled
+});
+// ['userById', 'searchUsers']
+```
+
+**`countOperations(config)`** - Count total enabled operations:
+
+```typescript
+import { countOperations } from 'gqlb/codegen';
+
+const stats = countOperations(config);
+// { Query: 5, Mutation: 3, Subscription: 0, total: 8 }
+```
+
 ## Advanced Usage
 
 ### Dynamic Field Selection
