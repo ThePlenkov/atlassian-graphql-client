@@ -1,4 +1,11 @@
-# gqlb -GraphQL Query Builder
+# gqlb - GraphQL Query Builder
+
+[![npm version](https://img.shields.io/npm/v/gqlb.svg?style=flat-square)](https://www.npmjs.com/package/gqlb)
+[![npm downloads](https://img.shields.io/npm/dm/gqlb.svg?style=flat-square)](https://www.npmjs.com/package/gqlb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue.svg?style=flat-square)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg?style=flat-square)](https://nodejs.org/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/gqlb?style=flat-square)](https://bundlephobia.com/package/gqlb)
 
 **Runtime proxy-based GraphQL query builder with full type safety**
 
