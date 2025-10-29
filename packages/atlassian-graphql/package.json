@@ -6,6 +6,29 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "atlassian",
+    "jira",
+    "confluence",
+    "graphql",
+    "typescript",
+    "api-client"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "directory": "packages/atlassian-graphql"
+  },
+  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "bugs": {
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
+  },
+  "license": "MIT",
   "dependencies": {
     "gqlb": "*"
   },

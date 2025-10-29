@@ -16,6 +16,11 @@
     },
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "graphql",
     "query-builder",
@@ -23,5 +28,15 @@
     "proxy",
     "type-safe"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "directory": "packages/gqlb"
+  },
+  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "bugs": {
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
+  },
+  "license": "MIT",
   "dependencies": {}
 }

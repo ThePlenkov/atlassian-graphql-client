@@ -33,6 +33,25 @@
         "default",
         "{workspaceRoot}/eslint.config.mjs"
       ]
+    },
+    "nx-release-publish": {
+      "dependsOn": [
+        "^build",
+        "build",
+        "lint",
+        "typecheck"
+      ]
+    }
+  },
+  "release": {
+    "projectsRelationship": "independent",
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": "github"
+      }
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",

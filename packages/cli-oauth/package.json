@@ -5,6 +5,11 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -21,6 +26,16 @@
     "async",
     "modern-node"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "directory": "packages/cli-oauth"
+  },
+  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "bugs": {
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
+  },
+  "license": "MIT",
   "dependencies": {},
   "peerDependencies": {}
 }

@@ -15,7 +15,9 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:e2e",
-    "test:e2e": "node --test e2e/*.test.ts"
+    "test:e2e": "node --test e2e/*.test.ts",
+    "release": "nx release",
+    "release:dry-run": "nx release --dry-run"
   },
   "dependencies": {
     "commander": "^14.0.1",

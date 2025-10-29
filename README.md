@@ -1,4 +1,4 @@
-# gqlb
+# gqlb -GraphQL Query Builder
 
 **Runtime proxy-based GraphQL query builder with full type safety**
 
@@ -191,24 +191,101 @@ OAuth 2.0 authentication utilities used by the CLI example.
 
 ## 🚀 Using gqlb with Your Own API
 
-1. **Install gqlb:**
+Getting full type safety with gqlb requires a few setup steps. Here's the complete flow:
+
+### 1. Install Dependencies
+
 ```bash
-npm install gqlb
+npm install gqlb graphql
+npm install --save-dev @graphql-codegen/cli @graphql-codegen/typescript
 ```
 
-2. **Get your GraphQL schema** (introspection JSON or SDL)
+### 2. Configure Type Generation
 
-3. **Create a query builder:**
+Create a `codegen.ts` file:
+
 ```typescript
-import { createQueryBuilder } from 'gqlb';
-import schema from './your-schema.graphql';
+import type { CodegenConfig } from '@graphql-codegen/cli';
 
-const builder = createQueryBuilder(schema);
+const config: CodegenConfig = {
+  schema: 'your-schema.graphql',  // or URL to your API
+  generates: {
+    'src/generated/schema-types.ts': {
+      plugins: ['typescript'],
+      config: {
+        scalars: {
+          DateTime: 'string',
+          JSON: 'unknown'
+        }
+      }
+    }
+  }
+};
+
+export default config;
 ```
 
-4. **Start building queries with full type safety!**
+### 3. Generate Types
 
-See our [documentation](./docs) for advanced usage, best practices, and more examples.
+```bash
+npx graphql-codegen
+```
+
+This creates TypeScript types from your GraphQL schema.
+
+### 4. Create Your Typed Builder
+
+Create a wrapper file (e.g., `src/builder.ts`):
+
+```typescript
+import { readFileSync } from 'fs';
+import { buildSchema } from 'graphql';
+import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
+import type { TypedQueryBuilder } from 'gqlb';
+import type { Query, Mutation } from './generated/schema-types.js';
+
+// Transform your generated types to gqlb's FieldFn format
+// (This requires utility types - see atlassian-graphql package for reference)
+import type { QueryFields, MutationFields } from './generated/types.js';
+
+const schema = buildSchema(readFileSync('./schema.graphql', 'utf-8'));
+
+export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields> {
+  return createGqlbBuilder(schema) as any;
+}
+
+export { $$, $args } from 'gqlb';
+```
+
+### 5. Build Queries with Full Type Safety!
+
+```typescript
+import { createQueryBuilder, $$ } from './builder.js';
+
+const builder = createQueryBuilder();
+const userId = $$<string>('userId');
+
+// Now you have FULL autocomplete and type checking!
+const query = builder.query('GetUser', q => [
+  q.user({ id: userId }, user => [
+    user.id,
+    user.name,
+    user.email
+  ])
+]);
+```
+
+### Quick Template
+
+The easiest way to get started is to use the [`atlassian-graphql`](./packages/atlassian-graphql) package as a template:
+
+1. Copy its structure (`codegen.ts`, `src/types.ts`, `src/index.ts`)
+2. Replace the Atlassian schema with your schema
+3. Update the codegen config with your schema URL/path
+4. Run `npx graphql-codegen`
+5. Start building queries!
+
+See our [documentation](./docs) and the [atlassian-graphql package](./packages/atlassian-graphql) for complete examples.
 
 ## ✨ Key Innovations
 
@@ -270,6 +347,59 @@ Guidelines:
 1. Use native Node.js APIs (avoid unnecessary dependencies)
 2. Never hardcode company-specific defaults
 3. Follow the documentation structure in [AGENTS.md](./AGENTS.md)
+
+## 📦 Releasing
+
+This project uses [Nx Release](https://nx.dev/features/manage-releases) with **Conventional Commits** for automated versioning and publishing.
+
+### Conventional Commits
+
+Version bumps are determined automatically from commit messages:
+
+- `feat:` → **minor** version bump (new feature)
+- `fix:` → **patch** version bump (bug fix)  
+- `BREAKING CHANGE:` or `!` → **major** version bump
+- `docs:`, `chore:`, etc. → no version bump
+
+**Examples:**
+```bash
+git commit -m "feat: add fragment support"        # 1.0.0 → 1.1.0
+git commit -m "fix: handle null values"           # 1.0.0 → 1.0.1
+git commit -m "feat!: change API signature"       # 1.0.0 → 2.0.0
+```
+
+### Local Release
+
+```bash
+# Preview what would be released
+npm run release:dry-run
+
+# Publish to npm (requires NPM_TOKEN)
+npm run release
+```
+
+### CI/CD Release (Automated)
+
+Releases are automated via GitHub Actions when changes are pushed to `main`:
+
+1. Push commits with conventional commit messages to `main`
+2. GitHub Actions runs quality gates (build, lint, typecheck)
+3. Nx Release analyzes commits and determines version bumps
+4. Packages are versioned and published to npm
+5. Changelogs and GitHub releases are created automatically
+
+**Required Secrets:**
+- `NPM_TOKEN` - npm authentication token (configured in GitHub repo settings)
+
+### Quality Gates
+
+The release flow ensures quality by automatically running these checks before publishing:
+
+- ✅ **Build** - All packages build successfully (including dependencies)
+- ✅ **Lint** - Code passes ESLint checks
+- ✅ **Typecheck** - TypeScript types are valid
+
+These checks are configured as dependencies of the `nx-release-publish` target, so you don't need to run them manually.
 
 ## 🌟 Why We Built This
 

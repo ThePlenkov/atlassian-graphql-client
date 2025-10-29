@@ -37,8 +37,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/atlassian-graphql-client",
-    "directory": "packages/codegen-plugin-args-map"
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "directory": "packages/graphql-codegen-args-map"
+  },
+  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "bugs": {
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
   },
   "license": "MIT"
 }
