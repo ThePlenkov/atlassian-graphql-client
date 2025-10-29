@@ -6,7 +6,16 @@
       "options": {
         "command": "node scripts/filter-schema.ts",
         "cwd": "packages/atlassian-graphql"
-      }
+      },
+      "inputs": [
+        "{projectRoot}/sdk.config.ts",
+        "{projectRoot}/scripts/filter-schema.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/src/generated/schema.graphql",
+        "{projectRoot}/src/generated/schema.full.graphql"
+      ],
+      "cache": true
     },
     "gen:codegen": {
       "executor": "nx:run-commands",
@@ -14,7 +23,16 @@
       "options": {
         "command": "graphql-codegen --config codegen.ts",
         "cwd": "packages/atlassian-graphql"
-      }
+      },
+      "inputs": [
+        "{projectRoot}/src/generated/schema.graphql",
+        "{projectRoot}/codegen.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/src/generated/schema-types.ts",
+        "{projectRoot}/src/generated/args-map.ts"
+      ],
+      "cache": true
     },
     "gen": {
       "executor": "nx:run-commands",
@@ -29,6 +47,7 @@
     },
     "build": {
       "executor": "nx:run-commands",
+      "dependsOn": ["gen:codegen", "^build"],
       "options": {
         "commands": [
           "tsdown",
@@ -36,7 +55,34 @@
         ],
         "cwd": "packages/atlassian-graphql",
         "parallel": false
-      }
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/src/generated/**",
+        "{projectRoot}/tsdown.config.ts",
+        "{workspaceRoot}/tsdown.config.mjs"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["gen:codegen"],
+      "options": {
+        "command": "tsc --build --emitDeclarationOnly",
+        "cwd": "packages/atlassian-graphql"
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/src/generated/**",
+        "{projectRoot}/tsconfig.json",
+        "{workspaceRoot}/tsconfig.base.json"
+      ],
+      "cache": true
     },
     "list:queries": {
       "executor": "nx:run-commands",
