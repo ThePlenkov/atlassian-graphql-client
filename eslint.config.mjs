@@ -37,7 +37,7 @@ export default [
           // Ignore config files - they often use devDependencies
           ignoredFiles: [
             '{projectRoot}/**/*.config.{ts,js,cts,mts,cjs,mjs}',
-          ],
+          ]          
         },
       ],
     },
