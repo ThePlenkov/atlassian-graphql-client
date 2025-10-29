@@ -34,13 +34,30 @@
       ],
       "cache": true
     },
+    "gen:codegen-full": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["gen:schema"],
+      "options": {
+        "command": "graphql-codegen --config codegen.full.ts",
+        "cwd": "packages/atlassian-graphql"
+      },
+      "inputs": [
+        "{projectRoot}/src/generated/schema.full.graphql",
+        "{projectRoot}/codegen.full.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/src/generated/schema-types.full.ts"
+      ],
+      "cache": true
+    },
     "gen": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:schema", "gen:codegen"],
+      "dependsOn": ["gen:schema", "gen:codegen", "gen:codegen-full"],
       "options": {
         "commands": [
           "nx run graphql:gen:schema",
-          "nx run graphql:gen:codegen"
+          "nx run graphql:gen:codegen",
+          "nx run graphql:gen:codegen-full"
         ],
         "parallel": false
       }
@@ -70,7 +87,7 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:codegen"],
+      "dependsOn": ["gen:codegen", "gen:codegen-full"],
       "options": {
         "command": "tsc --build --emitDeclarationOnly",
         "cwd": "packages/atlassian-graphql"

@@ -3,16 +3,20 @@
   "version": "0.1.5",
   "description": "Runtime proxy-based GraphQL query builder with type safety",
   "type": "module",
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./typed": {
-      "import": "./dist/typed-builder.mjs",
-      "types": "./dist/typed-builder.d.mts"
+      "import": "./dist/typed-builder.js",
+      "types": "./dist/typed-builder.d.ts"
+    },
+    "./codegen": {
+      "import": "./dist/codegen-utils.js",
+      "types": "./dist/codegen-utils.d.ts"
     },
     "./package.json": "./package.json"
   },
