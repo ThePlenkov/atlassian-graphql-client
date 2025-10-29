@@ -44,7 +44,7 @@
     }
   },
   "release": {
-    "projectsRelationship": "independent",
+    "projectsRelationship": "independent",    
     "version": {
       "conventionalCommits": true
     },
