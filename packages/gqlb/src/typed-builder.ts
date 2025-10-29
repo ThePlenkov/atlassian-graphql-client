@@ -15,6 +15,7 @@ export type SelectionOf<T> = T extends FieldFn<infer S, any, any> ? S : never;
 /**
  * A field function that can be called with args and/or selection
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type FieldFn<TSelection, TArgs = {}, TRequired extends boolean = false> =
   // Scalar field (no args, no selection)
   [TArgs] extends [never]

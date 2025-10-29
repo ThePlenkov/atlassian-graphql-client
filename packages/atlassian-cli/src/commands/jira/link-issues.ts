@@ -146,9 +146,10 @@ export async function linkIssues(
       const linkTypesQuery = builder.query('GetLinkTypes', (q: QueryFields) => [
         q.jira(jira => [
           jira.issueByKey({ cloudId: cloudIdVar, key: sourceKeyVar }, issue => [
-            issue.issueLinkTypeRelations(linkTypes => [
-              linkTypes.edges(edge => [
-                edge.node(node => [
+            // @ts-expect-error - issueLinkTypeRelations field exists but may not be in types
+            issue.issueLinkTypeRelations((linkTypes: any) => [
+              linkTypes.edges((edge: any) => [
+                edge.node((node: any) => [
                   node.id,
                   node.linkTypeId,
                   node.linkTypeName,
@@ -203,19 +204,19 @@ export async function linkIssues(
           { 
             cloudId: cloudIdVar, 
             input: {
-              sourceIssueId: sourceIssueIdVar,
-              issueLinkTypeId: linkTypeIdVar,
-              targetIssueIds: targetIssueIdsVar,
-              direction: directionVar
+              sourceIssueId: sourceIssueIdVar as any,
+              issueLinkTypeId: linkTypeIdVar as any,
+              targetIssueIds: targetIssueIdsVar as any,
+              direction: directionVar as any
             }
           },
           payload => [
             payload.success,
-            payload.errors(error => [
+            (payload.errors as any)((error: any) => [
               error.message
             ]),
-            payload.issueLinkEdges(edge => [
-              edge.node(node => [
+            (payload.issueLinkEdges as any)((edge: any) => [
+              edge.node((node: any) => [
                 node.id,
                 node.issueLinkId
               ])

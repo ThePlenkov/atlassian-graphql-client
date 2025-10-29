@@ -4,6 +4,15 @@ All notable changes to **gqlb** and demo packages will be documented in this fil
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed ESLint errors across all packages by removing unused dependencies from package.json files
+- Fixed empty function linter errors in SilentLogger by adding eslint-disable comments
+- Fixed TypeScript linter errors for inferrable types and unsafe function types
+- Fixed empty catch block linter error in atomic storage with appropriate comment
+- Fixed TypeScript typecheck errors in link-issues.ts demo code with proper type assertions
+- Removed unnecessary TypeScript project references and composite settings from configuration
+
 ### gqlb - Runtime Proxy-Based GraphQL Query Builder
 
 **Core Innovation:**

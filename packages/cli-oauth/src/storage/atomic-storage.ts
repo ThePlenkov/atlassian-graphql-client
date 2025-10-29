@@ -105,7 +105,10 @@ export class AtomicStorage {
         if (await this.exists(tempPath)) {
           await unlink(tempPath);
         }
-      } catch {}
+        // eslint-disable-next-line no-empty
+      } catch {
+        // Ignore cleanup errors
+      }
       throw new Error(`Failed to write ${filename}: ${error.message}`);
     }
   }

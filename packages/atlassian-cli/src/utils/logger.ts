@@ -12,7 +12,7 @@ export interface Logger {
 }
 
 export class ConsoleLogger implements Logger {
-  constructor(private verbose: boolean = false) {}
+  constructor(private verbose = false) {}
 
   debug(message: string, ...args: any[]): void {
     if (this.verbose) {
@@ -43,17 +43,22 @@ export class ConsoleLogger implements Logger {
  * Silent logger for MCP or other scenarios where output should be suppressed
  */
 export class SilentLogger implements Logger {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   debug(_message: string, ..._args: any[]): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   info(_message: string, ..._args: any[]): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   warn(_message: string, ..._args: any[]): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   error(_message: string, ..._args: any[]): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   log(_message: string, ..._args: any[]): void {}
 }
 
 /**
  * Create a logger based on verbose flag
  */
-export function createLogger(verbose: boolean = false): Logger {
+export function createLogger(verbose = false): Logger {
   return new ConsoleLogger(verbose);
 }
 

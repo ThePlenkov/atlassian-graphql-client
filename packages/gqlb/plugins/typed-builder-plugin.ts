@@ -164,7 +164,7 @@ function generateScalarTypes(scalars: Record<string, string>): string[] {
 /**
  * Generate TypeScript type from GraphQL type
  */
-function generateTypeReference(type: GraphQLType, config: TypedBuilderPluginConfig, forFieldFn: boolean = false): string {
+function generateTypeReference(type: GraphQLType, config: TypedBuilderPluginConfig, forFieldFn = false): string {
   const isRequired = isNonNullType(type);
   const nullableType = isRequired ? type.ofType : type;
   

@@ -15,6 +15,7 @@ type IsObject<T> = T extends object
     ? false
     : T extends Date
       ? false
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
       : T extends Function
         ? false
         : true

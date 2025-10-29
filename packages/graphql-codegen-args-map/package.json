@@ -26,10 +26,7 @@
     "args",
     "types"
   ],
-  "peerDependencies": {
-    "@graphql-codegen/plugin-helpers": ">=5.0.0",
-    "graphql": ">=16.0.0"
-  },
+  "peerDependencies": {},
   "peerDependenciesMeta": {
     "@graphql-codegen/plugin-helpers": {
       "optional": false
