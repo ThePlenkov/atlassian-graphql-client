@@ -37,9 +37,9 @@ const query = buildQuery(selectedFields);
 // ✅ Both dynamic AND fully typed!
 const query = builder.query('GetUser', q => [
   q.user({ id: userId }, user => [
-    user.id(),           // ← Perfect autocomplete
-    user.name(),         // ← TypeScript knows all fields
-    user.email(),        // ← Catches typos at compile time
+    user.id,             // ← Perfect autocomplete
+    user.name,           // ← TypeScript knows all fields
+    user.email,          // ← Catches typos at compile time
     ...conditionalFields // ← Dynamic selection!
   ])
 ]);
@@ -77,15 +77,15 @@ const limit = $$<number>('limit');
 // 3. Build queries with full autocomplete
 const query = builder.query('GetUser', q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
-    user.email(),
+    user.id,
+    user.name,
+    user.email,
     user.posts({ first: limit }, posts => [
-      posts.id(),
-      posts.title(),
-      posts.content(),
+      posts.id,
+      posts.title,
+      posts.content,
       posts.author(author => [
-        author.name()
+        author.name
       ])
     ])
   ])
@@ -135,8 +135,8 @@ Builds a GraphQL query.
 ```typescript
 const query = builder.query('GetUser', q => [
   q.user({ id: '123' }, user => [
-    user.id(),
-    user.name()
+    user.id,
+    user.name
   ])
 ]);
 ```
@@ -150,8 +150,8 @@ const mutation = builder.mutation('CreatePost', m => [
   m.createPost({ 
     input: { title: 'Hello', content: 'World' } 
   }, post => [
-    post.id(),
-    post.title()
+    post.id,
+    post.title
   ])
 ]);
 ```
@@ -171,7 +171,7 @@ import { $$ } from 'gqlb';
 const userId = $$<string>('userId');
 const query = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.name()
+    user.name
   ])
 ]);
 ```
@@ -186,12 +186,12 @@ Choose fields at runtime based on user input or configuration:
 function buildUserQuery(includeEmail: boolean, includePosts: boolean) {
   return builder.query('GetUser', q => [
     q.user({ id: userId }, user => [
-      user.id(),
-      user.name(),
-      ...(includeEmail ? [user.email()] : []),
+      user.id,
+      user.name,
+      ...(includeEmail ? [user.email] : []),
       ...(includePosts ? [
         user.posts(posts => [
-          posts.title()
+          posts.title
         ])
       ] : [])
     ])
@@ -229,14 +229,14 @@ Navigate deeply nested structures with full type safety:
 ```typescript
 const query = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.id(),
+    user.id,
     user.profile(profile => [
-      profile.bio(),
+      profile.bio,
       profile.avatar(avatar => [
-        avatar.url(),
+        avatar.url,
         avatar.thumbnails(thumb => [
-          thumb.small(),
-          thumb.large()
+          thumb.small,
+          thumb.large
         ])
       ])
     ])
@@ -248,9 +248,9 @@ const query = builder.query(q => [
 
 ```typescript
 const userFields = builder.fragment('UserFields', 'User', u => [
-  u.id(),
-  u.name(),
-  u.email()
+  u.id,
+  u.name,
+  u.email
 ]);
 
 const query = builder.query(q => [

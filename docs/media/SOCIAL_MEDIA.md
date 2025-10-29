@@ -57,8 +57,8 @@ Result: Dynamic + Safe + Fast 🎉
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ key }, issue => [
-      issue.key(),
-      issue.summary() // TypeScript knows EVERYTHING
+      issue.key,
+      issue.summary // TypeScript knows EVERYTHING
     ])
   ])
 ]);
@@ -147,9 +147,9 @@ We built a **multi-stage pipeline** that combines:
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),              // TypeScript validates this exists
+      issue.key,                // TypeScript validates this exists
       issue.summaryField(s => [ // Knows selection is required
-        s.text()                // Autocomplete for nested fields
+        s.text                  // Autocomplete for nested fields
       ])
     ])
   ])

@@ -16,13 +16,13 @@ Build dynamic GraphQL queries with perfect TypeScript autocomplete - no code gen
 // ✅ Tiny bundles (120KB vs 850KB)
 // ✅ Fast IDE (instant autocomplete vs 3-5s delay)
 
-const query = builder.query('GetUser', q => [
+const query = builder.query.GetUser(q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.posts({ first: 10 }, posts => [
-      posts.title(),
-      posts.content()
+      posts.title,
+      posts.content
     ])
   ])
 ]);
@@ -38,6 +38,8 @@ const query = builder.query('GetUser', q => [
 - 📦 **Tiny bundles** - 86% smaller than traditional approaches
 - ⚡ **Fast IDE** - Instant autocomplete (30x faster)
 - 🔄 **Any GraphQL schema** - Works with any API
+- 🎨 **Clean syntax** - Named query shorthand & variables proxy
+- 🌲 **Deep variables** - Nested variable objects just work
 
 ## Installation
 
@@ -60,13 +62,13 @@ const userId = $$<string>('userId');
 // Build queries with full autocomplete
 const query = builder.query('GetUser', q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
-    user.email(),
+    user.id,
+    user.name,
+    user.email,
     user.posts({ first: 10 }, posts => [
-      posts.id(),
-      posts.title(),
-      posts.content()
+      posts.id,
+      posts.title,
+      posts.content
     ])
   ])
 ]);
@@ -76,6 +78,72 @@ import { GraphQLClient } from 'graphql-request';
 const client = new GraphQLClient('https://api.example.com/graphql');
 const result = await client.request(query, { userId: '123' });
 ```
+
+## Convenient Syntax
+
+### Named Query Shorthand
+
+Use the query name as a property for cleaner syntax:
+
+```typescript
+// Traditional syntax
+const query = builder.query('GetUser', q => [...]);
+
+// Shorthand syntax - same result!
+const query = builder.query.GetUser(q => [
+  q.user({ id: userId }, user => [
+    user.id,
+    user.name,
+    user.email
+  ])
+]);
+```
+
+### Variables Proxy
+
+Create a variables proxy once and use it like a regular object:
+
+```typescript
+import { createQueryBuilder, $args } from 'gqlb';
+
+// Create variables proxy
+const vars = $args({
+  userId: String,
+  limit: Number,
+  filters: {
+    status: String,
+    priority: String
+  }
+});
+
+// Use variables naturally in your query
+const query = builder.query.GetUserPosts(q => [
+  q.user({ id: vars.userId }, user => [
+    user.id,
+    user.name,
+    user.posts({ 
+      first: vars.limit,
+      status: vars.filters.status,      // ✓ Deep variables supported!
+      priority: vars.filters.priority
+    }, posts => [
+      posts.id,
+      posts.title
+    ])
+  ])
+]);
+
+// Execute with variables
+const result = await client.request(query, {
+  userId: '123',
+  limit: 10,
+  filters: {
+    status: 'OPEN',
+    priority: 'HIGH'
+  }
+});
+```
+
+Both the traditional `$$<T>('name')` syntax and the `$args()` proxy are supported!
 
 ## How It Works
 

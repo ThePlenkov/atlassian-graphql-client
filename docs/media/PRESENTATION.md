@@ -196,9 +196,9 @@ The results speak for themselves. We're not just competitive - we CRUSHED every 
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [           // ✓ Knows args
     jira.issueByKey({ issueKey }, issue => [ // ✓ Nested
-      issue.key(),                        // ✓ Scalar
+      issue.key,                          // ✓ Scalar
       issue.summaryField(s => [           // ✓ Selection
-        s.text()                          // ✓ Deep nesting
+        s.text                            // ✓ Deep nesting
       ])
     ])
   ])
@@ -531,9 +531,9 @@ const query = builder.query('GetIssue', q => [
   q.jira({ cloudId: 'abc' }, jira => [
     jira.issueByKey({ issueKey }, issue => [
       // Demonstrate autocomplete here
-      issue.key(),
+      issue.key,
       issue.summaryField(s => [
-        s.text()
+        s.text
       ])
     ])
   ])

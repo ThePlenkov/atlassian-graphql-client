@@ -81,8 +81,8 @@ const ALL_FIELDS = [
 
 /**
  * Recursively build field selection based on dot notation
- * Example: "summaryField.text" becomes summaryField(s => [s.text()])
- * Example: "assigneeField.user.name" becomes assigneeField(a => [a.user(u => [u.name()])])
+ * Example: "summaryField.text" becomes summaryField(s => [s.text])
+ * Example: "assigneeField.user.name" becomes assigneeField(a => [a.user(u => [u.name])])
  */
 function buildFieldSelection(fieldPath: string, proxy: any): any {
   const parts = fieldPath.split('.');

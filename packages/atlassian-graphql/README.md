@@ -53,20 +53,20 @@ const query = builder.query('SearchIssues', q => [
     }, search => [
       search.edges(edge => [
         edge.node(node => [
-          node.id(),
-          node.key(),
-          node.summaryField(s => [s.text()]),
+          node.id,
+          node.key,
+          node.summaryField(s => [s.text]),
           node.assigneeField(a => [
             a.user(u => [
-              u.accountId(),
-              u.name()
+              u.accountId,
+              u.name
             ])
           ])
         ])
       ]),
       search.pageInfo(p => [
-        p.hasNextPage(),
-        p.endCursor()
+        p.hasNextPage,
+        p.endCursor
       ])
     ])
   ])
@@ -118,10 +118,10 @@ const issueId = $$<string>('issueId');
 const query = builder.query('GetIssue', q => [
   q.jira(jira => [
     jira.issue({ id: issueId }, issue => [
-      issue.id(),
-      issue.key(),
-      issue.summaryField(s => [s.text()]),
-      issue.descriptionField(d => [d.text()])
+      issue.id,
+      issue.key,
+      issue.summaryField(s => [s.text]),
+      issue.descriptionField(d => [d.text])
     ])
   ])
 ]);
@@ -135,19 +135,19 @@ const query = builder.query('DetailedSearch', q => [
     jira.issueSearch({ issueSearchInput: { jql } }, search => [
       search.edges(edge => [
         edge.node(node => [
-          node.key(),
-          node.summaryField(s => [s.text()]),
+          node.key,
+          node.summaryField(s => [s.text]),
           node.assigneeField(a => [
             a.user(u => [
-              u.name(),
-              u.emailAddress()
+              u.name,
+              u.emailAddress
             ])
           ]),
           node.statusField(status => [
-            status.name(),
+            status.name,
             status.statusCategory(cat => [
-              cat.key(),
-              cat.name()
+              cat.key,
+              cat.name
             ])
           ])
         ])
@@ -165,10 +165,10 @@ const spacesQuery = builder.query('GetSpaces', q => [
     c.spaces({ keys: spaceKeys, first: 10 }, spaces => [
       spaces.edges(edge => [
         edge.node(node => [
-          node.id(),
-          node.key(),
-          node.name(),
-          node.description()
+          node.id,
+          node.key,
+          node.name,
+          node.description
         ])
       ])
     ])
@@ -186,9 +186,9 @@ function buildIssueQuery(fields: string[]) {
       jira.issue({ id: issueId }, issue => 
         fields.map(field => {
           switch(field) {
-            case 'id': return issue.id();
-            case 'key': return issue.key();
-            case 'summary': return issue.summaryField(s => [s.text()]);
+            case 'id': return issue.id;
+            case 'key': return issue.key;
+            case 'summary': return issue.summaryField(s => [s.text]);
             // ... etc
           }
         })

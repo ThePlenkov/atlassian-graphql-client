@@ -34,9 +34,9 @@ const builder = createQueryBuilder(schema);
 const userIdVar = $$<string>('userId');
 const query1 = builder.query(q => [
   q.user({ id: userIdVar }, user => [
-    user.id(),
-    user.name(),
-    user.email(),
+    user.id,
+    user.name,
+    user.email,
   ])
 ]);
 
@@ -45,12 +45,12 @@ console.log('Query 1:', query1.loc?.source.body);
 // Example 2: Query with nested selections
 const query2 = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.posts({ first: 10 }, posts => [
-      posts.id(),
-      posts.title(),
-      posts.content(),
+      posts.id,
+      posts.title,
+      posts.content,
     ])
   ])
 ]);
@@ -63,8 +63,8 @@ const offsetVar = $<number>('offset');
 
 const query3 = builder.query(q => [
   q.users({ limit: limitVar, offset: offsetVar }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
   ])
 ]);
 

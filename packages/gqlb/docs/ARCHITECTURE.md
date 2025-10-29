@@ -35,8 +35,8 @@ builder.query(q =>              // Create Query proxy
     jira => [jira.issue(        // Create JiraQuery proxy → look up "issue"
       { id: '123' },            // Args object
       issue => [                // Selection function for Issue type
-        issue.id(),             // Look up "id" → scalar field
-        issue.key()             // Look up "key" → scalar field
+        issue.id,               // Look up "id" → scalar field
+        issue.key               // Look up "key" → scalar field
       ]
     )]
   )]
@@ -165,10 +165,10 @@ const builder = createQueryBuilder(schema);
 // Build queries
 const query = builder.query(q => [
   q.user({ id: $$<string>('userId') }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.posts({ first: $<number>('limit') }, post => [
-      post.title()
+      post.title
     ])
   ])
 ]);

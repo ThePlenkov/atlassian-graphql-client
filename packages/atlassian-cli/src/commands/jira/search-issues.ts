@@ -58,8 +58,8 @@ export async function searchIssues(jql: string, options: SearchIssuesOptions) {
             )
           ]),
           search.pageInfo((pageInfo: any) => [
-            pageInfo.hasNextPage(),
-            pageInfo.endCursor()
+            pageInfo.hasNextPage,
+            pageInfo.endCursor
           ])
         ])
       ])

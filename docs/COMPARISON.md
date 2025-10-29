@@ -112,10 +112,10 @@ const result = await client.request(
 ```typescript
 const query = builder.query('GetUser', q => [
   q.user({ id }, user => [
-    user.name(),
-    user.email(),
+    user.name,
+    user.email,
     user.posts({ first: 10 }, post => [
-      post.title()
+      post.title
     ])
   ])
 ]);

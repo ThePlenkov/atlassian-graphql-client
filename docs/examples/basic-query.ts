@@ -19,9 +19,9 @@ const issueKey = $$<string>('issueKey');
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),              // ✓ TypeScript validates this exists
+      issue.key,                // ✓ TypeScript validates this exists
       issue.summaryField(s => [ // ✓ Knows this requires selection
-        s.text()                // ✓ Autocomplete for all fields
+        s.text                  // ✓ Autocomplete for all fields
       ])
     ])
   ])

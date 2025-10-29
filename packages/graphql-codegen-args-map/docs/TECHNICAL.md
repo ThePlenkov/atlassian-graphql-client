@@ -272,8 +272,8 @@ type GetArgsType<TParent, TField> =
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),
-      issue.summary()
+      issue.key,
+      issue.summary
     ])
   ])
 ]);

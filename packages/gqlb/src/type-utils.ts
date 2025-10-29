@@ -142,10 +142,10 @@ export type FieldsOf<T> = T extends { __typename?: string }
  * // 4. Full autocomplete!
  * const query = builder.query(q => [
  *   q.user(user => [
- *     user.id(),
- *     user.name(),
+ *     user.id,
+ *     user.name,
  *     user.posts(post => [
- *       post.title()
+ *       post.title
  *     ])
  *   ])
  * ]);

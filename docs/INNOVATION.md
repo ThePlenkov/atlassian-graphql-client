@@ -29,9 +29,9 @@ const builder = createQueryBuilder();
 const query = builder.query('GetUser', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),              // ✓ TypeScript validates
+      issue.key,                // ✓ TypeScript validates
       issue.summaryField(s => [ // ✓ Knows selection required
-        s.text()                // ✓ Full autocomplete
+        s.text                  // ✓ Full autocomplete
       ])
     ])
   ])
@@ -292,15 +292,15 @@ See [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) for complete impl
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),              // ✓ Autocomplete
+      issue.key,                // ✓ Autocomplete
       issue.summaryField(s => [  // ✓ Knows selection required
-        s.text(),               // ✓ Autocomplete nested
-        s.rendered()
+        s.text,                 // ✓ Autocomplete nested
+        s.rendered
       ]),
       issue.statusField(st => [ // ✓ Different type
-        st.name(),
+        st.name,
         st.statusCategory(cat => [
-          cat.colorName()       // ✓ Deep nesting
+          cat.colorName         // ✓ Deep nesting
         ])
       ])
     ])
@@ -367,8 +367,8 @@ const userId = $$<string>('userId');
 
 const query = builder.query('GetUser', q => [
   q.user({ id: userId }, user => [
-    user.name(),
-    user.email()
+    user.name,
+    user.email
   ])
 ]);
 ```

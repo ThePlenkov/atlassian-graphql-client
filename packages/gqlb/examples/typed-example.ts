@@ -60,9 +60,9 @@ const builder = createQueryBuilder(schema) as TypedQueryBuilder<Query>;
 // Example 1: Simple query with full autocomplete
 const simpleQuery = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),
-    user.name(),
-    user.email()
+    user.id,
+    user.name,
+    user.email
   ])
 ]);
 
@@ -78,13 +78,13 @@ const simpleQuery = builder.query(q => [
 // Example 2: Nested query with full autocomplete
 const nestedQuery = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.posts({ first: 10 }, post => [
-      post.title(),
-      post.content(),
+      post.title,
+      post.content,
       post.author(author => [
-        author.name()
+        author.name
       ])
     ])
   ])
@@ -108,11 +108,11 @@ const nestedQuery = builder.query(q => [
 // Example 3: Multiple root fields
 const multiQuery = builder.query('GetUsersAndUser', q => [
   q.user({ id: '123' }, user => [
-    user.name()
+    user.name
   ]),
   q.users({ first: 10 }, user => [
-    user.id(),
-    user.name()
+    user.id,
+    user.name
   ])
 ]);
 

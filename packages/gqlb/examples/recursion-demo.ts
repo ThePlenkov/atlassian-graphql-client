@@ -56,8 +56,8 @@ console.log('-'.repeat(70));
 const userId = $$<string>('userId');
 const query1 = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name()
+    user.id,
+    user.name
   ])
 ]);
 
@@ -69,10 +69,10 @@ console.log('-'.repeat(70));
 
 const query2 = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.profile(profile => [        // ← 1st recursion: User → Profile
-      profile.bio()
+      profile.bio
     ])
   ])
 ]);
@@ -85,14 +85,14 @@ console.log('-'.repeat(70));
 
 const query3 = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.profile(profile => [        // ← 1st recursion: User → Profile
-      profile.bio(),
+      profile.bio,
       profile.avatar(avatar => [     // ← 2nd recursion: Profile → Image
-        avatar.url(),
-        avatar.width(),
-        avatar.height()
+        avatar.url,
+        avatar.width,
+        avatar.height
       ])
     ])
   ])
@@ -106,29 +106,29 @@ console.log('-'.repeat(70));
 
 const query4 = builder.query(q => [
   q.user({ id: userId }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.profile(profile => [        // ← 1st recursion: User → Profile
-      profile.bio(),
+      profile.bio,
       profile.avatar(avatar => [     // ← 2nd recursion: Profile → Image
-        avatar.url()
+        avatar.url
       ])
     ]),
     user.posts({ limit: 5 }, post => [  // ← Another 1st level recursion: User → Post
-      post.id(),
-      post.title(),
+      post.id,
+      post.title,
       post.author(author => [        // ← 2nd recursion: Post → User (circular!)
-        author.id(),
-        author.name()
+        author.id,
+        author.name
       ]),
       post.comments({ first: 3 }, comment => [  // ← 2nd recursion: Post → Comment
-        comment.id(),
-        comment.text(),
+        comment.id,
+        comment.text,
         comment.author(author => [   // ← 3rd recursion: Comment → User
-          author.id(),
-          author.name(),
+          author.id,
+          author.name,
           author.profile(profile => [  // ← 4th recursion: User → Profile
-            profile.bio()
+            profile.bio
           ])
         ])
       ])

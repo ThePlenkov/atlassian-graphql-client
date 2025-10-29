@@ -25,11 +25,11 @@
  * const query = builder.query('GetJiraIssue', q => [
  *   q.jira({ cloudId }, jira => [
  *     jira.issueByKey({ issueKey }, issue => [
- *       issue.key(),
- *       issue.summaryField(s => [s.text()]),
+ *       issue.key,
+ *       issue.summaryField(s => [s.text]),
  *       issue.assigneeField(a => [
  *         a.user(user => [
- *           user.name()
+ *           user.name
  *         ])
  *       ])
  *     ])
@@ -109,9 +109,9 @@ const schema = buildSchema(schemaSDL);
  * const query = builder.query('GetIssue', q => [
  *   q.jira({ cloudId }, jira => [
  *     jira.issueByKey({ issueKey }, issue => [
- *       issue.key(),              // ✓ TypeScript knows this exists
+ *       issue.key,                // ✓ TypeScript knows this exists
  *       issue.summaryField(s => [  // ✓ TypeScript knows this requires selection
- *         s.text()                 // ✓ TypeScript knows text field exists
+ *         s.text                   // ✓ TypeScript knows text field exists
  *       ])
  *     ])
  *   ])

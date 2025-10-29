@@ -14,9 +14,9 @@ We built a novel GraphQL code generation pipeline that gives you:
 const query = builder.query('GetIssue', q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),              // ✓ TypeScript knows this exists
+      issue.key,                // ✓ TypeScript knows this exists
       issue.summaryField(s => [ // ✓ Knows you need a selection
-        s.text()                // ✓ Autocomplete for nested fields
+        s.text                  // ✓ Autocomplete for nested fields
       ])
     ])
   ])
@@ -332,15 +332,15 @@ const issueKey = $$<string>('issueKey');
 const query = builder.query('GetJiraIssue', q => [
   q.jira({ cloudId }, jira => [           // ✓ TypeScript knows args
     jira.issueByKey({ issueKey }, issue => [ // ✓ Knows nested structure
-      issue.key(),                        // ✓ Scalar field
+      issue.key,                          // ✓ Scalar field
       issue.summaryField(s => [           // ✓ Knows selection needed
-        s.text(),                         // ✓ Knows nested fields
-        s.rendered()
+        s.text,                           // ✓ Knows nested fields
+        s.rendered
       ]),
       issue.assigneeField(a => [          // ✓ Different type
         a.user(user => [                  // ✓ More nesting
-          user.name(),                    // ✓ Still autocomplete!
-          user.email()
+          user.name,                      // ✓ Still autocomplete!
+          user.email
         ])
       ])
     ])

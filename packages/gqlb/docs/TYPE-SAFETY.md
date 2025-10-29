@@ -50,9 +50,9 @@ TypeScript infers the exact shape of your result based on the fields you select:
 const query = builder.query(q => [
   q.jira({ cloudId }, jira => [
     jira.issueByKey({ issueKey }, issue => [
-      issue.key(),                    // ✓ TypeScript knows this exists
+      issue.key,                      // ✓ TypeScript knows this exists
       issue.summaryField(s => [       // ✓ Requires nested selection
-        s.text()                       // ✓ TypeScript knows text exists
+        s.text                         // ✓ TypeScript knows text exists
       ])
     ])
   ])
@@ -84,8 +84,8 @@ Every field, at every level, has full IDE autocomplete:
 
 TypeScript catches errors at compile time:
 ```typescript
-issue.naem();  // ❌ Error: Property 'naem' does not exist
-issue.name();  // ✓ Correct
+issue.naem;    // ❌ Error: Property 'naem' does not exist
+issue.name;    // ✓ Correct
 ```
 
 ### ✅ Type-Safe Arguments

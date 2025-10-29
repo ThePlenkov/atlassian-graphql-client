@@ -160,11 +160,11 @@ export function $<T>(name: string): TypedVariable<T | null> {
  * // Full autocomplete!
  * const query = builder.query(q => [
  *   q.user({ id: '123' }, user => [
- *     user.id(),
- *     user.name(),
+ *     user.id,
+ *     user.name,
  *     user.posts({ first: 10 }, post => [
- *       post.title(),
- *       post.content()
+ *       post.title,
+ *       post.content
  *     ])
  *   ])
  * ]);

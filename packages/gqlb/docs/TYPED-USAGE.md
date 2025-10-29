@@ -47,11 +47,11 @@ const builder = createQueryBuilder(schema) as TypedQueryBuilder<Query>;
 // Now you have FULL autocomplete! 🎉
 const query = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),           // ✓ Autocomplete suggests: id, name, email, posts
-    user.name(),
+    user.id,             // ✓ Autocomplete suggests: id, name, email, posts
+    user.name,
     user.posts({ first: 10 }, post => [
-      post.title(),      // ✓ Autocomplete suggests: id, title, content, author
-      post.content()
+      post.title,        // ✓ Autocomplete suggests: id, title, content, author
+      post.content
     ])
   ])
 ]);
@@ -75,8 +75,8 @@ interface User {
 // Usage
 const query = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),    // Just call the function
-    user.name()
+    user.id,      // Just access the property
+    user.name
   ])
 ]);
 ```
@@ -108,8 +108,8 @@ const query = builder.query(q => [
   q.user({ id: '123' }, user => [
     // Object fields require a selection function
     user.posts({ first: 10 }, post => [
-      post.title(),
-      post.content()
+      post.title,
+      post.content
     ])
   ])
 ]);
@@ -122,10 +122,10 @@ The builder infers the exact shape of your result based on the fields you select
 ```typescript
 const query = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.id(),
-    user.name(),
+    user.id,
+    user.name,
     user.posts(post => [
-      post.title()
+      post.title
     ])
   ])
 ]);
@@ -162,7 +162,7 @@ const limit = $<number>('limit');         // Optional variable
 const query = builder.query(q => [
   q.user({ id: userId }, user => [
     user.posts({ first: limit }, post => [
-      post.title()
+      post.title
     ])
   ])
 ]);
@@ -181,9 +181,9 @@ Add operation names for better observability:
 ```typescript
 const query = builder.query('GetUserWithPosts', q => [
   q.user({ id: '123' }, user => [
-    user.name(),
+    user.name,
     user.posts(post => [
-      post.title()
+      post.title
     ])
   ])
 ]);
@@ -206,11 +206,11 @@ Select multiple root fields in one query:
 ```typescript
 const query = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.name()
+    user.name
   ]),
   q.users({ first: 10 }, user => [
-    user.id(),
-    user.name()
+    user.id,
+    user.name
   ])
 ]);
 
@@ -268,9 +268,9 @@ type SearchResult = User | Post;
 const query = builder.query(q => [
   q.search({ query: 'test' }, result => [
     // Select common fields
-    result.id(),
+    result.id,
     // Type narrowing with __typename
-    result.__typename?.()
+    result.__typename
   ])
 ]);
 ```
@@ -316,9 +316,9 @@ result.user.naem;  // No autocomplete, no error checking
 ```typescript
 const query = builder.query(q => [
   q.user({ id: '123' }, user => [
-    user.naem(),  // ❌ TypeScript error: Property 'naem' does not exist
-    user.unknown()  // ❌ TypeScript error: Property 'unknown' does not exist
-    user.name()  // ✓ Autocomplete suggests this!
+    user.naem,    // ❌ TypeScript error: Property 'naem' does not exist
+    user.unknown  // ❌ TypeScript error: Property 'unknown' does not exist
+    user.name     // ✓ Autocomplete suggests this!
   ])
 ]);
 
