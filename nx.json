@@ -13,16 +13,26 @@
         "{projectRoot}/tsdown.config.ts",
         "{workspaceRoot}/tsdown.config.mjs"
       ],
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
       "cache": true,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
-      "outputs": ["{projectRoot}/coverage"],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "lint": {
-      "cache": true
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/eslint.config.mjs"
+      ]
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
@@ -33,6 +43,13 @@
         "typecheck": {
           "targetName": "typecheck"
         }
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint",
+        "extensions": ["ts", "tsx", "js", "jsx"]
       }
     }
   ]

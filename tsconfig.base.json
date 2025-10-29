@@ -17,7 +17,8 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "paths": {
-      "atlassian-graphql": ["packages/atlassian-graphql/src/index.ts"]
+      "atlassian-graphql": ["packages/atlassian-graphql/src/index.ts"],
+      "sample": ["sample/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

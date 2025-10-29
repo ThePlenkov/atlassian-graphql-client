@@ -18,7 +18,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { GraphQLClient } from 'graphql-request';
-import { createQueryBuilder, $$ } from '@atlassian-tools/gql';
+import { createQueryBuilder, $vars, values } from '@atlassian-tools/gql';
 import { loadConfig, getValidToken } from '@atlassian-tools/cli/auth/config';
 import { print } from 'graphql';
 
@@ -48,9 +48,17 @@ test('Link Jira issues together', async () => {
   });
 
   const builder = createQueryBuilder();
-  const cloudId = $$<string>('cloudId');
-  const issueSearchInput = $$<any>('issueSearchInput');
-  const firstVar = $$<number>('first');
+  
+  // Create variables for search
+  const searchVars = $vars({
+    cloudId: config.cloudId,
+    issueSearchInput: {
+      jql: 'ORDER BY updated DESC'
+    },
+    first: 2
+  });
+
+  const { cloudId, issueSearchInput, first: firstVar } = searchVars;
 
   // Step 1: Find 2 issues to link (search for any issues)
   console.log('📋 Step 1: Finding issues to link...\n');
@@ -74,13 +82,7 @@ test('Link Jira issues together', async () => {
   ]);
 
   console.log('🔍 Searching for issues...');
-  const searchResult = await client.request(searchQuery, {
-    cloudId: config.cloudId,
-    issueSearchInput: {
-      jql: 'ORDER BY updated DESC'
-    },
-    first: 2
-  });
+  const searchResult = await client.request(searchQuery, values(searchVars));
 
   const issues = searchResult.jira.issueSearchStable.edges;
   assert.ok(issues.length >= 2, 'Need at least 2 issues to test linking');
@@ -106,13 +108,24 @@ test('Link Jira issues together', async () => {
   // Step 3: Create the issue link
   console.log('📋 Step 3: Creating issue link...\n');
 
-  const inputVar = $$<any>('input');  // JiraBulkCreateIssueLinksInput! type
+  // Create variables for mutation
+  const mutationVars = $vars({
+    cloudId: config.cloudId,
+    input: {
+      sourceIssueId: sourceIssue.issueId,
+      issueLinkTypeId: linkTypeId,
+      targetIssueIds: [targetIssue.issueId],
+      direction: 'OUTWARD'
+    }
+  });
+
+  const { cloudId: mutationCloudId, input: inputVar } = mutationVars;
 
   const linkMutation = builder.mutation.CreateIssueLinks(m => [
     m.jira(jira => [
       jira.createIssueLinks(
         {
-          cloudId,
+          cloudId: mutationCloudId,
           input: inputVar as any
         },
         (payload: any) => [
@@ -146,15 +159,7 @@ test('Link Jira issues together', async () => {
 
   console.log('🚀 Executing mutation...\n');
 
-  const linkResult = await client.request(mutationString, {
-    cloudId: config.cloudId,
-    input: {
-      sourceIssueId: sourceIssue.issueId,
-      issueLinkTypeId: linkTypeId,
-      targetIssueIds: [targetIssue.issueId],
-      direction: 'OUTWARD'
-    }
-  });
+  const linkResult = await client.request(mutationString, values(mutationVars));
 
   // Assertions
   assert.ok(linkResult.jira, 'jira field should exist');

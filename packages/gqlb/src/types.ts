@@ -9,6 +9,7 @@ export interface Variable<T = any> {
   readonly name: string;
   readonly required: boolean;
   readonly type?: T;
+  readonly value?: T;  // Optional: stores the actual value when using $vars()
 }
 
 /**

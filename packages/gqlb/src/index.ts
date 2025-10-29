@@ -3,7 +3,7 @@
  */
 
 export { createQueryBuilder } from './builder.js';
-export { $, $$ } from './variables.js';
+export { $, $$, $vars, values } from './variables.js';
 export type { QueryBuilder, SelectionFn, FieldSelection, Variable } from './types.js';
 
 // Re-export typed builder types for full type safety

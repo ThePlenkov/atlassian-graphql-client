@@ -64,7 +64,7 @@ type SubscriptionFields = Record<string, never>;
 /**
  * Re-export gqlb utilities for building queries
  */
-export { $, $$ } from 'gqlb';
+export { $, $$, $vars, values } from 'gqlb';
 export type { 
   QueryBuilder, 
   SelectionFn, 

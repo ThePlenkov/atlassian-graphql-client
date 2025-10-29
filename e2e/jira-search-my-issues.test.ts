@@ -18,7 +18,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { GraphQLClient } from 'graphql-request';
-import { createQueryBuilder, $$ } from '@atlassian-tools/gql';
+import { createQueryBuilder, $vars, values } from '@atlassian-tools/gql';
 import { loadConfig, getValidToken } from '@atlassian-tools/cli/auth/config';
 import { print } from 'graphql';
 
@@ -49,9 +49,17 @@ test('Search for Jira issues assigned to me', async () => {
 
   // Build the query
   const builder = createQueryBuilder();
-  const cloudId = $$<string>('cloudId');
-  const issueSearchInput = $$<any>('issueSearchInput');
-  const first = $$<number>('first');
+  
+  // Create variables with their values upfront
+  const vars = $vars({
+    cloudId: config.cloudId,
+    issueSearchInput: {
+      jql: 'assignee = currentUser() ORDER BY updated DESC'
+    },
+    first: 10
+  });
+
+  const { cloudId, issueSearchInput, first } = vars;
 
   const query = builder.query.SearchMyIssues(q => [
     q.jira(jira => [
@@ -103,13 +111,7 @@ test('Search for Jira issues assigned to me', async () => {
   // Execute the query
   console.log('🚀 Executing query...\n');
 
-  const result = await client.request(query, {
-    cloudId: config.cloudId,
-    issueSearchInput: {
-      jql: 'assignee = currentUser() ORDER BY updated DESC'
-    },
-    first: 10
-  });
+  const result = await client.request(query, values(vars));
 
   // Assertions
   assert.ok(result.jira, 'jira field should exist');
