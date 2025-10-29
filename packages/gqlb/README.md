@@ -2,14 +2,18 @@
 
 **Runtime proxy-based GraphQL query builder with full type safety**
 
-The impossible made possible: dynamic GraphQL queries with perfect TypeScript autocomplete and tiny bundle sizes.
+Dynamic GraphQL queries with full TypeScript autocomplete, optimized for large schemas.
 
-[![npm version](https://img.shields.io/npm/v/gqlb.svg)](https://www.npmjs.com/package/gqlb)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/gqlb.svg?style=flat-square)](https://www.npmjs.com/package/gqlb)
+[![npm downloads](https://img.shields.io/npm/dm/gqlb.svg?style=flat-square)](https://www.npmjs.com/package/gqlb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue.svg?style=flat-square)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg?style=flat-square)](https://nodejs.org/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/gqlb?style=flat-square)](https://bundlephobia.com/package/gqlb)
 
 ## Why gqlb?
 
-Traditional GraphQL clients force you to choose between type safety OR dynamic queries. **gqlb gives you both.**
+When working with **large, complex GraphQL schemas** and dynamic query requirements, traditional approaches have trade-offs. **gqlb aims to give you both type safety AND dynamic queries.**
 
 ### The Problem
 
@@ -47,11 +51,11 @@ const query = builder.query('GetUser', q => [
 
 ## Features
 
-- ✨ **Zero code generation** - Just load your schema
+- ✨ **Minimal code generation** - Small type files instead of massive builders
 - 🎯 **Full type safety** - Complete TypeScript autocomplete
 - 🚀 **Dynamic queries** - Build queries at runtime
-- 📦 **Tiny bundles** - 86% smaller than alternatives (120KB vs 850KB)
-- ⚡ **Fast IDE** - Instant autocomplete (30x faster)
+- 📦 **Optimized bundles** - Especially beneficial for large schemas
+- ⚡ **Fast IDE** - Smooth performance even with complex schemas
 - 🔄 **Any schema** - Works with any GraphQL API
 - 🌳 **Tree-shakeable** - Only bundle what you use
 
@@ -264,32 +268,47 @@ const query = builder.query(q => [
 
 `gqlb` uses a novel 5-stage approach:
 
-1. **Schema Pruning** - Remove unused types (90% reduction)
+1. **Schema Pruning** - Remove unused types for smaller output
 2. **Custom Codegen** - Generate minimal type definitions
-3. **Type Transformation** - TypeScript template literals for magic
-4. **Runtime Proxies** - Walk schema dynamically (300 lines!)
+3. **Type Transformation** - TypeScript template literals for type magic
+4. **Runtime Proxies** - Walk schema dynamically with tiny runtime
 5. **Tree-Shaking** - Bundle only what you use
 
-**Result:** 
-- 300 lines of runtime code (vs 130,000 generated lines)
-- 120KB bundles (vs 850KB with alternatives)
-- Instant autocomplete (vs 3-5 second delays)
+**Result:** Small runtime core plus minimal type definitions!
+
+**Impact on large schemas:** When working with schemas like Atlassian's (8000+ types), this approach can significantly reduce bundle sizes and maintain fast IDE performance compared to traditional builder generation.
 
 See [Innovation Deep Dive](../../docs/INNOVATION.md) for technical details.
 
 ## Comparison
 
+### When to Use gqlb
+
+**gqlb is ideal for:**
+- 🎯 Large schemas (1000+ types) where other builders struggle
+- 🎯 Dynamic field selection requirements
+- 🎯 Bundle size constraints
+- 🎯 GraphQL tools, explorers, or admin panels
+
+**Other tools may be simpler for:**
+- Small to medium schemas (<1000 types)
+- Fixed queries known at build time
+- Simple applications with few query variants
+
+### Feature Comparison
+
 | Feature | gqlb | graphql-code-generator | typed-graphql-builder |
 |---------|------|----------------------|---------------------|
-| Dynamic queries | ✅ | ❌ | ❌ |
-| Full type safety | ✅ | ✅ | ✅ |
-| Bundle size | 120KB | 850KB | 2.5MB+ |
-| IDE autocomplete | Instant | 3-5s delay | 5-10s delay |
-| Generated code | None | Moderate | 130,000+ lines |
-| Tree-shakeable | ✅ | Partial | ❌ |
-| Setup complexity | Low | Medium | High |
+| **Dynamic queries** | ✅ Yes | ⚠️ Limited | ✅ Yes |
+| **Type safety** | ✅ Full | ✅ Full | ✅ Full |
+| **Large schema support** | ✅ Excellent | ✅ Good | ⚠️ Struggles |
+| **Setup complexity** | ⚠️ Medium | ✅ Low | ✅ Low |
+| **Runtime flexibility** | ✅ High | ⚠️ Low | ✅ High |
+| **Tree-shakeable** | ✅ Yes | ⚠️ Partial | ⚠️ Partial |
 
-See [Detailed Comparison](../../docs/COMPARISON.md) for more.
+**Note:** Performance characteristics vary significantly based on schema size. The table above reflects behavior with large schemas (1000+ types).
+
+See [Detailed Comparison](../../docs/COMPARISON.md) for in-depth analysis and specific metrics.
 
 ## Use Cases
 
@@ -382,19 +401,22 @@ Areas of interest:
 ## FAQ
 
 ### Q: Do I need to generate code?
-**A:** No! Just load your schema and start building queries.
+**A:** You generate minimal type definitions (much smaller than traditional approaches), then use the runtime query builder.
 
 ### Q: Does it work with my GraphQL API?
 **A:** Yes! It works with any GraphQL schema.
 
 ### Q: What about performance?
-**A:** Runtime overhead is negligible. Proxy operations are highly optimized.
+**A:** Runtime overhead is negligible. Proxy operations are highly optimized. The main benefits are smaller bundles and faster IDE performance, especially noticeable with large schemas.
 
 ### Q: Can I use it with [insert GraphQL client]?
 **A:** Yes! `gqlb` generates standard `TypedDocumentNode` objects that work with any client.
 
 ### Q: How big is the bundle?
-**A:** ~50KB base + only the types you use (tree-shaken).
+**A:** Base runtime + minimal types. Exact size depends on your schema and tree-shaking, but significantly smaller than traditional builder approaches for large schemas.
+
+### Q: Is this overkill for small schemas?
+**A:** Possibly! For schemas with <1000 types, traditional codegen tools like graphql-code-generator may be simpler and work just fine.
 
 ### Q: Do I lose any GraphQL features?
 **A:** Currently fragments and directives are in development. Everything else works!

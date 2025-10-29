@@ -20,8 +20,8 @@ Build dynamic GraphQL queries with perfect TypeScript autocomplete - no code gen
 ```typescript
 // ✅ Dynamic field selection (choose at runtime)
 // ✅ Full TypeScript autocomplete (knows all your types)
-// ✅ Tiny bundles (120KB vs 850KB)
-// ✅ Fast IDE (instant autocomplete vs 3-5s delay)
+// ✅ Optimized bundles (especially for large schemas)
+// ✅ Fast IDE performance
 
 const query = builder.query.GetUser(q => [
   q.user({ id: userId }, user => [
@@ -35,15 +35,15 @@ const query = builder.query.GetUser(q => [
 ]);
 ```
 
-**No massive generated files. Just runtime proxy magic. 🪄**
+**Runtime proxy magic means minimal generated code. 🪄**
 
 ## Features
 
-- ✨ **Zero code generation** - Load your schema and go
+- ✨ **Minimal code generation** - Small type files instead of massive builders
 - 🎯 **Full type safety** - TypeScript autocomplete for all fields
 - 🚀 **Dynamic queries** - Build queries at runtime
-- 📦 **Tiny bundles** - 86% smaller than traditional approaches
-- ⚡ **Fast IDE** - Instant autocomplete (30x faster)
+- 📦 **Optimized bundles** - Especially beneficial for large schemas
+- ⚡ **Fast IDE** - Smooth autocomplete even with complex schemas
 - 🔄 **Any GraphQL schema** - Works with any API
 - 🎨 **Clean syntax** - Named query shorthand & variables proxy
 - 🌲 **Deep variables** - Nested variable objects just work
@@ -156,13 +156,13 @@ Both the traditional `$$<T>('name')` syntax and the `$args()` proxy are supporte
 
 Instead of generating thousands of lines of TypeScript classes, `gqlb` uses:
 
-1. **Schema Pruning** - Remove unnecessary types (90% size reduction)
+1. **Schema Pruning** - Remove unnecessary types for smaller output
 2. **Custom Codegen Plugin** - Generate minimal type definitions
 3. **Type Transformation** - TypeScript template literals for type magic
 4. **Runtime Proxies** - Walk the schema dynamically
 5. **Tree-Shaking** - Only bundle what you use
 
-**Result:** 300 lines of runtime code vs 130,000 lines of generated code!
+**Result:** A small runtime core plus minimal type definitions!
 
 ## 📦 Demo Packages
 
@@ -297,12 +297,14 @@ See our [documentation](./docs) and the [atlassian-graphql package](./packages/a
 ## ✨ Key Innovations
 
 - **🔬 Multi-Stage Pipeline** - Novel 5-stage codegen approach
-- **📉 Schema Pruning** - Config-driven filtering for 90% size reduction
+- **📉 Schema Pruning** - Config-driven filtering reduces generated code
 - **🗺️ Args Map Plugin** - Custom codegen plugin enables tree-shaking
-- **✨ Type Transformation** - Template literals + conditional types
-- **🎯 Runtime Proxy Builder** - 300 lines vs 130,000 lines
-- **📦 Tiny Bundles** - 86% smaller than traditional approaches
-- **⚡ Instant Autocomplete** - 30x faster than typed-graphql-builder
+- **✨ Type Transformation** - Template literals + conditional types for type magic
+- **🎯 Runtime Proxy Builder** - Small runtime core instead of generated builders
+- **📦 Optimized Bundles** - Tree-shaking friendly architecture
+- **⚡ Fast IDE** - Minimal type definitions keep autocomplete snappy
+
+> 💡 **Impact:** On large schemas (like Atlassian's 8000+ types), this approach can reduce generated code by 94% and bundle sizes by 86% compared to traditional builder approaches, while maintaining fast IDE performance.
 
 ## 📚 Documentation
 
@@ -410,13 +412,48 @@ These checks are configured as dependencies of the `nx-release-publish` target, 
 
 ## 🌟 Why We Built This
 
-We needed to work with Atlassian's massive GraphQL schema (8000+ types). Traditional approaches failed:
+We needed to work with **Atlassian's massive GraphQL schema (8000+ types)** and build dynamic query tools. Traditional approaches had trade-offs:
 
-- **graphql-code-generator** → 850KB bundles, 3-5s autocomplete delay
-- **typed-graphql-builder** → 130,000 lines of code, IDE crashes
-- **No types** → Runtime errors, poor DX
+### The Challenge
 
-So we invented a new approach that gives you **dynamic queries + full type safety + tiny bundles**.
+**For large, complex schemas like Atlassian's:**
+
+- **Static codegen (graphql-code-generator, Apollo)** 
+  - ✅ Great type safety and IDE performance
+  - ❌ No runtime field selection - need separate queries for each UI
+  - ❌ Not ideal for dynamic tools (API explorers, admin panels)
+
+- **Builder codegen (typed-graphql-builder)**
+  - ✅ Excellent runtime flexibility
+  - ❌ Generated huge files (3.5MB+) that slowed down IDEs
+  - ❌ Large bundle sizes after tree-shaking
+
+- **No types (raw GraphQL strings)**
+  - ✅ Maximum flexibility
+  - ❌ No type safety or autocomplete
+
+### Our Solution
+
+We built `gqlb` to get the **best of all approaches** for large schemas:
+- ✅ **Runtime flexibility** (like typed-graphql-builder)
+- ✅ **Fast IDE** (like static codegen)
+- ✅ **Small bundles** (via runtime proxies)
+- ✅ **Full type safety** (TypeScript magic)
+
+### When to Use gqlb
+
+**gqlb shines when you have:**
+- Large schemas (1000+ types) where other builders struggle
+- Dynamic query requirements (field selection at runtime)
+- Bundle size constraints
+- GraphQL tools, explorers, or admin panels
+
+**Other tools may be simpler for:**
+- Small to medium schemas (<1000 types)
+- Fixed queries known at build time
+- Simple applications
+
+> 📚 See our [detailed comparison](./docs/COMPARISON.md) for choosing the right approach
 
 And it works with **any GraphQL API**, not just Atlassian!
 
