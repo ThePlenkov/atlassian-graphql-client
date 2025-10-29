@@ -1,6 +1,6 @@
 {
   "name": "gqlb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Runtime proxy-based GraphQL query builder with type safety",
   "type": "module",
   "main": "./dist/index.mjs",
