@@ -44,11 +44,13 @@
     }
   },
   "release": {
-    "projectsRelationship": "independent",    
+    "projectsRelationship": "independent",
     "version": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "fallbackCurrentVersionResolver": "disk"           
     },
     "changelog": {
+      "automaticFromRef": true,
       "projectChangelogs": {
         "createRelease": "github"
       }
