@@ -58,7 +58,8 @@
       }
     },
     "changelog": {
-      "automaticFromRef": true      
+      "automaticFromRef": true,
+      "projectChangelogs":true      
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
