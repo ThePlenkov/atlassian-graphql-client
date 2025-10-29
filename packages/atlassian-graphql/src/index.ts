@@ -123,6 +123,7 @@ const schema = buildSchema(schemaSDL);
  * ```
  */
 export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return createGqlbBuilder(schema) as any as TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
 }
 

@@ -16,6 +16,13 @@
     }
   },
   "include": ["e2e/**/*", "packages/*/src/**/*"],
-  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"],
+  "references": [
+    {
+      "path": "./packages/atlassian-cli"
+    },
+    {
+      "path": "./packages/cli-oauth"
+    }
+  ]
 }
-

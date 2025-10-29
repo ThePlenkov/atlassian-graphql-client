@@ -2,14 +2,14 @@
   "name": "@atlassian-tools/gql",
   "version": "1.0.0",
   "description": "Typed GraphQL client for Atlassian APIs (Jira, Confluence)",
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "graphql": "^16.11.0",
-    "graphql-request": "^7.2.2",
     "gqlb": "*"
   },
+  "peerDependencies": {},
   "exports": {
     ".": {
       "import": "./dist/index.mjs",

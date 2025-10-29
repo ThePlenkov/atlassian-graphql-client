@@ -36,6 +36,9 @@
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
+  "sync": {
+    "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"]
+  },
   "plugins": [
     {
       "plugin": "@nx/js/typescript",

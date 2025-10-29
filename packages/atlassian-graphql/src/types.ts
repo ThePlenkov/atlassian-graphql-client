@@ -7,7 +7,7 @@
  * Auto-detects *Args types and injects them automatically!
  */
 
-import type { FieldFn, Variable } from 'gqlb';
+import type { Variable } from 'gqlb';
 import type { Query, JiraQuery, Mutation, JiraMutation } from './generated/schema-types.js';
 import type { ArgsTypeMap } from './generated/args-map.js';
 
@@ -41,8 +41,9 @@ type GetArgsType<TParent extends string, TField extends string | number | symbol
 
 /**
  * Narrow type based on selection (from gqlb)
+ * eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
  */
-type Narrow<T, S> = any;  // Simplified for now
+type Narrow<_T, _S> = any;  // Simplified for now
 
 /**
  * Selection array type (from gqlb)

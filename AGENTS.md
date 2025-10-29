@@ -45,6 +45,10 @@
 
 ## Monorepo Conventions
 
+### Package Configuration
+- All packages must use `"type": "module"` in their `package.json`
+- Enables ESM by default for all packages
+
 ### Workspace References
 ```json
 {

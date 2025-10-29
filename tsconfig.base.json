@@ -17,8 +17,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "paths": {
-      "atlassian-graphql": ["packages/atlassian-graphql/src/index.ts"],
-      "sample": ["sample/src/index.ts"]
+      "@atlassian-tools/gql": ["packages/atlassian-graphql/src/index.ts"],
+      "@atlassian-tools/cli": ["packages/atlassian-cli/src/index.ts"],
+      "gqlb": ["packages/gqlb/src/index.ts"],
+      "cli-oauth": ["packages/cli-oauth/src/index.ts"],
+      "graphql-codegen-args-map": ["packages/graphql-codegen-args-map/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
