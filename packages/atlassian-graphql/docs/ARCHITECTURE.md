@@ -1,8 +1,14 @@
-# Architecture
+# Atlassian GraphQL Architecture
+
+> **Note:** This document describes the architecture of the **demo application** (`@atlassian-tools/gql` and `@atlassian-tools/cli`) that showcases `gqlb` with Atlassian's massive GraphQL API. For the core `gqlb` library architecture, see [gqlb/docs/ARCHITECTURE.md](../../gqlb/docs/ARCHITECTURE.md).
+
+## Using gqlb with a Large Schema: Atlassian Example
+
+This demonstrates how to use **gqlb** with a complex, real-world GraphQL API (Atlassian's 8000+ types).
 
 ## Custom GraphQL Code Generator Plugin
 
-We created a **custom GraphQL Code Generator plugin** (`typescript-typed-builder`) as a monorepo package that wraps `typed-graphql-builder`'s compiler.
+For this demo, we created a **custom GraphQL Code Generator plugin** (`typescript-typed-builder`) as a monorepo package that wraps `typed-graphql-builder`'s compiler.
 
 ### Why a Custom Plugin?
 

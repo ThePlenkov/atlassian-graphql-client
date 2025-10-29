@@ -177,7 +177,7 @@ Compared to typed-graphql-builder:
 
 ## Links
 
-- **GitHub**: https://github.com/ThePlenkov/atlassian-graphql-client
+- **GitHub**: https://github.com/gqlb/gqlb
 - **Deep Dive**: [Innovation docs]
 - **Blog Post**: [Quick read]
 
@@ -214,7 +214,7 @@ We Built a Better GraphQL Codegen: How We Achieved Dynamic Queries + Full Type S
 ```
 
 ### Post
-Use the content from `BLOG_POST.md`
+Use the content from `BLOG_POST.md` (in this same folder)
 
 ## Hacker News
 
@@ -245,7 +245,7 @@ Results vs typed-graphql-builder:
 
 We proved you CAN have it all. The approach is schema-agnostic and could work for any GraphQL API.
 
-GitHub: https://github.com/ThePlenkov/atlassian-graphql-client
+GitHub: https://github.com/gqlb/gqlb
 Blog post: [link]
 
 Would love feedback from the HN community!
@@ -282,7 +282,7 @@ The approach is schema-agnostic and uses:
 
 This proves you CAN have dynamic queries + full type safety + small bundles - you just need to think differently about the problem.
 
-Check it out: https://github.com/ThePlenkov/atlassian-graphql-client
+Check it out: https://github.com/gqlb/gqlb
 
 #GraphQL #TypeScript #DeveloperTools #OpenSource
 
@@ -307,7 +307,7 @@ Compared to typed-graphql-builder:
 • 30x faster autocomplete
 • Same great DX
 
-Check it out: https://github.com/ThePlenkov/atlassian-graphql-client
+Check it out: https://github.com/gqlb/gqlb
 
 Feedback welcome! 🙏
 ```
@@ -340,7 +340,7 @@ vs typed-graphql-builder:
 • 86% smaller bundles
 
 🔗 LINKS
-GitHub: https://github.com/ThePlenkov/atlassian-graphql-client
+GitHub: https://github.com/gqlb/gqlb
 Blog Post: [link]
 Documentation: [link]
 

@@ -1,24 +1,70 @@
 # Project Rules
 
+## 🚨 MOST IMPORTANT RULE 🚨
+
+**DO NOT CREATE NEW DOCUMENTATION (.md) FILES**
+
+We have 14 documentation files in `docs/` - that's enough. When working on docs:
+- ✅ UPDATE existing files
+- ✅ DELETE outdated content  
+- ❌ NEVER create new .md files (unless user explicitly asks)
+
+## Repository Focus
+
+**Main Package:** `gqlb` - Runtime proxy-based GraphQL query builder
+**Demo Packages:** `@atlassian-tools/gql` and `@atlassian-tools/cli` - Example usage with Atlassian's GraphQL API (8000+ types)
+
+The Atlassian packages are reference implementations showing gqlb's capabilities with a complex, real-world schema. They will be moved to a separate repository soon.
+
 ## Documentation
 
-### Package READMEs (End-User Focused)
-- Write as if published on npmjs.com
-- Include: Installation, usage examples, API reference
-- Exclude: Build instructions, development setup, architecture
+### 🚨 CRITICAL POLICY: CHALLENGE BEFORE CREATING 🚨
 
-### Root `docs/` (Contributor Focused)
-- Development setup, architecture, contributing guidelines
-- Examples: `docs/DEVELOPMENT.md`, `docs/ARCHITECTURE.md`
+**Before adding ANY new documentation:**
 
-### Package `docs/` (Advanced User Guides)
-- Detailed usage guides and examples for end users
-- Location: `packages/[name]/docs/`
+1. ❓ **Does this duplicate existing content?** → Update the existing doc instead
+2. ❓ **Does this conflict with existing content?** → Resolve the conflict first
+3. ❓ **Is this really needed?** → Most new docs are unnecessary
+4. ❓ **Could this be part of an existing doc?** → Add a section instead
 
-### ❌ Don't Create
-- `ARCHITECTURE.md` in packages → use root `docs/`
-- `BUILD.md` anywhere → use `docs/DEVELOPMENT.md`
-- Development content in package READMEs
+**Default answer: NO new markdown files. Update existing ones.**
+
+### Documentation System
+
+**Root Level:**
+- `README.md` - Main project entry point
+- `CHANGELOG.md` - Version history only
+- `AGENTS.md` - This file
+
+**docs/** - General documentation
+- Core technical docs (innovation, comparison, guides)
+- `examples/` - Canonical code samples (single source of truth)
+- `media/` - External marketing materials (blog posts, social, presentations)
+
+**packages/[name]/docs/** - Package-specific technical documentation
+- Package internals, architecture, advanced usage
+- Keep package READMEs user-facing (like npmjs.com)
+
+### Documentation Principles
+
+1. **Single Source of Truth** - One canonical place for each piece of information
+2. **No Duplication** - Link to existing content instead of copying
+3. **Update Over Create** - Always prefer updating existing docs
+4. **Package-Specific = Package Docs** - Technical details belong with the package
+5. **Marketing Separate** - Keep external materials in `docs/media/`
+
+### When Adding Content
+
+**Always ask:**
+- Where does this logically belong?
+- Does something like this already exist?
+- Can I add this to an existing document?
+- Will this create maintenance burden?
+
+**If creating a new file is truly needed:**
+- Get explicit user approval first
+- Explain why existing docs can't be updated
+- Ensure it has a clear, unique purpose
 
 ## Code Style
 
@@ -59,7 +105,8 @@
 ```
 
 ### Build Order
-Packages: `gqlb` → `atlassian-graphql` → `atlassian-cli`
+Main: `gqlb` (core library)
+Demos: `atlassian-graphql` → `atlassian-cli` (example applications)
 
 ### Dev Dependencies
 - **All devDependencies at root level only**

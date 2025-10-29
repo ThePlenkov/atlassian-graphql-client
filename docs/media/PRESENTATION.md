@@ -422,7 +422,7 @@ npm install gqlb @atlassian-tools/gql
 ```
 
 **Resources:**
-- 📖 **Docs:** github.com/ThePlenkov/atlassian-graphql-client
+- 📖 **Docs:** github.com/gqlb/gqlb
 - 🚀 **Innovation Deep Dive:** Full technical explanation
 - 📝 **Blog Post:** Quick summary
 - 📊 **Comparison Guide:** vs other solutions
@@ -443,7 +443,7 @@ Areas of interest:
 - 📚 Documentation
 - ⚡ Performance optimizations
 
-**GitHub:** github.com/ThePlenkov/atlassian-graphql-client
+**GitHub:** github.com/gqlb/gqlb
 
 **⭐ Star the repo if you find it useful!**
 
@@ -477,7 +477,7 @@ The key message: You don't have to choose anymore. With the right architecture -
 
 **Questions?**
 
-- 🌐 **GitHub:** github.com/ThePlenkov/atlassian-graphql-client
+- 🌐 **GitHub:** github.com/gqlb/gqlb
 - 📧 **Email:** [your email]
 - 🐦 **Twitter:** [your twitter]
 - 💼 **LinkedIn:** [your linkedin]
@@ -659,7 +659,7 @@ A: No! Works with any GraphQL schema. Atlassian is just our example.
 - **Slides Template:** Create from this outline in Google Slides, PowerPoint, or Keynote
 - **Code Samples:** All examples in `/examples` directory
 - **Live Demo:** Record ahead of time as backup
-- **Handouts:** Print Quick Reference guide
+- **Handouts:** Print Innovation Deep Dive or comparison table
 - **Stickers:** "I solved the GraphQL Trilemma" 😄
 
 ---

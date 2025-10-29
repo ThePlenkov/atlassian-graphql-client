@@ -12,7 +12,7 @@ This guide is for contributors who want to work on the monorepo codebase.
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd atlassian-graphql-client
+cd gqlb
 
 # Install dependencies (uses npm workspaces)
 npm install
@@ -21,7 +21,7 @@ npm install
 ## Project Structure
 
 ```
-atlassian-graphql-client/
+gqlb/
 ├── packages/
 │   ├── gqlb/                      # Runtime Proxy-based GraphQL query builder
 │   ├── atlassian-graphql/         # Atlassian GraphQL client (uses gqlb)
@@ -29,9 +29,7 @@ atlassian-graphql-client/
 │   └── cli-oauth/                 # Shared OAuth utilities for CLIs
 ├── docs/                          # Development & architecture docs
 │   ├── DEVELOPMENT.md             # This file
-│   ├── GQLB-ARCHITECTURE.md       # gqlb internals
-│   ├── ATLASSIAN-GRAPHQL-ARCHITECTURE.md
-│   └── DEMO.md                    # Demo walkthrough
+│   └── (architecture docs moved to packages)
 └── AGENTS.md                      # Agent rules & guidelines
 ```
 
@@ -84,9 +82,9 @@ npx -w @atlassian-tools/cli jira get ISSUE-123
 
 ```bash
 # In external project
-npm install /path/to/atlassian-graphql-client/packages/gqlb
-npm install /path/to/atlassian-graphql-client/packages/atlassian-graphql
-npm install /path/to/atlassian-graphql-client/packages/atlassian-cli
+npm install /path/to/gqlb/packages/gqlb
+npm install /path/to/gqlb/packages/atlassian-graphql
+npm install /path/to/gqlb/packages/atlassian-cli
 ```
 
 ## Development Workflow
@@ -229,9 +227,8 @@ We ignore lock files (`package-lock.json`, `pnpm-lock.yaml`, etc.) to avoid conf
 ## Architecture Docs
 
 For deep dives into specific packages:
-- [gqlb Architecture](./GQLB-ARCHITECTURE.md) - Proxy-based query builder internals
-- [Atlassian GraphQL Architecture](./ATLASSIAN-GRAPHQL-ARCHITECTURE.md) - Schema handling
-- [Demo Walkthrough](./DEMO.md) - Step-by-step feature demo
+- [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) - Proxy-based query builder internals
+- [Atlassian GraphQL Architecture](../packages/atlassian-graphql/docs/ARCHITECTURE.md) - Schema handling
 
 ## Contributing
 

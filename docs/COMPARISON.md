@@ -485,10 +485,9 @@ Each approach has its place, but **our multi-stage pipeline is the only solution
 
 ## Links
 
-- **GitHub:** https://github.com/ThePlenkov/atlassian-graphql-client
+- **GitHub:** https://github.com/gqlb/gqlb
 - **Innovation Docs:** [Deep dive](./INNOVATION.md)
-- **Blog Post:** [Quick read](./BLOG_POST.md)
-- **Quick Reference:** [One-page guide](./QUICK_REFERENCE.md)
+- **Blog Post:** [Quick read](./media/BLOG_POST.md)
 
 ---
 

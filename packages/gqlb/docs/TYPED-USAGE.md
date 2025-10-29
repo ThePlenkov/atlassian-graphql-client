@@ -330,7 +330,7 @@ result.user.name;  // ✓ Full autocomplete, TypeScript knows it's a string
 
 - See [examples/typed-example.ts](../examples/typed-example.ts) for a working example
 - Check out the [main README](../README.md) for general usage
-- Read [ARCHITECTURE.md](../../docs/GQLB-ARCHITECTURE.md) to understand how it works
+- Read [ARCHITECTURE.md](./ARCHITECTURE.md) to understand how it works
 
 
 

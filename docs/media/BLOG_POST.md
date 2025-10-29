@@ -23,77 +23,24 @@ const query = builder.query('GetIssue', q => [
 ]);
 ```
 
-**GitHub:** https://github.com/ThePlenkov/atlassian-graphql-client
+**GitHub:** https://github.com/gqlb/gqlb
 
 ## The Problem: The GraphQL Trilemma
 
-When building TypeScript clients for GraphQL, you're forced to choose your poison:
+Traditional GraphQL TypeScript clients force you to choose between:
+- **Static queries** (no runtime flexibility) 
+- **Massive generated code** (poor IDE performance)
+- **No type safety** (runtime errors)
 
-### 🔴 Option 1: Pre-defined Queries (Apollo Codegen, GraphQL Code Generator)
+We needed all four "impossible" requirements:
+1. ✅ **Dynamic field selection** 
+2. ✅ **Full TypeScript safety** 
+3. ✅ **Small output** 
+4. ✅ **Tree-shaking** 
 
-```typescript
-// You define queries in .graphql files
-query GetUser {
-  user(id: "123") {
-    name
-    email
-    posts {
-      title
-    }
-  }
-}
+> For detailed problem analysis with code examples, see [The Problem (canonical reference)](./examples/the-problem.md).
 
-// Generated code creates static functions
-const result = await client.request(GetUserDocument);
-```
-
-**Problem:** No runtime field selection. You need 100 different `.graphql` files for 100 different UIs.
-
-### 🟡 Option 2: Full Typed Builders (typed-graphql-builder, genql)
-
-```typescript
-// Generates complete TypeScript builders from schema
-import { query, user, posts } from './generated'; // 130,000 lines!
-
-const result = await client.request(
-  query({
-    user: [{ id: '123' }, {
-      name: true,
-      email: true,
-      posts: [{}, { title: true }]
-    }]
-  })
-);
-```
-
-**Problem:** Generates **massive** files (3.5MB for Atlassian schema). IDE crawls. Bundle bloats.
-
-### 🟠 Option 3: String Templates (No codegen)
-
-```typescript
-const query = gql`
-  query GetUser($id: ID!) {
-    user(id: $id) {
-      name
-      emial  # Typo won't be caught!
-    }
-  }
-`;
-```
-
-**Problem:** No type safety. Typos become runtime errors. No autocomplete.
-
-## The "Impossible" Requirements
-
-We needed a client that:
-1. ✅ Supports **dynamic field selection** (don't know fields until runtime)
-2. ✅ Has **full TypeScript safety** (catch errors at compile time)
-3. ✅ Generates **small output** (IDE and bundle friendly)
-4. ✅ Supports **tree-shaking** (only bundle what you use)
-
-Conventional wisdom says: "Pick two, you can't have all four."
-
-**We proved them wrong.**
+**We proved you can have it all.**
 
 ## Our Solution: Multi-Stage Pipeline
 
@@ -528,7 +475,7 @@ npx jira get ISSUE-123 --fields "key,summary,status"
 npm install gqlb @atlassian-tools/gql
 ```
 
-**GitHub:** https://github.com/ThePlenkov/atlassian-graphql-client
+**GitHub:** https://github.com/gqlb/gqlb
 
 ## What's Next?
 
@@ -556,14 +503,14 @@ No more choosing between flexibility and safety. No more 3MB generated files. No
 
 **Questions? Ideas? Issues?**
 
-- GitHub: https://github.com/ThePlenkov/atlassian-graphql-client
-- Issues: https://github.com/ThePlenkov/atlassian-graphql-client/issues
+- GitHub: https://github.com/gqlb/gqlb
+- Issues: https://github.com/gqlb/gqlb/issues
 
 **If you found this useful, please ⭐ the repo!**
 
 ---
 
-**Built with ❤️ by [@ThePlenkov](https://github.com/ThePlenkov)**
+**Built with ❤️ for the GraphQL developer community**
 
 *Special thanks to the GraphQL Code Generator team, typed-graphql-builder for inspiration, and the TypeScript team for building such a powerful type system.*
 
