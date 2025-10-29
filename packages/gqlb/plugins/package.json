@@ -1,6 +1,6 @@
 {
   "name": "@gqlb/typed-builder-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "GraphQL Code Generator plugin for gqlb typed builder",
   "main": "./typed-builder-plugin.js",
   "types": "./typed-builder-plugin.d.ts",
