@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Pre-commit hook to prevent creation of new .md files outside approved locations
+# This enforces the project documentation policy from AGENTS.md
+
+echo "🔍 Checking for new documentation files..."
+
+# Get list of new/staged .md files
+NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
+
+if [ -z "$NEW_MD_FILES" ]; then
+  echo "✅ No new .md files detected"
+  exit 0
+fi
+
+echo "⚠️  New .md files detected:"
+echo "$NEW_MD_FILES"
+echo ""
+
+# Define approved locations where new .md files are allowed
+APPROVED_LOCATIONS=(
+  "^CHANGELOG\.md$"
+  "^docs/examples/.*\.md$"
+  "^packages/.*/CHANGELOG\.md$"
+)
+
+VIOLATIONS=()
+
+# Check each new .md file
+while IFS= read -r file; do
+  APPROVED=false
+  
+  for pattern in "${APPROVED_LOCATIONS[@]}"; do
+    if [[ "$file" =~ $pattern ]]; then
+      APPROVED=true
+      break
+    fi
+  done
+  
+  if [ "$APPROVED" = false ]; then
+    VIOLATIONS+=("$file")
+  fi
+done <<< "$NEW_MD_FILES"
+
+# If there are violations, block the commit
+if [ ${#VIOLATIONS[@]} -gt 0 ]; then
+  echo "❌ COMMIT BLOCKED: New documentation files not allowed"
+  echo ""
+  echo "The following files violate documentation policy (see AGENTS.md):"
+  printf '   - %s\n' "${VIOLATIONS[@]}"
+  echo ""
+  echo "📝 Policy: DO NOT CREATE NEW DOCUMENTATION FILES"
+  echo ""
+  echo "Instead:"
+  echo "  1. Add content to existing .md files (README.md, docs/*.md, etc.)"
+  echo "  2. Check AGENTS.md for where content should go"
+  echo "  3. Get explicit user approval if truly needed"
+  echo ""
+  echo "To override (only if user explicitly approved):"
+  echo "  git commit --no-verify"
+  echo ""
+  exit 1
+fi
+
+echo "✅ All new .md files in approved locations"
+exit 0
+
