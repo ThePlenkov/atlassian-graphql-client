@@ -37,12 +37,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "url": "https://github.com/gqlb/gqlb",
     "directory": "packages/atlassian-cli"
   },
-  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "homepage": "https://github.com/gqlb/gqlb#readme",
   "bugs": {
-    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
+    "url": "https://github.com/gqlb/gqlb/issues"
   },
   "license": "MIT",
   "dependencies": {
