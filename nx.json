@@ -49,11 +49,15 @@
       "conventionalCommits": true,
       "fallbackCurrentVersionResolver": "disk"           
     },
-    "changelog": {
-      "automaticFromRef": true,
-      "projectChangelogs": {
-        "createRelease": "github"
+    "conventionalCommits": {
+      "types": {
+        "docs": { 
+          "semverBump": "patch"
+        }
       }
+    },
+    "changelog": {
+      "automaticFromRef": true      
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
