@@ -6,7 +6,6 @@ import {
   isEnumType,
   isListType,
   isNonNullType,
-  getNullableType,
   getNamedType,
   parse
 } from 'graphql';
