@@ -1,6 +1,6 @@
 {
   "name": "graphql-codegen-args-map",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "GraphQL Codegen plugin to generate optimized Args type map for tree-shaking",
   "type": "module",
   "main": "./dist/index.js",
@@ -46,4 +46,3 @@
   },
   "license": "MIT"
 }
-

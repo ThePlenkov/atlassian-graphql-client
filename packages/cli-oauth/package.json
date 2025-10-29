@@ -1,6 +1,6 @@
 {
   "name": "cli-oauth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generic OAuth 2.0 authentication for CLI applications with async file I/O and atomic writes",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -39,4 +39,3 @@
   "dependencies": {},
   "peerDependencies": {}
 }
-
