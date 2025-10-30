@@ -6,14 +6,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./codegen": {
-      "import": "./dist/codegen-utils.js",
-      "types": "./dist/codegen-utils.d.ts"
-    },
+    ".": "./dist/index.js",
+    "./codegen-utils": "./dist/codegen-utils.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -48,5 +42,6 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.1.2"
-  }
+  },
+  "module": "./dist/index.js"
 }

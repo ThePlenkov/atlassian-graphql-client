@@ -71,7 +71,7 @@ export default [
 
   // Allow workspace config files to import from root
   {
-    files: ['**/tsdown.config.ts', '**/tsdown.config.mjs'],
+    files: ['**/tsdown.config.ts'],
     rules: {
       '@nx/enforce-module-boundaries': 'off',
     },

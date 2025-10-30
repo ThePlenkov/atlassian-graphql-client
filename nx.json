@@ -11,7 +11,7 @@
         "default",
         "^default",
         "{projectRoot}/tsdown.config.ts",
-        "{workspaceRoot}/tsdown.config.mjs"
+        "{workspaceRoot}/tsdown.config.ts"
       ],
       "outputs": [
         "{projectRoot}/dist"

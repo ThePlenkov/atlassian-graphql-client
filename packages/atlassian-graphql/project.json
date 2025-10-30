@@ -78,7 +78,7 @@
         "^default",
         "{projectRoot}/src/generated/**",
         "{projectRoot}/tsdown.config.ts",
-        "{workspaceRoot}/tsdown.config.mjs"
+        "{workspaceRoot}/tsdown.config.ts"
       ],
       "outputs": [
         "{projectRoot}/dist"
