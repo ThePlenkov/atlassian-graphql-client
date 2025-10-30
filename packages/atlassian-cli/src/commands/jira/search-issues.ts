@@ -12,22 +12,6 @@ interface SearchIssuesOptions {
   url?: string;
 }
 
-/**
- * Recursively build field selection based on dot notation
- */
-function buildFieldSelection(fieldPath: string, proxy: any): any {
-  const parts = fieldPath.split('.');
-  const fieldName = parts[0];
-  
-  if (parts.length === 1) {
-    return proxy[fieldName]();
-  } else {
-    return proxy[fieldName]((nested: any) => [
-      buildFieldSelection(parts.slice(1).join('.'), nested)
-    ]);
-  }
-}
-
 export async function searchIssues(jql: string, options: SearchIssuesOptions) {
   console.log(`\n🔍 Searching issues with JQL: ${jql}`);
   
@@ -37,27 +21,36 @@ export async function searchIssues(jql: string, options: SearchIssuesOptions) {
   console.log(`📋 Fields: ${fields.join(', ')}`);
   console.log(`🔢 Limit: ${limit}\n`);
 
-  // Create query builder
+  // Create query builder with proper typing
   const builder = createQueryBuilder();
   const cloudIdVar = $$<string>('cloudId');
   const jqlVar = $$<string>('jql');
   const limitVar = $<number>('limit');
 
   try {
-    // Build the query dynamically
-    const query = builder.query((q: any) => [
-      q.jira((jira: any) => [
-        jira.issueSearch({
+    // Build the query with full type safety - types are inferred from createQueryBuilder()
+    const query = builder.query(q => [
+      q.jira(jira => [
+        jira.issueSearchStable({
           cloudId: cloudIdVar,
           issueSearchInput: { jql: jqlVar },
           first: limitVar
-        }, (search: any) => [
-          search.edges((edge: any) => [
-            edge.node((node: any) =>
-              fields.map(field => buildFieldSelection(field, node))
-            )
+        }, search => [
+          search.edges(edge => [
+            edge.node(issue => [
+              issue.id,
+              issue.key,
+              issue.summary,
+              issue.summaryField(s => [s.text]),
+              issue.statusField(s => [s.name]),
+              issue.assigneeField(a => [
+                a.user(u => [u.name, u.accountId])
+              ]),
+              issue.createdField(c => [c.dateTime]),
+              issue.updatedField(u => [u.dateTime])
+            ])
           ]),
-          search.pageInfo((pageInfo: any) => [
+          search.pageInfo(pageInfo => [
             pageInfo.hasNextPage,
             pageInfo.endCursor
           ])
@@ -119,12 +112,25 @@ export async function searchIssues(jql: string, options: SearchIssuesOptions) {
     console.log(JSON.stringify(result, null, 2));
     console.log('');
 
-  } catch (error: any) {
-    console.error('\n❌ Error:', error.message || error);
-    if (error.response?.errors) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('\n❌ Error:', errorMessage);
+    
+    // Type-safe error handling
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'errors' in error.response &&
+      Array.isArray(error.response.errors)
+    ) {
       console.error('\nGraphQL Errors:');
-      error.response.errors.forEach((err: any) => {
-        console.error(`  - ${err.message}`);
+      error.response.errors.forEach((err: unknown) => {
+        if (err && typeof err === 'object' && 'message' in err) {
+          console.error(`  - ${String(err.message)}`);
+        }
       });
     }
     process.exit(1);

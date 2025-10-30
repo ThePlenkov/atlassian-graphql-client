@@ -30,7 +30,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "gqlb": "*"
+    "gqlb": "*",
+    "gqlb-codegen": "*"
   },
   "peerDependencies": {},
   "exports": {

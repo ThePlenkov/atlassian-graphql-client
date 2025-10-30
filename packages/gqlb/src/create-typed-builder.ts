@@ -5,7 +5,7 @@
  */
 
 import type { GraphQLSchema } from 'graphql';
-import { createQueryBuilder } from '../src/builder.js';
+import { createQueryBuilder } from './builder.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { FieldSelection } from './field-types-helpers.js';
 

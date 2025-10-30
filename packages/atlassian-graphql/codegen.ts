@@ -63,6 +63,13 @@ const config: CodegenConfig = {
     // Only includes Args types present in the pruned schema
     'src/generated/args-map.ts': {
       plugins: ['graphql-codegen-args-map']
+    },
+    // Generate field types for fully typed query builder
+    'src/generated/field-types.ts': {
+      plugins: ['gqlb-codegen/field-types'],
+      config: {
+        schemaTypesImportPath: './schema-types.js'
+      }
     }
   }
 };

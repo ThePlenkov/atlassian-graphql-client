@@ -73,6 +73,25 @@ export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
 }
 
 /**
+ * Create a typed query builder for the given GraphQL schema
+ * This is the same as createQueryBuilder but with generic type parameters
+ * for full TypeScript type safety - no type assertions needed!
+ * 
+ * @example
+ * ```typescript
+ * import type { QueryFields, MutationFields } from './generated/field-types.js';
+ * const builder = createTypedQueryBuilder<QueryFields, MutationFields>(schema);
+ * ```
+ */
+export function createTypedQueryBuilder<
+  TQuery = unknown,
+  TMutation = unknown,
+  TSubscription = unknown
+>(schema: GraphQLSchema): import('./typed-builder.js').TypedQueryBuilder<TQuery, TMutation, TSubscription> {
+  return createQueryBuilder(schema) as any;
+}
+
+/**
  * Normalize selections array: extract FieldSelection from callable objects
  * Supports both:
  * - search.totalCount (returns callable with __fieldSelection marker)

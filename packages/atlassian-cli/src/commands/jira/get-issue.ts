@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { createQueryBuilder, $$ } from '@atlassian-tools/gql';
+import { createQueryBuilder, $$, type QueryFields } from '@atlassian-tools/gql';
 import { print } from 'graphql';
 import { getValidToken, loadConfig } from '../../auth/config.js';
 import { ATLASSIAN_DEFAULTS } from '../../constants.js';
@@ -17,114 +17,12 @@ interface GetIssueOptions {
   logger?: Logger;
 }
 
-// Default fields to fetch if none specified
-// Note: Avoid duplicate parent paths (e.g., assigneeField.user.X twice) as the builder doesn't merge them yet
-const DEFAULT_FIELDS = [
-  'id',
-  'key', 
-  'issueId',
-  'webUrl',
-  'summary',  // Direct scalar field
-  'summaryField.text',  // SingleLineTextField
-  'descriptionField.richText.plainText',  // RichTextField
-  'statusField.name',  // StatusField
-  'priorityField.name',  // PriorityField
-  'assigneeField.user.name',  // UserField - just name for now (can't merge with .email yet)
-  'createdField.dateTime',  // DateTimeField
-  'updatedField.dateTime',  // DateTimeField
-  'issueType.name',  // IssueType
-  'projectField.project.name',  // Project name
-].join(',');
-
-// Comprehensive field list for --all flag
-const ALL_FIELDS = [
-  // Core identifiers
-  'id',
-  'key', 
-  'issueId',
-  'webUrl',
-  'issueTypeAvatarUrl',
-  
-  // Summary & Description
-  'summary',
-  'summaryField.text',
-  'descriptionField.richText.plainText',
-  
-  // Status & Priority
-  'status.name',
-  'statusField.name',
-  'statusCategory.name',
-  'priorityField.name',
-  
-  // Issue Type
-  'issueType.name',
-  'issueTypeField.name',
-  
-  // People
-  'assigneeField.user.name',
-  'assigneeField.user.accountId',
-  
-  // Dates
-  'createdField.dateTime',
-  'updatedField.dateTime',
-  'dueDateField.date',
-  'startDateField.date',
-  'resolutionDateField.dateTime',
-  
-  // Project
-  'projectField.project.key',
-  'projectField.project.name',
-  
-  // Resolution
-  'resolutionField.name',
-].join(',');
-
-/**
- * Recursively build field selection based on dot notation
- * Example: "summaryField.text" becomes summaryField(s => [s.text])
- * Example: "assigneeField.user.name" becomes assigneeField(a => [a.user(u => [u.name])])
- */
-function buildFieldSelection(fieldPath: string, proxy: any): any {
-  const parts = fieldPath.split('.');
-  
-  if (parts.length === 0) {
-    throw new Error('Field path cannot be empty');
-  }
-  
-  if (parts.length === 1) {
-    // Simple scalar field - terminal case
-    return proxy[parts[0]]();
-  }
-  
-  // Nested field - recursively build the selection
-  const [currentField, ...remainingParts] = parts;
-  return proxy[currentField]((nested: any) => [
-    buildFieldSelection(remainingParts.join('.'), nested)
-  ]);
-}
-
 export async function getIssue(issueKey: string, options: GetIssueOptions) {
   // Create logger (can be overridden by parent process)
   // If --json is set, suppress all non-JSON output (even if verbose)
   const logger = options.logger || createLogger(options.json ? false : (options.verbose || false));
   
   logger.info(`\n🔍 Fetching issue: ${issueKey}`);
-  
-  // Determine which fields to fetch
-  let fieldsInput: string;
-  if (options.all) {
-    fieldsInput = ALL_FIELDS;
-    logger.info(`📋 Fields: Using ALL available fields (${ALL_FIELDS.split(',').length} fields)\n`);
-  } else if (options.fields) {
-    fieldsInput = options.fields;
-    const fieldsList = fieldsInput.split(',').map(f => f.trim());
-    logger.info(`📋 Fields: ${fieldsList.join(', ')}\n`);
-  } else {
-    fieldsInput = DEFAULT_FIELDS;
-    logger.info(`📋 Fields: Using default fields\n`);
-  }
-  
-  const fields = fieldsInput.split(',').map(f => f.trim());
 
   // Get config for cloud ID
   const config = await loadConfig();
@@ -141,11 +39,51 @@ export async function getIssue(issueKey: string, options: GetIssueOptions) {
   const cloudIdVar = $$<string>('cloudId');
 
   try {
-    // Build the query dynamically using issueByKey
-    const query = builder.query('GetJiraIssue', (q: any) => [
-      q.jira((jira: any) => [
-        jira.issueByKey({ cloudId: cloudIdVar, key: issueKeyVar }, (issue: any) => 
-          fields.map(field => buildFieldSelection(field, issue))
+    // Build the query with full type safety
+    const query = builder.query('GetJiraIssue', (q: QueryFields) => [
+      q.jira(jira => [
+        jira.issueByKey({ cloudId: cloudIdVar, key: issueKeyVar }, issue => 
+          options.all ? [
+            // Comprehensive field list for --all flag
+            issue.id,
+            issue.key,
+            issue.issueId,
+            issue.webUrl,
+            issue.issueTypeAvatarUrl,
+            issue.summary,
+            issue.summaryField(s => [s.text]),
+            issue.descriptionField(d => [d.richText(r => [r.plainText])]),
+            issue.status(s => [s.name]),
+            issue.statusField(s => [s.name]),
+            issue.statusCategory(s => [s.name]),
+            issue.priorityField(p => [p.name]),
+            issue.issueType(t => [t.name]),
+            issue.issueTypeField(t => [t.name]),
+            issue.assigneeField(a => [a.user(u => [u.name, u.accountId])]),
+            issue.createdField(c => [c.dateTime]),
+            issue.updatedField(u => [u.dateTime]),
+            issue.dueDateField(d => [d.date]),
+            issue.startDateField(s => [s.date]),
+            issue.resolutionDateField(r => [r.dateTime]),
+            issue.projectField(p => [p.project(pr => [pr.key, pr.name])]),
+            issue.resolutionField(r => [r.name])
+          ] : [
+            // Default fields
+            issue.id,
+            issue.key,
+            issue.issueId,
+            issue.webUrl,
+            issue.summary,
+            issue.summaryField(s => [s.text]),
+            issue.descriptionField(d => [d.richText(r => [r.plainText])]),
+            issue.statusField(s => [s.name]),
+            issue.priorityField(p => [p.name]),
+            issue.assigneeField(a => [a.user(u => [u.name])]),
+            issue.createdField(c => [c.dateTime]),
+            issue.updatedField(u => [u.dateTime]),
+            issue.issueType(t => [t.name]),
+            issue.projectField(p => [p.project(pr => [pr.name])])
+          ]
         )
       ])
     ]);
@@ -209,17 +147,31 @@ export async function getIssue(issueKey: string, options: GetIssueOptions) {
       logger.log('');
     }
 
-  } catch (error: any) {
-    if (error.message && error.message.includes('does not exist')) {
-      logger.error(`\n❌ Error: ${error.message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    if (errorMessage.includes('does not exist')) {
+      logger.error(`\n❌ Error: ${errorMessage}`);
       logger.error('\n💡 Tip: Check available fields in the schema or use simpler fields like:');
       logger.error('   id, key, issueId, webUrl');
     } else {
-      logger.error('\n❌ Error:', error.message || error);
-      if (error.response?.errors) {
+      logger.error('\n❌ Error:', errorMessage);
+      
+      // Type-safe error handling
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'errors' in error.response &&
+        Array.isArray(error.response.errors)
+      ) {
         logger.error('\nGraphQL Errors:');
-        error.response.errors.forEach((err: any) => {
-          logger.error(`  - ${err.message}`);
+        error.response.errors.forEach((err: unknown) => {
+          if (err && typeof err === 'object' && 'message' in err) {
+            logger.error(`  - ${String(err.message)}`);
+          }
         });
       }
     }

@@ -26,7 +26,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test:codegen": "graphql-codegen --config tests/schema/codegen.ts && npx tsx tests/schema/generate-field-types.ts",
+    "test:codegen": "graphql-codegen --config tests/schema/codegen.ts",
     "test:typecheck": "tsc --noEmit -p tests/tsconfig.json",
     "test:run": "npx tsx --test tests/index.test.ts"
   },

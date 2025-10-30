@@ -1,0 +1,60 @@
+{
+  "name": "gqlb-codegen",
+  "version": "0.1.0",
+  "description": "GraphQL Code Generator plugins for gqlb - runtime proxy-based query builder",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./field-types": {
+      "import": "./dist/field-types/index.mjs",
+      "require": "./dist/field-types/index.js",
+      "types": "./dist/field-types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test:codegen": "graphql-codegen --config tests/schema/codegen.ts",
+    "test:typecheck": "tsc --noEmit -p tests/tsconfig.json",
+    "test:run": "npx tsx --test tests/index.test.ts"
+  },
+  "keywords": [
+    "graphql",
+    "codegen",
+    "plugin",
+    "typescript",
+    "gqlb",
+    "field-types"
+  ],
+  "peerDependencies": {},
+  "peerDependenciesMeta": {
+    "@graphql-codegen/plugin-helpers": {
+      "optional": false
+    },
+    "graphql": {
+      "optional": false
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client",
+    "directory": "packages/gqlb-codegen"
+  },
+  "homepage": "https://github.com/ThePlenkov/atlassian-graphql-client#readme",
+  "bugs": {
+    "url": "https://github.com/ThePlenkov/atlassian-graphql-client/issues"
+  },
+  "license": "MIT"
+}
+
