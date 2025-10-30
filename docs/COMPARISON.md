@@ -487,7 +487,6 @@ Each approach has its place, but **our multi-stage pipeline is the only solution
 
 - **GitHub:** https://github.com/gqlb/gqlb
 - **Innovation Docs:** [Deep dive](./INNOVATION.md)
-- **Blog Post:** [Quick read](./media/BLOG_POST.md)
 
 ---
 

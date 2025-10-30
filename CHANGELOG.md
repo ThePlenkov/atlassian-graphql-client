@@ -54,7 +54,7 @@ All notable changes to **gqlb** and demo packages will be documented in this fil
 Comprehensive documentation covering:
 - [Innovation Deep Dive](./docs/INNOVATION.md) - Technical architecture
 - [Comparison Guide](./docs/COMPARISON.md) - vs other solutions
-- [Blog Post](./docs/media/BLOG_POST.md) - Shareable article
+- [Development Guide](./docs/DEVELOPMENT.md) - Setup and contributing
 
 ### Performance
 

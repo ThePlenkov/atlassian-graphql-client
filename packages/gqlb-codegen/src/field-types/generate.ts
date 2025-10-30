@@ -27,9 +27,10 @@ import { GraphQLSchema, GraphQLObjectType, GraphQLInterfaceType, GraphQLField, i
  * generateArgsTypeName('Mutation', 'createUser') // => 'MutationCreateUserArgs'
  */
 function generateArgsTypeName(parentTypeName: string, fieldName: string): string {
-  // GraphQL Codegen does NOT capitalize the field name!
-  // Example: Backlog.cards -> BacklogcardsArgs (not BacklogCardsArgs)
-  return `${parentTypeName}${fieldName}Args`;
+  // GraphQL Codegen capitalizes the first letter of the field name
+  // Example: Query.user -> QueryUserArgs, Mutation.createUser -> MutationCreateUserArgs
+  const capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+  return `${parentTypeName}${capitalizedFieldName}Args`;
 }
 
 interface FieldInfo {

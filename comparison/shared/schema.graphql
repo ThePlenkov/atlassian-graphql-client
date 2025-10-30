@@ -1,0 +1,325 @@
+# Realistic GraphQL Schema for Comparison
+# Based on common patterns in real-world APIs
+
+scalar DateTime
+scalar JSON
+
+# Root Query Type
+type Query {
+  # User queries
+  user(id: ID!): User
+  users(
+    first: Int = 10
+    after: String
+    filter: UserFilter
+  ): UserConnection!
+  
+  # Post queries
+  post(id: ID!): Post
+  posts(
+    first: Int = 10
+    after: String
+    authorId: ID
+    status: PostStatus
+  ): PostConnection!
+  
+  # Comment queries
+  comments(
+    postId: ID!
+    first: Int = 10
+    after: String
+  ): CommentConnection!
+  
+  # Search
+  search(
+    query: String!
+    type: SearchType
+    first: Int = 10
+  ): SearchResultConnection!
+}
+
+# Root Mutation Type
+type Mutation {
+  # User mutations
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  deleteUser(id: ID!): DeleteUserPayload!
+  
+  # Post mutations
+  createPost(input: CreatePostInput!): CreatePostPayload!
+  updatePost(id: ID!, input: UpdatePostInput!): UpdatePostPayload!
+  publishPost(id: ID!): PublishPostPayload!
+  deletePost(id: ID!): DeletePostPayload!
+  
+  # Comment mutations
+  createComment(input: CreateCommentInput!): CreateCommentPayload!
+  updateComment(id: ID!, input: UpdateCommentInput!): UpdateCommentPayload!
+  deleteComment(id: ID!): DeleteCommentPayload!
+}
+
+# User Type
+type User implements Node {
+  id: ID!
+  email: String!
+  username: String!
+  name: String
+  bio: String
+  avatar: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relationships
+  posts(
+    first: Int = 10
+    after: String
+    status: PostStatus
+  ): PostConnection!
+  
+  comments(
+    first: Int = 10
+    after: String
+  ): CommentConnection!
+  
+  followers(first: Int = 10, after: String): UserConnection!
+  following(first: Int = 10, after: String): UserConnection!
+  
+  # Computed fields
+  postsCount: Int!
+  followersCount: Int!
+  followingCount: Int!
+}
+
+# Post Type
+type Post implements Node {
+  id: ID!
+  title: String!
+  content: String!
+  excerpt: String
+  status: PostStatus!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relationships
+  author: User!
+  comments(first: Int = 10, after: String): CommentConnection!
+  tags: [Tag!]!
+  
+  # Computed fields
+  commentsCount: Int!
+  viewsCount: Int!
+  likesCount: Int!
+}
+
+# Comment Type
+type Comment implements Node {
+  id: ID!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relationships
+  author: User!
+  post: Post!
+  parent: Comment
+  replies(first: Int = 10, after: String): CommentConnection!
+  
+  # Computed fields
+  repliesCount: Int!
+}
+
+# Tag Type
+type Tag implements Node {
+  id: ID!
+  name: String!
+  slug: String!
+  description: String
+  
+  # Relationships
+  posts(first: Int = 10, after: String): PostConnection!
+  
+  # Computed fields
+  postsCount: Int!
+}
+
+# Interface
+interface Node {
+  id: ID!
+}
+
+# Enums
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SearchType {
+  USER
+  POST
+  COMMENT
+  TAG
+  ALL
+}
+
+# Connection Types (Relay-style pagination)
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PostEdge {
+  node: Post!
+  cursor: String!
+}
+
+type CommentConnection {
+  edges: [CommentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CommentEdge {
+  node: Comment!
+  cursor: String!
+}
+
+type SearchResultConnection {
+  edges: [SearchResultEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SearchResultEdge {
+  node: SearchResult!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Union Type
+union SearchResult = User | Post | Comment | Tag
+
+# Input Types
+input UserFilter {
+  username: String
+  email: String
+  createdAfter: DateTime
+  createdBefore: DateTime
+}
+
+input CreateUserInput {
+  email: String!
+  username: String!
+  name: String
+  bio: String
+  password: String!
+}
+
+input UpdateUserInput {
+  username: String
+  name: String
+  bio: String
+  avatar: String
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  excerpt: String
+  status: PostStatus = DRAFT
+  tagIds: [ID!]
+}
+
+input UpdatePostInput {
+  title: String
+  content: String
+  excerpt: String
+  status: PostStatus
+  tagIds: [ID!]
+}
+
+input CreateCommentInput {
+  postId: ID!
+  parentId: ID
+  content: String!
+}
+
+input UpdateCommentInput {
+  content: String!
+}
+
+# Payload Types
+type CreateUserPayload {
+  user: User
+  errors: [Error!]
+}
+
+type UpdateUserPayload {
+  user: User
+  errors: [Error!]
+}
+
+type DeleteUserPayload {
+  success: Boolean!
+  errors: [Error!]
+}
+
+type CreatePostPayload {
+  post: Post
+  errors: [Error!]
+}
+
+type UpdatePostPayload {
+  post: Post
+  errors: [Error!]
+}
+
+type PublishPostPayload {
+  post: Post
+  errors: [Error!]
+}
+
+type DeletePostPayload {
+  success: Boolean!
+  errors: [Error!]
+}
+
+type CreateCommentPayload {
+  comment: Comment
+  errors: [Error!]
+}
+
+type UpdateCommentPayload {
+  comment: Comment
+  errors: [Error!]
+}
+
+type DeleteCommentPayload {
+  success: Boolean!
+  errors: [Error!]
+}
+
+type Error {
+  message: String!
+  field: String
+  code: String
+}
+

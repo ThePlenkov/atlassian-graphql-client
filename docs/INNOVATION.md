@@ -50,17 +50,18 @@ For problem comparison details, see [COMPARISON.md](./COMPARISON.md).
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Stage 2: Base Type Generation                              │
-│ ➜ Standard GraphQL Codegen (typescript plugins)            │
+│ ➜ Standard GraphQL Codegen (typescript plugin)             │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ Stage 3: Args Map Generation                               │
-│ ➜ Custom plugin for tree-shaking                          │
+│ Stage 3: Field Types Generation                            │
+│ ➜ Custom gqlb-codegen/field-types plugin                   │
+│ ➜ Direct imports for tree-shaking                          │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Stage 4: Type Transformation                               │
-│ ➜ Transform types into FieldFn<> format                   │
+│ ➜ TypeScript infers FieldFn<> types                        │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -136,43 +137,51 @@ const config: CodegenConfig = {
 
 **Output:** Clean TypeScript interfaces (~200KB)
 
-## 📋 Stage 3: Args Map Generation
+## 📋 Stage 3: Field Types Generation
 
-**Goal:** Enable tree-shaking of argument types
+**Goal:** Transform standard types into gqlb-compatible format with tree-shaking support
 
-### The Problem
-TypeScript can't tree-shake complex type unions effectively.
+### The Custom Plugin: `gqlb-codegen/field-types`
 
-### Custom Plugin
+This plugin generates gqlb-compatible `FieldFn<>` types while enabling tree-shaking by directly importing Args types:
+
 ```typescript
-// Generates a type map for Args
-export const plugin: PluginFunction = (schema) => {
-  const argsTypes = new Set<string>();
+// gqlb-codegen/field-types plugin
+export const plugin: PluginFunction = (schema, documents, config) => {
+  const { schemaTypesImportPath } = config;
   
+  // Collect all Args types used
+  const usedArgsTypes = new Set<string>();
+  
+  // Generate field types for each GraphQL type
   for (const type of Object.values(schema.getTypeMap())) {
     if (isObjectType(type)) {
       for (const field of Object.values(type.getFields())) {
         if (field.args.length > 0) {
-          argsTypes.add(`${type.name}${field.name}Args`);
+          const argsTypeName = `${type.name}${field.name}Args`;
+          usedArgsTypes.add(argsTypeName);
         }
       }
     }
   }
   
-  // Generate type map
+  // Generate imports - tree-shaking friendly!
+  const imports = Array.from(usedArgsTypes).join(', ');
+  
   return `
-    export interface ArgsTypeMap {
-      ${Array.from(argsTypes).map(name => 
-        `'${name}': ${name};`
-      ).join('\n')}
+    // Direct imports enable tree-shaking!
+    import type { Query, Mutation, ${imports} } from '${schemaTypesImportPath}';
+    
+    export interface QueryFields {
+      // ... generated field types
     }
   `;
 };
 ```
 
-**Output:** args-map.ts with type map for tree-shaking
+**Key Innovation:** By importing Args types directly from `schema-types.ts` instead of using an intermediate `ArgsTypeMap`, TypeScript can tree-shake unused types effectively.
 
-> **Note:** This approach (separate args-map plugin) has been superseded by the `gqlb-codegen/field-types` plugin, which directly imports Args types from schema-types.ts, achieving the same tree-shaking benefits without an intermediate mapping layer. The standalone `graphql-codegen-args-map` package has been removed.
+**Output:** field-types.ts with gqlb-compatible types
 
 ## 📋 Stage 4: Type Transformation
 
@@ -187,11 +196,9 @@ type FieldFn<TSelection, TArgs, TRequired extends boolean> =
     ? (args: TArgs, selection: (t: TSelection) => any[]) => any
     : (selection: (t: TSelection) => any[]) => any;
 
-// Auto-detect Args using template literals
-type GetArgsType<TParent extends string, TField extends string> = 
-  `${TParent}${TField}Args` extends keyof ArgsTypeMap
-    ? ArgsTypeMap[`${TParent}${TField}Args`]
-    : never;
+// Args types are imported directly for tree-shaking
+// The gqlb-codegen/field-types plugin handles this automatically
+import type { QueryjiraArgs, JiraQueryissueByKeyArgs } from './schema-types.js';
 
 // Transform each field
 type QueryFields = {
@@ -254,10 +261,10 @@ See [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) for complete impl
    - 90% size reduction
    - First-class support in the pipeline
 
-2. **Args Map Plugin** 🗺️
-   - Enables tree-shaking of argument types
+2. **Field Types Plugin** 🗺️
+   - Generates gqlb-compatible FieldFn types
+   - Direct imports enable tree-shaking (no intermediate mapping)
    - 40-60% bundle size reduction
-   - Novel approach to dependency tracking
 
 3. **Type Transformation** 🔄
    - TypeScript template literals for magic

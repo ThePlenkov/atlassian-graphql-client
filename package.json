@@ -27,8 +27,10 @@
     "@graphql-codegen/cli": "^6.0.1-alpha-20251020115833-8d7877f21dec8264954784745fe577eccf6bb9da",    
     "@graphql-codegen/plugin-helpers": "^6.0.0",
     "@graphql-codegen/typescript": "^5.0.2",
-    
     "@graphql-codegen/typescript-operations": "^5.0.2",
+    "esbuild": "^0.24.2",
+    "typed-graphql-builder": "^4.0.0",
+    "tsx": "^4.19.2",
     
     "@graphql-tools/load": "^8.1.2",
     "@graphql-tools/url-loader": "^9.0.0",
@@ -66,6 +68,9 @@
     "magic-string": "$magic-string"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "comparison",
+    "comparison/gqlb-approach",
+    "comparison/typed-builder-approach"
   ]
 }

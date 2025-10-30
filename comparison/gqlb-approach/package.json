@@ -1,0 +1,17 @@
+{
+  "name": "comparison-gqlb",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "gqlb + GraphQL Codegen approach",
+  "scripts": {
+    "gen": "graphql-codegen --config codegen.ts",
+    "build": "tsc && node --experimental-strip-types build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "gqlb": "*",
+    "gqlb-codegen": "*",
+    "graphql": "^16.11.0"
+  }
+}

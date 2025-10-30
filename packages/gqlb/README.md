@@ -572,7 +572,6 @@ MIT
 - [Issue Tracker](https://github.com/gqlb/gqlb/issues)
 - [Documentation](../../docs)
 - [Innovation Deep Dive](../../docs/INNOVATION.md)
-- [Blog Post](../../docs/media/BLOG_POST.md)
 
 ---
 
