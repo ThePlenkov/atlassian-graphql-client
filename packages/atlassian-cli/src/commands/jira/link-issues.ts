@@ -18,6 +18,31 @@ interface LinkIssuesOptions {
   logger?: Logger;
 }
 
+// Result types for GraphQL queries/mutations
+type IssueQueryResult = {
+  jira: {
+    issueByKey: {
+      issueId: string;
+      key: string;
+    };
+  };
+};
+
+type CreateIssueLinksResult = {
+  jira: {
+    createIssueLinks: {
+      success: boolean;
+      errors?: Array<{ message: string }>;
+      issueLinkEdges?: Array<{
+        node: {
+          id: string;
+          issueLinkId: string;
+        };
+      }>;
+    };
+  };
+};
+
 /**
  * Link two or more Jira issues together
  * 
@@ -94,7 +119,7 @@ export async function linkIssues(
     ]);
 
     logger.info('   Fetching source issue ID...');
-    const sourceResult = await client.request(sourceQuery, {
+    const sourceResult = await client.request<IssueQueryResult>(sourceQuery, {
       cloudId: config.cloudId,
       sourceKey: sourceIssueKey
     });
@@ -118,7 +143,7 @@ export async function linkIssues(
     logger.info('   Fetching target issue IDs...');
     const targetResults = await Promise.all(
       targetQueries.map((query, index) => 
-        client.request(query, {
+        client.request<IssueQueryResult>(query, {
           cloudId: config.cloudId,
           [`targetKey${index}`]: targetIssueKeys[index]
         })
@@ -197,7 +222,7 @@ export async function linkIssues(
 
     logger.info('🚀 Executing mutation...\n');
 
-    const linkResult = await client.request(linkMutation, {
+    const linkResult = await client.request<CreateIssueLinksResult>(linkMutation, {
       cloudId: config.cloudId,
       sourceIssueId: sourceIssueId,
       linkTypeId: linkTypeId,

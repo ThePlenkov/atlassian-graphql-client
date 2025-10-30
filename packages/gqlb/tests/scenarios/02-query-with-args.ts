@@ -1,14 +1,13 @@
 /**
- * Query with inline arguments - FULLY TYPED, NO any!
+ * Query with inline arguments - Testing ARRAY syntax!
  */
 import { createQueryBuilder } from '../../src/index.js';
 import { schema } from '../schema/index.js';
-import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { QueryFields } from '../schema/generated/field-types.js';
 
 const builder = createQueryBuilder<QueryFields>(schema);
 
-export const query: TypedDocumentNode = builder.query(q => [
+export const query = builder.query(q => [
   q.user({ id: '123' }, user => [
     user.id,
     user.name,

@@ -6,12 +6,10 @@
  */
 
 import { Command } from 'commander';
-import { createAuthCommand } from 'cli-oauth';
 import { getIssue } from './commands/jira/get-issue.js';
 import { searchIssues } from './commands/jira/search-issues.js';
 import { loginCommand } from './commands/auth/login.js';
-import { auth, setOAuthConfig, saveConfig, loadConfig, getAccessibleResources, clearToken } from './auth/config.js';
-import { ATLASSIAN_DEFAULTS } from './constants.js';
+import { auth, loadConfig, clearToken } from './auth/config.js';
 
 const program = new Command();
 

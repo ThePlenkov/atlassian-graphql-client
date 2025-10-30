@@ -7,6 +7,31 @@
 
 import { GraphQLSchema, GraphQLObjectType, GraphQLInterfaceType, GraphQLField, isNonNullType, isListType, isScalarType, isEnumType, isObjectType, isInterfaceType, isUnionType, GraphQLOutputType, GraphQLUnionType, GraphQLNamedType } from 'graphql';
 
+/**
+ * Generate the Args type name that GraphQL Codegen will create.
+ * 
+ * We directly query the GraphQL schema to determine which fields have arguments,
+ * then generate the type name using GraphQL Codegen's standard naming convention.
+ * 
+ * This is the most reliable approach because:
+ * 1. We have direct access to the schema (no file parsing needed)
+ * 2. We know exactly which fields have args: `field.args.length > 0`
+ * 3. We use the standard GraphQL Codegen naming: ParentType + CapitalizedFieldName + "Args"
+ * 
+ * @param parentTypeName - Parent type name (e.g., "Query", "Mutation", "User")
+ * @param fieldName - Field name (e.g., "createUser", "posts")
+ * @returns The Args type name (e.g., "QueryCreateUserArgs")
+ * 
+ * @example
+ * generateArgsTypeName('Query', 'user') // => 'QueryUserArgs'
+ * generateArgsTypeName('Mutation', 'createUser') // => 'MutationCreateUserArgs'
+ */
+function generateArgsTypeName(parentTypeName: string, fieldName: string): string {
+  // GraphQL Codegen capitalizes the first letter: Query.user -> QueryUserArgs
+  const capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+  return `${parentTypeName}${capitalizedFieldName}Args`;
+}
+
 interface FieldInfo {
   name: string;
   typeName: string;
@@ -45,7 +70,11 @@ function unwrapType(type: GraphQLOutputType): {
   return { baseType: current as GraphQLNamedType, isNonNull, isList };
 }
 
-function getFieldInfo(field: GraphQLField<unknown, unknown>, parentTypeName: string, referencedTypes: Set<string>): FieldInfo {
+function getFieldInfo(
+  field: GraphQLField<unknown, unknown>,
+  parentTypeName: string,
+  referencedTypes: Set<string>
+): FieldInfo {
   const { baseType, isNonNull, isList } = unwrapType(field.type);
   const typeName = baseType.name;
   const isScalar = isScalarType(baseType) || isEnumType(baseType);
@@ -55,9 +84,8 @@ function getFieldInfo(field: GraphQLField<unknown, unknown>, parentTypeName: str
   }
   
   const hasArgs = Object.keys(field.args).length > 0;
-  // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
-  // e.g., 'cards' -> 'BacklogcardsArgs', 'createUser' -> 'MutationcreateUserArgs'
-  const argsTypeName = hasArgs ? `${parentTypeName}${field.name}Args` : null;
+  // Generate the Args type name using GraphQL Codegen's standard convention
+  const argsTypeName = hasArgs ? generateArgsTypeName(parentTypeName, field.name) : null;
   const hasRequiredArgs = field.args.some(arg => isNonNullType(arg.type));
 
   return {
@@ -105,39 +133,54 @@ function generateFieldType(field: FieldInfo): string {
   }
 
   // Generate field signature compatible with TypedOperationBuilder
-  // All fields return FieldSelection<T> where T is the inferred result type
+  // All fields return FieldSelection<T, FieldName> where:
+  // - T is the inferred result type  
+  // - FieldName enables array-based type inference
   // Args accept WithVariables to allow TypedVariable usage
   if (isScalar) {
-    // Scalar field
+    // Scalar field - encode field name for array inference!
+    const scalarFieldType = `FieldSelection<${resultType}, "${name}">`;
     if (hasArgs) {
       if (hasRequiredArgs) {
-        return `  ${name}: (args: WithVariables<${argsTypeName}>) => FieldSelection<${resultType}>;`;
+        return `  ${name}: (args: WithVariables<${argsTypeName}>) => ${scalarFieldType};`;
       } else {
-        return `  ${name}: (args?: WithVariables<${argsTypeName}>) => FieldSelection<${resultType}>;`;
+        return `  ${name}: (args?: WithVariables<${argsTypeName}>) => ${scalarFieldType};`;
       }
     } else {
-      return `  ${name}: FieldSelection<${resultType}>;`;
+      return `  ${name}: ${scalarFieldType};`;
     }
   } else {
     // Object field - requires selection
-    const selectParam = `(obj: ${typeName}Fields) => ReadonlyArray<FieldSelection<unknown>>`;
+    // NEW: Use generic TSelection to enable automatic type inference!
+    // ALSO encode field name for array inference!
+    // IMPORTANT: Wrap in array type if the field returns a list!
+    
+    const inferredType = isList 
+      ? `InferResultType<TSelection>[]` 
+      : `InferResultType<TSelection>`;
+    
+    // Add null if the field is nullable
+    const finalType = isNonNull ? inferredType : `${inferredType} | null`;
     
     if (hasArgs) {
       if (hasRequiredArgs) {
-        return `  ${name}: (args: WithVariables<${argsTypeName}>, select: ${selectParam}) => FieldSelection<${resultType}>;`;
+        return `  ${name}: <TSelection>(args: WithVariables<${argsTypeName}>, select: (obj: ${typeName}Fields) => TSelection) => FieldSelection<${finalType}, "${name}">;`;
       } else {
         return `  ${name}: {
-    (select: ${selectParam}): FieldSelection<${resultType}>;
-    (args: WithVariables<${argsTypeName}>, select: ${selectParam}): FieldSelection<${resultType}>;
+    <TSelection>(select: (obj: ${typeName}Fields) => TSelection): FieldSelection<${finalType}, "${name}">;
+    <TSelection>(args: WithVariables<${argsTypeName}>, select: (obj: ${typeName}Fields) => TSelection): FieldSelection<${finalType}, "${name}">;
   };`;
       }
     } else {
-      return `  ${name}: (select: ${selectParam}) => FieldSelection<${resultType}>;`;
+      return `  ${name}: <TSelection>(select: (obj: ${typeName}Fields) => TSelection) => FieldSelection<${finalType}, "${name}">;`;
     }
   }
 }
 
-function generateTypeFields(type: GraphQLObjectType | GraphQLInterfaceType, referencedTypes: Set<string>): string {
+function generateTypeFields(
+  type: GraphQLObjectType | GraphQLInterfaceType,
+  referencedTypes: Set<string>
+): string {
   const fields = Object.values(type.getFields());
   const fieldInfos = fields.map(field => getFieldInfo(field, type.name, referencedTypes));
   
@@ -198,8 +241,8 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
   
   // Generate import statement based on helpers path
   const importStatement = helpersImportPath === 'gqlb' 
-    ? `import type { TypedFieldSelection as FieldSelection, TypedVariable, WithVariables } from 'gqlb';`
-    : `import type { FieldSelection, TypedVariable, WithVariables } from '${helpersImportPath}';`;
+    ? `import type { TypedFieldSelection as FieldSelection, TypedVariable, WithVariables, InferResultType } from 'gqlb';`
+    : `import type { FieldSelection, TypedVariable, WithVariables, InferResultType } from '${helpersImportPath}';`;
   
   const output: string[] = [
     '/**',
@@ -209,7 +252,7 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
     '',
     '// Import helper types',
     importStatement,
-    'export type { FieldSelection, TypedVariable, WithVariables };',
+    'export type { FieldSelection, TypedVariable, WithVariables, InferResultType };',
     '',
     '// Import generated schema types',
     'import type {',
@@ -228,9 +271,7 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
   if (queryType) {
     Object.values(queryType.getFields()).forEach(field => {
       if (field.args.length > 0) {
-        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
-        const argsTypeName = `Query${field.name}Args`;
-        argsTypes.add(argsTypeName);
+        argsTypes.add(generateArgsTypeName('Query', field.name));
       }
     });
   }
@@ -238,9 +279,7 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
   if (mutationType) {
     Object.values(mutationType.getFields()).forEach(field => {
       if (field.args.length > 0) {
-        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
-        const argsTypeName = `Mutation${field.name}Args`;
-        argsTypes.add(argsTypeName);
+        argsTypes.add(generateArgsTypeName('Mutation', field.name));
       }
     });
   }
@@ -251,9 +290,7 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
     fields.forEach(field => {
       getFieldInfo(field, type.name, referencedTypes);
       if (field.args.length > 0) {
-        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
-        const argsTypeName = `${type.name}${field.name}Args`;
-        argsTypes.add(argsTypeName);
+        argsTypes.add(generateArgsTypeName(type.name, field.name));
       }
     });
   }

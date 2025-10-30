@@ -115,7 +115,7 @@ const schema = buildSchema(schemaSDL);
  * //                  result.jira.issueByKey.summaryField.text is string
  * ```
  */
-export function createQueryBuilder(): QueryBuilder {
+export function createQueryBuilder(): QueryBuilder<QueryFields, MutationFields> {
   return createGqlbBuilder<QueryFields, MutationFields>(schema);
 }
 

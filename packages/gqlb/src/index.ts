@@ -11,6 +11,7 @@ export type { FieldSelection } from './types.js'; // Runtime FieldSelection (not
 export type { 
   FieldSelection as TypedFieldSelection,  // Generic marker type for generated code
   TypedVariable, 
-  WithVariables 
+  WithVariables,
+  InferResultType  // NEW: For automatic result type inference
 } from './field-types-helpers.js';
 

@@ -56,7 +56,9 @@ const config: CodegenConfig = {
         enumsAsTypes: true,
         // Generate field argument types (e.g., QueryjiraArgs, JiraQueryissueByKeyArgs)
         addUnderscoreToArgsType: false,
-        fieldWrapperValue: '(T extends undefined ? never : T) | null | undefined'
+        fieldWrapperValue: '(T extends undefined ? never : T) | null | undefined',
+        futureProofEnums: true,
+        futureProofUnions: true
       }
     },
     // Generate field types for fully typed query builder

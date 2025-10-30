@@ -77,6 +77,41 @@ describe('gqlb query builder', () => {
     testScenario('07-query-nested-args', import('./scenarios/07-query-nested-args.ts').then(m => m.query));
     testScenario('08-named-operation', import('./scenarios/08-named-operation.ts').then(m => m.query));
     testScenario('09-multiple-fields', import('./scenarios/09-multiple-fields.ts').then(m => m.query));
+    testScenario('12-query-result-access', import('./scenarios/12-query-result-access.ts').then(m => m.query));
+    testScenario('14-array-result-access', import('./scenarios/14-array-result-access.ts').then(m => m.query));
+    
+    // Runtime test for complete flow with mock client (object syntax)
+    test('12-query-result-access (runtime execution)', async () => {
+      const module = await import('./scenarios/12-query-result-access.ts');
+      
+      // Test the complete flow
+      const result = await module.testCompleteFlow();
+      strictEqual(result.userId, '123', 'User ID should match');
+      strictEqual(result.userName, 'John Doe', 'User name should match');
+      strictEqual(result.userEmail, 'john@example.com', 'User email should match');
+      
+      // Test inline typing
+      const inlineResult = await module.testInlineTyping();
+      strictEqual(inlineResult.id, '456', 'User ID should match for inline test');
+      strictEqual(inlineResult.name, 'John Doe', 'User name should match for inline test');
+    });
+    
+    // Runtime test for ARRAY syntax (like typed-graphql-builder!)
+    test('14-array-result-access (runtime execution)', async () => {
+      const module = await import('./scenarios/14-array-result-access.ts');
+      
+      // Test array syntax with type inference
+      const result = await module.testArraySyntaxWithInference();
+      strictEqual(result.userId, '123', 'Array syntax: User ID should match');
+      strictEqual(result.userName, 'John Doe', 'Array syntax: User name should match');
+      strictEqual(result.userEmail, 'john@example.com', 'Array syntax: User email should match');
+      
+      // Test nested arrays
+      const nestedResult = await module.testNestedArrays();
+      strictEqual(nestedResult.firstUserId, '1', 'Nested array: User ID should match');
+      strictEqual(nestedResult.firstUserName, 'Alice', 'Nested array: User name should match');
+      strictEqual(nestedResult.firstPostTitle, 'Post 1', 'Nested array: Post title should match');
+    });
   });
 
   describe('mutations', () => {

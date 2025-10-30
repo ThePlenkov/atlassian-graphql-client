@@ -14,12 +14,13 @@ export interface Variable<T = any> {
 
 /**
  * Function that selects fields from a type
- * Returns readonly array to match generated field types
+ * NOW returns an object where keys are field names and values are FieldSelections
+ * This enables automatic type inference!
  */
-export type SelectionFn<T = any> = (proxy: T) => ReadonlyArray<unknown>;
+export type SelectionFn<T = any, TResult = any> = (proxy: T) => TResult;
 
 /**
- * A field selection (scalar, object, or nested)
+ * A field selection (scalar, object, or nested) - internal representation
  */
 export interface FieldSelection {
   name: string;
@@ -28,17 +29,22 @@ export interface FieldSelection {
   selection?: FieldSelection[];
 }
 
+// Import InferResultType for use in OperationBuilder
+import type { InferResultType } from './field-types-helpers.js';
+
 /**
  * Operation builder that supports both function calls and proxy property access
- * - builder.query(q => [...]) - anonymous operation
- * - builder.query('Name', q => [...]) - named operation (backward compatible)
- * - builder.query.Name(q => [...]) - named operation (fluent API)
+ * - builder.query(q => ({...})) - anonymous operation with object selection
+ * - builder.query('Name', q => ({...})) - named operation (backward compatible)
+ * - builder.query.Name(q => ({...})) - named operation (fluent API)
+ * 
+ * The result type is automatically inferred from the selection object!
  */
 export type OperationBuilder<T = any> = {
-  (selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
-  (operationName: string, selectionFn: SelectionFn<T>): TypedDocumentNode<T, any>;
+  <TSelection>(selectionFn: SelectionFn<T, TSelection>): TypedDocumentNode<InferResultType<TSelection>, any>;
+  <TSelection>(operationName: string, selectionFn: SelectionFn<T, TSelection>): TypedDocumentNode<InferResultType<TSelection>, any>;
   // Index signature for proxy property access (builder.query.Name)
-  [operationName: string]: (selectionFn: SelectionFn<T>) => TypedDocumentNode<T, any>;
+  [operationName: string]: <TSelection>(selectionFn: SelectionFn<T, TSelection>) => TypedDocumentNode<InferResultType<TSelection>, any>;
 };
 
 /**
