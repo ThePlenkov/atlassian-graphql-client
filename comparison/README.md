@@ -97,9 +97,9 @@ After running the comparison, results are saved to `results/`:
 - `report.md` - Full human-readable report
 
 **Key Findings (from latest run):**
-- **79.6% smaller bundles** with gqlb
-- **68.3% less generated code** (lines)
-- **Similar build times** (essentially the same)
+- **79.6% smaller bundles** → faster page loads for users
+- **68.3% less generated code** → better IDE performance
+- **Similar build times** → gqlb slightly slower (3.5s vs 3.4s)
 
 ## 🏗️ Approaches Compared
 

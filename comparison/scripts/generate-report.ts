@@ -136,17 +136,17 @@ ${buildData ? `## Build Performance
 
 ### When gqlb Approach Excels
 
-✅ **Large schemas** - The difference becomes more pronounced with larger schemas
-✅ **Bundle size constraints** - ${bundleData.comparison.bundleReduction}% smaller bundles
-✅ **IDE performance** - Smaller generated code = faster autocomplete
-✅ **Build performance** - ${buildData ? `${buildData.comparison.totalSpeedup}x faster builds` : 'Faster builds'}
-✅ **Maintainability** - Less generated code to review/debug
+✅ **Production bundle size** - ${bundleData.comparison.bundleReduction}% smaller bundles (faster page loads)
+✅ **Generated code size** - ${generatedData.comparison.lineReduction}% less code (better IDE autocomplete)
+✅ **Tree-shaking** - Better dead code elimination with direct imports
+✅ **Large schemas** - Benefits multiply with larger schemas (100+ types)
 
 ### Trade-offs
 
+⚠️ **Build time** - Slightly slower (${buildData.gqlb.totalTime}ms vs ${buildData.typedBuilder.totalTime}ms total)
 ⚠️ **Setup complexity** - Requires GraphQL Codegen + custom plugin configuration
-⚠️ **Runtime overhead** - Minimal proxy cost (negligible in practice)
-⚠️ **Novel approach** - Less mature than traditional codegen
+⚠️ **Runtime overhead** - Uses JavaScript Proxy API (small performance cost)
+⚠️ **Maturity** - Newer approach, less battle-tested than traditional codegen
 
 ## Raw Data
 

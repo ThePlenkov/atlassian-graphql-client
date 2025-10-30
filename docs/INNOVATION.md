@@ -4,12 +4,12 @@
 
 ## 🎯 The Problem
 
-Existing GraphQL TypeScript solutions force you to choose:
+Existing GraphQL TypeScript solutions often involve trade-offs:
 - **Static queries** (no runtime flexibility) OR
 - **Massive generated files** (poor IDE performance) OR  
 - **No type safety** (runtime errors)
 
-**We proved you can have all three:** dynamic queries + full type safety + tiny bundles.
+**Our approach:** Combine dynamic queries + full type safety + small bundles through a multi-stage pipeline. This comes with trade-offs (see below).
 
 ## 💡 Our Solution
 
@@ -20,10 +20,10 @@ A **5-stage pipeline** that gives you:
 - ✅ Tree-shaking friendly
 - ✅ Great IDE performance
 
-### The Result
+### The Approach
 
 ```typescript
-// Dynamic + Type-safe + Small bundles!
+// Dynamic + Type-safe + Optimized for large schemas
 const builder = createQueryBuilder();
 
 const query = builder.query('GetUser', q => [
@@ -392,15 +392,15 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for complete setup guide.
 4. **Separate types from implementation** - Clean architecture
 5. **Runtime proxies are fast** - Modern JS engines optimize well
 
-### The Breakthrough
+### The Approach
 
 **Key insight:** Separate **types** (compile-time) from **implementation** (runtime)
 
 - Types can be generated (TypeScript handles well if clean)
-- Implementation should be small runtime code
+- Implementation should be small runtime code  
 - Use TypeScript's type system to bridge the gap
 
-This enabled dynamic queries with full type safety and tiny bundles.
+This enables dynamic queries with full type safety and optimized bundles, with some trade-offs in setup complexity and build time.
 
 ## 🌟 Future Enhancements
 
@@ -442,8 +442,9 @@ Generated Code:    200 KB (8,000 lines)    ⬇️ 94% smaller
 IDE Autocomplete:  <100ms                  ⚡ 30x faster
 Build Time:        1.8 seconds             🚀 2.3x faster  
 Bundle Size:       120 KB (minified)       📦 86% smaller
-Developer Rating:  😍 "Finally usable!"
 ```
+
+**Trade-offs:** More complex setup, requires GraphQL Codegen + custom plugin configuration.
 
 ### Documentation Organization Results
 
@@ -481,4 +482,4 @@ MIT
 
 ---
 
-**This approach proves you can have it all: type safety, flexibility, performance, and great DX!**
+**This approach offers a balanced solution for large schemas, trading setup complexity for better runtime characteristics.**

@@ -13,9 +13,17 @@
 | Apollo Client Codegen | ❌ None | ✅ Full | ⚠️ Medium | ✅ Fast | ⚠️ High |
 | String Templates (gql) | ✅ Excellent | ❌ None | ✅ Tiny | ✅ Fast | ⚠️ Medium |
 
-**Our approach is the only solution that gets ✅ in all categories.**
+**Note:** Results vary by schema size. Our approach excels with large schemas (1000+ types) but adds setup complexity.
 
 ## Detailed Comparison
+
+**Disclaimer:** The following comparisons are based on our experience and testing with specific schemas. Tool performance varies significantly based on:
+- Schema size and complexity
+- Project setup and configuration
+- Hardware and environment
+- Version of tools used
+
+Always test with your own schema and requirements.
 
 ### 1. typescript-generic-sdk
 
@@ -53,10 +61,10 @@ const result = await client.request(GetUserDocument);
 - ❌ Apps needing dynamic field selection
 - ❌ GraphQL API explorers/tools
 
-#### Bundle Impact (Atlassian Schema)
-- **Generated code:** ~50KB
-- **Runtime bundle:** ~400KB (all queries included)
-- **Tree-shaking:** Limited (all defined queries bundled)
+#### Bundle Impact (Example - varies by schema)
+- **Generated code:** Varies by number of queries
+- **Runtime bundle:** Depends on number of queries included
+- **Tree-shaking:** Each query is a separate module
 
 ---
 
@@ -65,7 +73,7 @@ const result = await client.request(GetUserDocument);
 **Approach:** Generate complete TypeScript builder classes from schema
 
 ```typescript
-import { query, user, posts } from './generated'; // 130,000 lines!
+import { query, user, posts } from './generated';
 
 const result = await client.request(
   query({
@@ -85,11 +93,11 @@ const result = await client.request(
 - ✅ No .graphql files needed
 
 #### Cons
-- ❌ Generates MASSIVE files (3.5MB for Atlassian)
-- ❌ IDE struggles (3-5s autocomplete delay)
-- ❌ Very slow builds
-- ❌ Large bundle sizes
-- ❌ Memory intensive
+- ❌ Generates large files (size scales with schema size)
+- ❌ Can slow IDE with very large schemas (1000+ types)
+- ❌ Build times increase with schema size
+- ❌ Larger bundle sizes than alternatives
+- ❌ More memory intensive
 
 #### Use Cases
 - ✅ Small to medium schemas (<1000 types)
@@ -97,11 +105,13 @@ const result = await client.request(
 - ❌ Large enterprise schemas
 - ❌ Apps with strict bundle size requirements
 
-#### Bundle Impact (Atlassian Schema)
-- **Generated code:** 3.5MB (132,000 lines)
-- **Runtime bundle:** ~850KB (with tree-shaking)
-- **Build time:** ~4.2s
-- **IDE autocomplete:** 3-5s delay
+#### Bundle Impact (Our Testing - 8000+ type schema)
+- **Generated code:** ~3.5MB in our test
+- **Runtime bundle:** ~850KB after tree-shaking
+- **Build time:** ~4s in our test
+- **IDE autocomplete:** Noticeably slower with very large schemas
+
+**Important:** These numbers are from OUR specific testing. Your results will vary. Performance is excellent with small/medium schemas (<1000 types).
 
 ---
 
@@ -131,9 +141,10 @@ const query = builder.query('GetUser', q => [
 - ✅ Composable queries
 
 #### Cons
-- ⚠️ Minimal runtime overhead (proxies)
-- ⚠️ More complex setup (5 stages)
-- ⚠️ Novel approach (less mature)
+- ⚠️ More complex setup (multi-stage pipeline)
+- ⚠️ Slightly slower build times than some alternatives
+- ⚠️ Runtime overhead from JavaScript Proxies
+- ⚠️ Newer approach (less battle-tested than alternatives)
 
 #### Use Cases
 - ✅ Large enterprise schemas
@@ -142,11 +153,13 @@ const query = builder.query('GetUser', q => [
 - ✅ GraphQL API tools/explorers
 - ✅ Monorepos with multiple consumers
 
-#### Bundle Impact (Atlassian Schema)
-- **Generated types:** 200KB (8,000 lines)
+#### Bundle Impact (Our Testing - 8000+ type schema)
+- **Generated types:** ~200KB after pruning
 - **Runtime bundle:** ~120KB
-- **Build time:** ~1.8s
-- **IDE autocomplete:** <100ms
+- **Build time:** ~2s
+- **IDE autocomplete:** Fast (<100ms)
+
+**Important:** These numbers are from OUR specific testing with our setup. Your results will vary based on schema, hardware, and configuration.
 
 ---
 
@@ -189,10 +202,10 @@ const result = await client.request(query, { id: '123' });
 - ❌ Large teams (typos cause issues)
 - ❌ Complex nested queries
 
-#### Bundle Impact
-- **Generated types:** ~30KB
-- **Runtime bundle:** ~50KB
-- **Type coverage:** 60% (variables + response types only)
+#### Bundle Impact  
+- **Generated types:** Small (varies by queries defined)
+- **Runtime bundle:** Small (graphql-request is lightweight)
+- **Type coverage:** Partial (variables + response types, not query structure)
 
 ---
 
@@ -235,9 +248,9 @@ const { data } = useGetUserQuery({ variables: { id: '123' } });
 - ❌ Dynamic query requirements
 
 #### Bundle Impact
-- **Generated code:** ~80KB
-- **Runtime bundle:** ~500KB (Apollo + queries)
-- **Flexibility:** Low
+- **Generated code:** Varies by number of queries
+- **Runtime bundle:** Apollo Client is feature-rich (includes caching, state management, etc.)
+- **Flexibility:** Low (requires defining queries upfront)
 
 ---
 
@@ -277,9 +290,9 @@ const query = gql`
 - ❌ Complex schemas
 
 #### Bundle Impact
-- **Generated code:** 0KB
-- **Runtime bundle:** ~10KB (graphql-tag)
-- **Type safety:** 0%
+- **Generated code:** None
+- **Runtime bundle:** Minimal (just graphql-tag or similar)
+- **Type safety:** None
 
 ---
 
@@ -301,11 +314,13 @@ const query = gql`
 
 | Metric | Our Approach | generic-sdk | typed-builder | graphql-request | Apollo | Strings |
 |--------|-------------|-------------|---------------|-----------------|--------|---------|
-| **Generated code size** | 200KB | 50KB | 3.5MB | 30KB | 80KB | 0KB |
-| **Bundle size** | 120KB | 400KB | 850KB | 50KB | 500KB | 10KB |
-| **Build time** | 1.8s | 1.5s | 4.2s | 1.0s | 2.0s | 0s |
-| **IDE autocomplete** | <100ms | <50ms | 3-5s | N/A | <50ms | N/A |
-| **Runtime overhead** | Minimal | None | None | Minimal | High | Minimal |
+| **Generated code size** | Small* | Small | Large* | Small | Medium | None |
+| **Bundle size** | Small* | Medium | Large* | Minimal | Large | Minimal |
+| **Build time** | Medium | Fast | Slow* | Fast | Medium | None |
+| **IDE autocomplete** | Fast | Fast | Slow* | N/A | Fast | N/A |
+| **Runtime overhead** | Low | Low | Low | Low | Low | Low |
+
+\*Performance varies significantly with schema size. Numbers shown are relative for large schemas (1000+ types).
 
 ### Developer Experience
 
@@ -436,50 +451,53 @@ Legend: ✅ Supported | ⚠️ Partial | ❌ Not Supported | 🚧 In Progress
 
 ---
 
-## Real-World Case Study: Atlassian GraphQL API
+## Case Study: Large Schema (8000+ types)
 
-### Problem
-- Large schema: 8000+ types
-- Need dynamic field selection (API explorer)
-- Bundle size critical (web app)
-- Great DX required (internal tool)
+### Context
+- Schema: Atlassian GraphQL API (8000+ types)
+- Requirement: Dynamic field selection for API explorer
+- Constraints: Bundle size, good IDE performance
 
-### Tried
-1. **typed-graphql-builder** → Generated 3.5MB file, IDE struggled
-2. **typescript-generic-sdk** → No runtime flexibility
-3. **String templates** → No type safety
+### Approach Comparison
 
-### Solution
-Multi-stage pipeline
+**typed-graphql-builder:**
+- Works well for small/medium schemas
+- With this specific large schema: 3.5MB generated code, slow IDE autocomplete
+- Trade-off: Simplicity vs performance at scale
 
-### Results
-- Generated code: **3.5MB → 200KB** (94% reduction)
-- Bundle size: **850KB → 120KB** (86% reduction)
-- IDE autocomplete: **3-5s → <100ms** (30x faster)
-- Build time: **4.2s → 1.8s** (2.3x faster)
+**typescript-generic-sdk:**
+- Excellent for known queries
+- Limitation: No runtime field selection (not suitable for this use case)
 
-**And we got BETTER DX!**
+**Our multi-stage pipeline:**
+- Generated code: 200KB (after schema pruning)
+- Bundle size: 120KB  
+- IDE autocomplete: <100ms
+- Build time: 1.8s
+
+**Note:** This is one specific large schema. Results vary based on schema size and structure. For small schemas (<1000 types), simpler approaches may be more appropriate.
 
 ---
 
 ## Conclusion
 
-Each approach has its place, but **our multi-stage pipeline is the only solution that excels in ALL areas:**
+Each approach has its strengths. **Our multi-stage pipeline offers a balanced solution** that combines:
 
 - ✅ **Dynamic queries** like typed-graphql-builder
-- ✅ **Type safety** like typescript-generic-sdk
+- ✅ **Type safety** like typescript-generic-sdk  
 - ✅ **Small bundles** like graphql-request
 - ✅ **Fast IDE** like Apollo codegen
-- ✅ **Low maintenance** like typed-graphql-builder
 
-**The key innovations:**
-1. **Schema pruning** - Reduce input by 90%
-2. **Args map plugin** - Enable tree-shaking
-3. **Type transformation** - TypeScript magic
-4. **Runtime proxies** - Tiny implementation
-5. **Multi-stage pipeline** - Best of all worlds
+**Key trade-offs to consider:**
+- More complex setup than simple alternatives
+- Slightly slower builds than raw codegen
+- Uses runtime Proxies (small performance cost)
+- Less mature than established solutions
 
-**We proved you CAN have it all.**
+**Best for:**
+- Large schemas (1000+ types) where benefits are most pronounced
+- Projects prioritizing bundle size and IDE performance
+- Teams willing to invest in initial setup
 
 ---
 
