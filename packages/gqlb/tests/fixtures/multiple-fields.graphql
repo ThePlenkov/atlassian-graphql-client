@@ -1,0 +1,11 @@
+query($limit: Int, $searchQuery: String!) {
+  hello
+  users(limit: $limit) {
+    id
+    name
+  }
+  search(query: $searchQuery) {
+    totalCount
+  }
+}
+

@@ -1,0 +1,9 @@
+query {
+  searchUsers(filter: {name: {contains: "John"}, age: {gte: 18, lt: 65}}) {
+    id
+    name
+    age
+    role
+  }
+}
+

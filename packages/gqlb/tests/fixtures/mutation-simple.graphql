@@ -1,0 +1,4 @@
+mutation {
+  deleteUser(id: "123")
+}
+
