@@ -8,7 +8,8 @@
         "cwd": "packages/graphql-codegen-args-map"
       },
       "outputs": ["{projectRoot}/dist"]
-    }
+    },
+    "clean": {}
   }
 }
 

@@ -1,6 +1,13 @@
 {
   "name": "gqlb-codegen",
   "targets": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist tests/schema/generated",
+        "cwd": "packages/gqlb-codegen"
+      }
+    },
     "build": {
       "executor": "nx:run-commands",
       "options": {

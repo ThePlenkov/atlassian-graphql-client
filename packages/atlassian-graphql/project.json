@@ -1,6 +1,13 @@
 {
   "name": "graphql",
   "targets": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist src/generated",
+        "cwd": "packages/atlassian-graphql"
+      }
+    },
     "gen:schema": {
       "executor": "nx:run-commands",
       "options": {

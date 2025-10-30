@@ -4,7 +4,8 @@
   "sourceRoot": "packages/cli-oauth/src",
   "projectType": "library",
   "targets": {
-    "build": {}
+    "build": {},
+    "clean": {}
   }
 }
 
