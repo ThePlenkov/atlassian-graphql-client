@@ -24,10 +24,12 @@
     "graphql": "^16.11.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^6.0.1-alpha-20251020115833-8d7877f21dec8264954784745fe577eccf6bb9da",
+    "@graphql-codegen/cli": "^6.0.1-alpha-20251020115833-8d7877f21dec8264954784745fe577eccf6bb9da",    
     "@graphql-codegen/plugin-helpers": "^6.0.0",
     "@graphql-codegen/typescript": "^5.0.2",
+    
     "@graphql-codegen/typescript-operations": "^5.0.2",
+    
     "@graphql-tools/load": "^8.1.2",
     "@graphql-tools/url-loader": "^9.0.0",
     "@nx/eslint": "^22.0.1",
@@ -44,18 +46,24 @@
     "@typescript-eslint/parser": "^7.16.0",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^10.0.0",
+    "get-tsconfig": "^4.12.0",
     "graphql-request": "^7.2.2",
     "jiti": "^2.6.1",
+    "magic-string": "^0.30.19",
     "nx": "22.0.1",
     "prettier": "^2.6.2",
     "prompts": "^2.4.2",
+    "rolldown": "^1.0.0-beta.44",
     "tsdown": "^0.15.9",
     "tslib": "^2.3.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.46.2-alpha.0"
   },
   "overrides": {
-    "@oxc-project/types": "$@oxc-project/types"
+    "@oxc-project/types": "$@oxc-project/types",
+    "rolldown": "$rolldown",
+    "get-tsconfig": "$get-tsconfig",
+    "magic-string": "$magic-string"
   },
   "workspaces": [
     "packages/*"
