@@ -68,20 +68,20 @@ async function testScenario(
 
 describe('gqlb query builder', () => {
   describe('queries', () => {
-    testScenario('query-simple', import('./scenarios/query-simple.ts').then(m => m.query));
-    testScenario('query-with-args', import('./scenarios/query-with-args.ts').then(m => m.query));
-    testScenario('query-with-variables', import('./scenarios/query-with-variables.ts').then(m => m.query));
-    testScenario('query-nested', import('./scenarios/query-nested.ts').then(m => m.query));
-    testScenario('query-arrays', import('./scenarios/query-arrays.ts').then(m => m.query));
-    testScenario('query-nullable', import('./scenarios/query-nullable.ts').then(m => m.query));
-    testScenario('query-nested-args', import('./scenarios/query-nested-args.ts').then(m => m.query));
-    testScenario('named-operation', import('./scenarios/named-operation.ts').then(m => m.query));
-    testScenario('multiple-fields', import('./scenarios/multiple-fields.ts').then(m => m.query));
+    testScenario('01-query-simple', import('./scenarios/01-query-simple.ts').then(m => m.query));
+    testScenario('02-query-with-args', import('./scenarios/02-query-with-args.ts').then(m => m.query));
+    testScenario('03-query-with-variables', import('./scenarios/03-query-with-variables.ts').then(m => m.query));
+    testScenario('04-query-arrays', import('./scenarios/04-query-arrays.ts').then(m => m.query));
+    testScenario('05-query-nested', import('./scenarios/05-query-nested.ts').then(m => m.query));
+    testScenario('06-query-nullable', import('./scenarios/06-query-nullable.ts').then(m => m.query));
+    testScenario('07-query-nested-args', import('./scenarios/07-query-nested-args.ts').then(m => m.query));
+    testScenario('08-named-operation', import('./scenarios/08-named-operation.ts').then(m => m.query));
+    testScenario('09-multiple-fields', import('./scenarios/09-multiple-fields.ts').then(m => m.query));
   });
 
   describe('mutations', () => {
-    testScenario('mutation-simple', import('./scenarios/mutation-simple.ts').then(m => m.mutation), 'mutation');
-    testScenario('mutation-with-input', import('./scenarios/mutation-with-input.ts').then(m => m.mutation), 'mutation');
+    testScenario('10-mutation-simple', import('./scenarios/10-mutation-simple.ts').then(m => m.mutation), 'mutation');
+    testScenario('11-mutation-with-input', import('./scenarios/11-mutation-with-input.ts').then(m => m.mutation), 'mutation');
   });
 });
 
