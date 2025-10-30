@@ -14,8 +14,9 @@ export interface Variable<T = any> {
 
 /**
  * Function that selects fields from a type
+ * Returns readonly array to match generated field types
  */
-export type SelectionFn<T = any> = (proxy: any) => FieldSelection[];
+export type SelectionFn<T = any> = (proxy: T) => ReadonlyArray<unknown>;
 
 /**
  * A field selection (scalar, object, or nested)
@@ -43,9 +44,9 @@ export type OperationBuilder<T = any> = {
 /**
  * Query builder interface
  */
-export interface QueryBuilder {
-  query: OperationBuilder;
-  mutation: OperationBuilder;
+export interface QueryBuilder<TQueryFields = any, TMutationFields = any> {
+  query: OperationBuilder<TQueryFields>;
+  mutation: OperationBuilder<TMutationFields>;
   subscription: OperationBuilder;
 }
 

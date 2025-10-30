@@ -74,7 +74,7 @@ function createOperationProxy(
  */
 export function createQueryBuilder<TQueryFields = any, TMutationFields = any>(
   schema: GraphQLSchema
-): QueryBuilder {
+): QueryBuilder<TQueryFields, TMutationFields> {
   const context: BuildContext = {
     schema,
     variables: new Map(),
@@ -85,7 +85,7 @@ export function createQueryBuilder<TQueryFields = any, TMutationFields = any>(
     query: createOperationProxy('query', () => schema.getQueryType()!, context),
     mutation: createOperationProxy('mutation', () => schema.getMutationType()!, context),
     subscription: createOperationProxy('subscription', () => schema.getSubscriptionType()!, context),
-  } as QueryBuilder;
+  } as QueryBuilder<TQueryFields, TMutationFields>;
 }
 
 
@@ -135,7 +135,7 @@ function buildOperation(
   const proxy = createTypeProxy(rootType, context);
 
   // Execute selection function to collect fields
-  const rawSelections = selectionFn(proxy);
+  const rawSelections = selectionFn(proxy) as any[];
 
   // Normalize selections: extract FieldSelection from callable objects (property access)
   const selections = normalizeSelections(rawSelections);
@@ -230,7 +230,7 @@ function createFieldSelection(
     // Support both object types and interface types (interfaces also have fields)
     if (isObjectType(fieldType) || isInterfaceType(fieldType)) {
       const nestedProxy = createTypeProxy(fieldType as GraphQLObjectType | GraphQLInterfaceType, context);
-      nestedSelections = selectionFn(nestedProxy);
+      nestedSelections = selectionFn(nestedProxy) as any[];
     }
   }
 

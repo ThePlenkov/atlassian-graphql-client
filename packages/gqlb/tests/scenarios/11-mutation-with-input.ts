@@ -1,14 +1,14 @@
 /**
  * Mutation with complex nested input - FULLY TYPED, NO any!
  */
-import { createTypedBuilder } from '../../src/create-typed-builder.js';
+import { createQueryBuilder } from '../../src/index.js';
 import { $$ } from '../../src/variables.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { QueryFields, MutationFields } from '../schema/generated/field-types.js';
 import type { CreateUserInput } from '../schema/generated/schema-types.js';
 
-const builder = createTypedBuilder<QueryFields, MutationFields>(schema);
+const builder = createQueryBuilder<QueryFields, MutationFields>(schema);
 
 const input = $$<CreateUserInput>('input');
 

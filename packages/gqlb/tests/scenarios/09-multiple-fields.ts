@@ -1,13 +1,13 @@
 /**
  * Multiple root fields - FULLY TYPED, NO any!
  */
-import { createTypedBuilder } from '../../src/create-typed-builder.js';
+import { createQueryBuilder } from '../../src/index.js';
 import { $ } from '../../src/variables.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { QueryFields } from '../schema/generated/field-types.js';
 
-const builder = createTypedBuilder<QueryFields>(schema);
+const builder = createQueryBuilder<QueryFields>(schema);
 
 const limit = $<number>('limit');
 const searchQuery = $<string>('searchQuery');
