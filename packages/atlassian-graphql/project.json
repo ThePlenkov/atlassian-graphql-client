@@ -1,5 +1,5 @@
 {
-  "name": "graphql",
+  "name": "atlassian-graphql",
   "targets": {
     "clean": {
       "executor": "nx:run-commands",
