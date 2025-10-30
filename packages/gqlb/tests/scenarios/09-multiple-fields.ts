@@ -1,23 +1,24 @@
 /**
- * Query with multiple root fields
+ * Multiple root fields - FULLY TYPED, NO any!
  */
-import { createQueryBuilder, $ } from '../../src/index.js';
+import { createTypedBuilder } from '../../src_typed/create-typed-builder.js';
+import { $ } from '../../src/typed-builder.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { QueryFields } from '../schema/generated/field-types.js';
 
-const builder = createQueryBuilder(schema);
+const builder = createTypedBuilder<QueryFields>(schema);
 
 const limit = $<number>('limit');
 const searchQuery = $<string>('searchQuery');
 
-export const query: TypedDocumentNode = builder.query((q: any) => [
+export const query: TypedDocumentNode = builder.query(q => [
   q.hello,
-  q.users({ limit }, (user: any) => [
+  q.users({ limit }, user => [
     user.id,
     user.name
   ]),
-  q.search({ query: searchQuery }, (result: any) => [
+  q.search({ query: searchQuery }, result => [
     result.totalCount
   ])
 ]);
-

@@ -1,25 +1,25 @@
 /**
- * Query with nullable fields and nullable return type
+ * Query with nullable fields - FULLY TYPED, NO any!
  */
-import { createQueryBuilder } from '../../src/index.js';
+import { createTypedBuilder } from '../../src_typed/create-typed-builder.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { QueryFields } from '../schema/generated/field-types.js';
 
-const builder = createQueryBuilder(schema);
+const builder = createTypedBuilder<QueryFields>(schema);
 
-export const query: TypedDocumentNode = builder.query((q: any) => [
-  q.post({ id: '456' }, (post: any) => [
+export const query: TypedDocumentNode = builder.query(q => [
+  q.post({ id: '456' }, post => [
     post.id,
     post.title,
-    post.author((author: any) => [
+    post.author(author => [
       author.id,
       author.name,
       author.email,
-      author.profile((profile: any) => [
+      author.profile(profile => [
         profile.bio,
         profile.avatar
       ])
     ])
   ])
 ]);
-

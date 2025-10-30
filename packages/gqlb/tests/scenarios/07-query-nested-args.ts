@@ -1,13 +1,14 @@
 /**
- * Query with nested filter arguments
+ * Query with nested filter arguments - FULLY TYPED, NO any!
  */
-import { createQueryBuilder } from '../../src/index.js';
+import { createTypedBuilder } from '../../src_typed/create-typed-builder.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { QueryFields } from '../schema/generated/field-types.js';
 
-const builder = createQueryBuilder(schema);
+const builder = createTypedBuilder<QueryFields>(schema);
 
-export const query: TypedDocumentNode = builder.query((q: any) => [
+export const query: TypedDocumentNode = builder.query(q => [
   q.searchUsers({
     filter: {
       name: {
@@ -18,11 +19,10 @@ export const query: TypedDocumentNode = builder.query((q: any) => [
         lt: 65
       }
     }
-  }, (user: any) => [
+  }, user => [
     user.id,
     user.name,
     user.age,
     user.role
   ])
 ]);
-

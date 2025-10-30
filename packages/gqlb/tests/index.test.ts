@@ -37,7 +37,7 @@ function normalizeQuery(query: string): string {
 async function testScenario(
   name: string,
   _documentOrPromise: TypedDocumentNode | Promise<TypedDocumentNode>,
-  documentKey: string = 'query'
+  documentKey = 'query'
 ): Promise<void> {
   await test(name, async () => {
     // Import the scenario module

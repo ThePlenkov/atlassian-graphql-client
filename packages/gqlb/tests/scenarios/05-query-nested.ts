@@ -1,22 +1,23 @@
 /**
- * Query with deeply nested selections (3 levels)
+ * Deeply nested query - FULLY TYPED, NO any!
  */
-import { createQueryBuilder } from '../../src/index.js';
+import { createTypedBuilder } from '../../src_typed/create-typed-builder.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { QueryFields } from '../schema/generated/field-types.js';
 
-const builder = createQueryBuilder(schema);
+const builder = createTypedBuilder<QueryFields>(schema);
 
-export const query: TypedDocumentNode = builder.query((q: any) => [
-  q.user({ id: '123' }, (user: any) => [
+export const query: TypedDocumentNode = builder.query(q => [
+  q.user({ id: '123' }, user => [
     user.id,
     user.name,
-    user.profile((profile: any) => [
+    user.profile(profile => [
       profile.bio,
-      profile.location((location: any) => [
+      profile.location(location => [
         location.city,
         location.country,
-        location.coordinates((coords: any) => [
+        location.coordinates(coords => [
           coords.lat,
           coords.lng
         ])
@@ -24,4 +25,3 @@ export const query: TypedDocumentNode = builder.query((q: any) => [
     ])
   ])
 ]);
-
