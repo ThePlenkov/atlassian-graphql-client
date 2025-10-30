@@ -21,6 +21,7 @@ export default [
       '**/*.d.mts',
       '**/*.d.cts',
       'coverage/**',
+      '**/generated/schema-types.full.ts', // Exclude extremely large generated file
     ],
   },
 
@@ -37,7 +38,9 @@ export default [
           // Ignore config files - they often use devDependencies
           ignoredFiles: [
             '{projectRoot}/**/*.config.{ts,js,cts,mts,cjs,mjs}',
-          ]          
+          ],
+          // gqlb-codegen is used during code generation (in project.json targets)
+          ignoredDependencies: ['gqlb-codegen'],
         },
       ],
     },
@@ -92,6 +95,14 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'no-useless-escape': 'off',
+    },
+  },
+
+  // Relax rules for generated files
+  {
+    files: ['**/generated/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 ];

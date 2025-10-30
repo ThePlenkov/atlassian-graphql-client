@@ -55,10 +55,9 @@ function getFieldInfo(field: GraphQLField<unknown, unknown>, parentTypeName: str
   }
   
   const hasArgs = Object.keys(field.args).length > 0;
-  // Capitalize the field name to match @graphql-codegen/typescript behavior
-  // e.g., 'createUser' -> 'MutationCreateUserArgs', 'jira' -> 'QueryJiraArgs'
-  const capitalizedFieldName = field.name.charAt(0).toUpperCase() + field.name.slice(1);
-  const argsTypeName = hasArgs ? `${parentTypeName}${capitalizedFieldName}Args` : null;
+  // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
+  // e.g., 'cards' -> 'BacklogcardsArgs', 'createUser' -> 'MutationcreateUserArgs'
+  const argsTypeName = hasArgs ? `${parentTypeName}${field.name}Args` : null;
   const hasRequiredArgs = field.args.some(arg => isNonNullType(arg.type));
 
   return {
@@ -229,9 +228,8 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
   if (queryType) {
     Object.values(queryType.getFields()).forEach(field => {
       if (field.args.length > 0) {
-        // Capitalize the field name to match @graphql-codegen/typescript behavior
-        const capitalizedFieldName = field.name.charAt(0).toUpperCase() + field.name.slice(1);
-        const argsTypeName = `Query${capitalizedFieldName}Args`;
+        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
+        const argsTypeName = `Query${field.name}Args`;
         argsTypes.add(argsTypeName);
       }
     });
@@ -240,9 +238,8 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
   if (mutationType) {
     Object.values(mutationType.getFields()).forEach(field => {
       if (field.args.length > 0) {
-        // Capitalize the field name to match @graphql-codegen/typescript behavior
-        const capitalizedFieldName = field.name.charAt(0).toUpperCase() + field.name.slice(1);
-        const argsTypeName = `Mutation${capitalizedFieldName}Args`;
+        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
+        const argsTypeName = `Mutation${field.name}Args`;
         argsTypes.add(argsTypeName);
       }
     });
@@ -254,9 +251,8 @@ export function generateFieldTypes(options: GenerateFieldTypesOptions): string {
     fields.forEach(field => {
       getFieldInfo(field, type.name, referencedTypes);
       if (field.args.length > 0) {
-        // Capitalize the field name to match @graphql-codegen/typescript behavior
-        const capitalizedFieldName = field.name.charAt(0).toUpperCase() + field.name.slice(1);
-        const argsTypeName = `${type.name}${capitalizedFieldName}Args`;
+        // GraphQL Codegen concatenates type name + field name as-is (no capitalization)
+        const argsTypeName = `${type.name}${field.name}Args`;
         argsTypes.add(argsTypeName);
       }
     });
