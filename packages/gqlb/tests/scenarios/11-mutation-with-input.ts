@@ -2,7 +2,7 @@
  * Mutation with complex nested input - FULLY TYPED, NO any!
  */
 import { createTypedBuilder } from '../../src/create-typed-builder.js';
-import { $$ } from '../../src/typed-builder.js';
+import { $$ } from '../../src/variables.js';
 import { schema } from '../schema/index.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { QueryFields, MutationFields } from '../schema/generated/field-types.js';

@@ -1,14 +1,9 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const config: CodegenConfig = {
-  schema: join(__dirname, 'schema.graphql'),
+  schema: 'tests/schema/schema.graphql',
   generates: {
-    [join(__dirname, 'generated/schema-types.ts')]: {
+    'tests/schema/generated/schema-types.ts': {
       plugins: ['typescript'],
       config: {
         skipTypename: false,
@@ -18,11 +13,11 @@ const config: CodegenConfig = {
         }
       }
     },
-    [join(__dirname, 'generated/field-types.ts')]: {
+    'tests/schema/generated/field-types.ts': {
       plugins: ['gqlb-codegen/field-types'],
       config: {
         schemaTypesImportPath: './schema-types.js',
-        helpersImportPath: 'gqlb-codegen/field-types'
+        helpersImportPath: '../../../src/field-types-helpers.js'
       }
     }
   }

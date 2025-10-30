@@ -11,8 +11,8 @@
       "types": "./dist/index.d.ts"
     },
     "./typed": {
-      "import": "./dist/typed-builder.js",
-      "types": "./dist/typed-builder.d.ts"
+      "import": "./dist/create-typed-builder.js",
+      "types": "./dist/create-typed-builder.d.ts"
     },
     "./codegen": {
       "import": "./dist/codegen-utils.js",

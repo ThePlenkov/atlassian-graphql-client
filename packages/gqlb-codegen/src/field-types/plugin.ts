@@ -35,7 +35,7 @@ export interface FieldTypesPluginConfig {
   
   /**
    * Import path for helper types (FieldSelection, TypedVariable, WithVariables)
-   * @default 'gqlb-codegen/field-types'
+   * @default 'gqlb' - Imports TypedFieldSelection, TypedVariable, WithVariables from gqlb
    */
   helpersImportPath?: string;
 }
@@ -50,7 +50,7 @@ export const plugin: PluginFunction<FieldTypesPluginConfig> = (
 ): string => {
   const {
     schemaTypesImportPath = './schema-types.js',
-    helpersImportPath = 'gqlb-codegen/field-types'
+    helpersImportPath = 'gqlb'
   } = config;
 
   const options: GenerateFieldTypesOptions = {

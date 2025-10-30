@@ -54,8 +54,7 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
-import { createTypedBuilder } from '../../gqlb/src/create-typed-builder.js';
-import type { TypedQueryBuilder } from '../../gqlb/src/create-typed-builder.js';
+import { createTypedBuilder, type TypedQueryBuilder } from 'gqlb/typed';
 import type { QueryFields, MutationFields } from './generated/field-types.js';
 
 /**
@@ -66,12 +65,9 @@ export type {
   QueryBuilder, 
   SelectionFn, 
   FieldSelection, 
-  Variable,
-  TypedQueryBuilder,
-  FieldFn,
-  Selection,
-  Scalar
+  Variable
 } from 'gqlb';
+export type { TypedQueryBuilder } from 'gqlb/typed';
 
 /**
  * Re-export generated types for external use

@@ -11,9 +11,6 @@ export { generateFieldTypes, type GenerateFieldTypesOptions } from './generate.j
 // Export plugin
 export { plugin, type FieldTypesPluginConfig } from './plugin.js';
 
-// Export helper types
-export type { FieldSelection, TypedVariable, WithVariables } from './helpers.js';
-
 // Default export for GraphQL Codegen plugin usage
 export { default } from './plugin.js';
 

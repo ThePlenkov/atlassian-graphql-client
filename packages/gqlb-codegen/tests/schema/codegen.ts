@@ -24,7 +24,7 @@ const config: CodegenConfig = {
       plugins: ['gqlb-codegen/field-types'],
       config: {
         schemaTypesImportPath: './schema-types.js',
-        helpersImportPath: 'gqlb-codegen/field-types'
+        helpersImportPath: 'gqlb'
       }
     }
   }
