@@ -201,6 +201,8 @@ export interface ArgsTypeMap {
 
 Now TypeScript can tree-shake! **Bundle size decreased by 60%.**
 
+> **Note:** This approach has been superseded. The `gqlb-codegen/field-types` plugin now directly imports Args types from schema-types.ts, achieving the same tree-shaking benefits without an intermediate ArgsTypeMap interface. The standalone `graphql-codegen-args-map` package has been removed.
+
 ## 🔹 Stage 4: Type Transformation
 
 **Key Insight:** TypeScript's type system is Turing complete

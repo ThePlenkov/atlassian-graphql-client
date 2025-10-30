@@ -4,8 +4,12 @@
     "clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rm -rf dist tests/schema/generated",
-        "cwd": "packages/gqlb-codegen"
+        "commands": [
+          "rm -rf dist",
+          "rm -rf tests/schema/generated"
+        ],
+        "cwd": "packages/gqlb-codegen",
+        "parallel": false
       }
     },
     "build": {

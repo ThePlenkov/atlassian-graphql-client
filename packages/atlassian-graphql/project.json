@@ -4,8 +4,12 @@
     "clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rm -rf dist src/generated",
-        "cwd": "packages/atlassian-graphql"
+        "commands": [
+          "rm -rf dist",
+          "rm -rf src/generated"
+        ],
+        "cwd": "packages/atlassian-graphql",
+        "parallel": false
       }
     },
     "gen:schema": {
@@ -26,7 +30,7 @@
     },
     "gen:codegen": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:schema", "argsmap:build"],
+      "dependsOn": ["gen:schema", "^build"],
       "options": {
         "command": "graphql-codegen --config codegen.ts",
         "cwd": "packages/atlassian-graphql"
@@ -37,7 +41,7 @@
       ],
       "outputs": [
         "{projectRoot}/src/generated/schema-types.ts",
-        "{projectRoot}/src/generated/args-map.ts"
+        "{projectRoot}/src/generated/field-types.ts"
       ],
       "cache": true
     },

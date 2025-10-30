@@ -172,7 +172,7 @@ export const plugin: PluginFunction = (schema) => {
 
 **Output:** args-map.ts with type map for tree-shaking
 
-See [Args Map Plugin Technical Docs](../packages/graphql-codegen-args-map/docs/TECHNICAL.md) for complete details.
+> **Note:** This approach (separate args-map plugin) has been superseded by the `gqlb-codegen/field-types` plugin, which directly imports Args types from schema-types.ts, achieving the same tree-shaking benefits without an intermediate mapping layer. The standalone `graphql-codegen-args-map` package has been removed.
 
 ## 📋 Stage 4: Type Transformation
 

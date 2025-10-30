@@ -22,8 +22,7 @@
       "gqlb": ["packages/gqlb/src/index.ts"],
       "gqlb/codegen": ["packages/gqlb/dist/codegen-utils.d.ts"],
       "gqlb/typed": ["packages/gqlb/src/typed-builder.ts"],
-      "cli-oauth": ["packages/cli-oauth/src/index.ts"],
-      "graphql-codegen-args-map": ["packages/graphql-codegen-args-map/src/index.ts"]
+      "cli-oauth": ["packages/cli-oauth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
