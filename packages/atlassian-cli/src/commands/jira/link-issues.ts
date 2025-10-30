@@ -18,30 +18,8 @@ interface LinkIssuesOptions {
   logger?: Logger;
 }
 
-// Result types for GraphQL queries/mutations
-type IssueQueryResult = {
-  jira: {
-    issueByKey: {
-      issueId: string;
-      key: string;
-    };
-  };
-};
-
-type CreateIssueLinksResult = {
-  jira: {
-    createIssueLinks: {
-      success: boolean;
-      errors?: Array<{ message: string }>;
-      issueLinkEdges?: Array<{
-        node: {
-          id: string;
-          issueLinkId: string;
-        };
-      }>;
-    };
-  };
-};
+// 🎉 No manual type annotations needed!
+// The query builder automatically infers result types from selections!
 
 /**
  * Link two or more Jira issues together
@@ -119,12 +97,17 @@ export async function linkIssues(
     ]);
 
     logger.info('   Fetching source issue ID...');
-    const sourceResult = await client.request<IssueQueryResult>(sourceQuery, {
+    // ✨ Automatic type inference! TypeScript knows the exact response structure
+    const sourceResult = await client.request(sourceQuery, {
       cloudId: config.cloudId,
       sourceKey: sourceIssueKey
     });
 
-    const sourceIssueId = sourceResult.jira.issueByKey.issueId;
+    // TypeScript knows issueByKey is nullable per the schema
+    const sourceIssueId = sourceResult.jira?.issueByKey?.issueId;
+    if (!sourceIssueId) {
+      throw new Error(`Source issue ${sourceIssueKey} not found`);
+    }
     logger.info(`   ✓ Source issue: ${sourceIssueKey} → ${sourceIssueId}`);
 
     // Build query to get target issue IDs
@@ -141,9 +124,10 @@ export async function linkIssues(
     });
 
     logger.info('   Fetching target issue IDs...');
+    // ✨ Automatic type inference for all target queries!
     const targetResults = await Promise.all(
       targetQueries.map((query, index) => 
-        client.request<IssueQueryResult>(query, {
+        client.request(query, {
           cloudId: config.cloudId,
           [`targetKey${index}`]: targetIssueKeys[index]
         })
@@ -151,7 +135,10 @@ export async function linkIssues(
     );
 
     const targetIssueIds = targetResults.map((result, index) => {
-      const issueId = result.jira.issueByKey.issueId;
+      const issueId = result.jira?.issueByKey?.issueId;
+      if (!issueId) {
+        throw new Error(`Target issue ${targetIssueKeys[index]} not found`);
+      }
       logger.info(`   ✓ Target issue: ${targetIssueKeys[index]} → ${issueId}`);
       return issueId;
     });
@@ -222,7 +209,8 @@ export async function linkIssues(
 
     logger.info('🚀 Executing mutation...\n');
 
-    const linkResult = await client.request<CreateIssueLinksResult>(linkMutation, {
+    // ✨ Automatic type inference! TypeScript knows the exact response structure
+    const linkResult = await client.request(linkMutation, {
       cloudId: config.cloudId,
       sourceIssueId: sourceIssueId,
       linkTypeId: linkTypeId,
@@ -236,19 +224,21 @@ export async function linkIssues(
       console.log(JSON.stringify(linkResult, null, 2));
     } else {
       // Human-friendly mode
-      if (linkResult.jira.createIssueLinks.success) {
+      // TypeScript knows the exact structure from the mutation selections!
+      if (linkResult.jira?.createIssueLinks?.success) {
         logger.log('✅ Success! Issue links created:\n');
         
+        // TypeScript infers the array type too!
         const links = linkResult.jira.createIssueLinks.issueLinkEdges || [];
-        links.forEach((edge: { node: { issueLinkId: string } }, index: number) => {
+        links.forEach((edge, index) => {
           logger.log(`   ${index + 1}. ${sourceIssueKey} ${direction === 'OUTWARD' ? '→' : '←'} ${targetIssueKeys[index]}`);
-          logger.log(`      Link ID: ${edge.node.issueLinkId}`);
+          logger.log(`      Link ID: ${edge?.node?.issueLinkId}`);
         });
         logger.log('');
       } else {
         logger.error('❌ Failed to create issue links\n');
-        const errors = linkResult.jira.createIssueLinks.errors || [];
-        errors.forEach((error: { message: string }) => {
+        const errors = linkResult.jira?.createIssueLinks?.errors || [];
+        errors.forEach((error) => {
           logger.error(`   - ${error.message}`);
         });
         process.exit(1);

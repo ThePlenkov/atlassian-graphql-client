@@ -98,7 +98,6 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:codegen", "gen:codegen-full"],
       "options": {
         "command": "tsc --build --emitDeclarationOnly",
         "cwd": "packages/atlassian-graphql"
