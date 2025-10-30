@@ -14,7 +14,3 @@ export type {
   WithVariables 
 } from './field-types-helpers.js';
 
-// Re-export typed builder types from create-typed-builder
-export { createTypedBuilder } from './create-typed-builder.js';
-export type { TypedQueryBuilder } from './create-typed-builder.js';
-

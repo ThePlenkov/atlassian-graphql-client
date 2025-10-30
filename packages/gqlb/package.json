@@ -10,10 +10,6 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./typed": {
-      "import": "./dist/create-typed-builder.js",
-      "types": "./dist/create-typed-builder.d.ts"
-    },
     "./codegen": {
       "import": "./dist/codegen-utils.js",
       "types": "./dist/codegen-utils.d.ts"

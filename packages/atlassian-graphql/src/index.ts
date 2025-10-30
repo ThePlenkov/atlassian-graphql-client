@@ -54,7 +54,8 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
-import { createTypedBuilder, type TypedQueryBuilder } from 'gqlb/typed';
+import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
+import type { QueryBuilder } from 'gqlb';
 import type { QueryFields, MutationFields } from './generated/field-types.js';
 
 /**
@@ -67,7 +68,6 @@ export type {
   FieldSelection, 
   Variable
 } from 'gqlb';
-export type { TypedQueryBuilder } from 'gqlb/typed';
 
 /**
  * Re-export generated types for external use
@@ -115,8 +115,8 @@ const schema = buildSchema(schemaSDL);
  * //                  result.jira.issueByKey.summaryField.text is string
  * ```
  */
-export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields> {
-  return createTypedBuilder<QueryFields, MutationFields>(schema);
+export function createQueryBuilder(): QueryBuilder {
+  return createGqlbBuilder<QueryFields, MutationFields>(schema);
 }
 
 /**
@@ -128,4 +128,4 @@ export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFie
  * const builder: AtlassianQueryBuilder = createQueryBuilder();
  * ```
  */
-export type AtlassianQueryBuilder = TypedQueryBuilder<QueryFields, MutationFields>;
+export type AtlassianQueryBuilder = QueryBuilder;

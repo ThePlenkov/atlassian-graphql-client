@@ -57,8 +57,24 @@ function createOperationProxy(
 
 /**
  * Create a query builder for a GraphQL schema
+ * 
+ * @template TQueryFields - Optional type for Query fields (for full type safety)
+ * @template TMutationFields - Optional type for Mutation fields (for full type safety)
+ * 
+ * @example Untyped usage:
+ * ```typescript
+ * const builder = createQueryBuilder(schema);
+ * ```
+ * 
+ * @example Typed usage:
+ * ```typescript
+ * import type { QueryFields, MutationFields } from './generated/field-types';
+ * const builder = createQueryBuilder<QueryFields, MutationFields>(schema);
+ * ```
  */
-export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
+export function createQueryBuilder<TQueryFields = any, TMutationFields = any>(
+  schema: GraphQLSchema
+): QueryBuilder {
   const context: BuildContext = {
     schema,
     variables: new Map(),
@@ -69,7 +85,7 @@ export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
     query: createOperationProxy('query', () => schema.getQueryType()!, context),
     mutation: createOperationProxy('mutation', () => schema.getMutationType()!, context),
     subscription: createOperationProxy('subscription', () => schema.getSubscriptionType()!, context),
-  };
+  } as QueryBuilder;
 }
 
 
