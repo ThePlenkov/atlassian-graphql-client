@@ -84,6 +84,7 @@
     },
     {
       "plugin": "@nx/eslint/plugin",
+      "exclude": ["comparison/**/*"],
       "options": {
         "targetName": "lint",
         "extensions": ["ts", "tsx", "js", "jsx"]
