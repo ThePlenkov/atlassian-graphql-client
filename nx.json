@@ -51,11 +51,13 @@
     }
   },
   "release": {
-    "versionPlans": true,
     "projectsRelationship": "independent",
-    "version": {      
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"           
+    "version": {
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk",
+        "updateDependents": "auto"
+      }
     },
     "conventionalCommits": {
       "types": {
@@ -66,7 +68,7 @@
     },
     "changelog": {
       "automaticFromRef": true,
-      "projectChangelogs":true      
+      "projectChangelogs": true
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
