@@ -26,14 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build all packages
-        run: npx nx run-many -t build --all
-
-      - name: Type check (excluding atlassian-graphql)
-        run: npx nx run-many -t typecheck --exclude=atlassian-graphql
-
-      - name: Lint
-        run: npx nx run-many -t lint --all
-
-      - name: Run tests
-        run: npm test
+      - name: Run checks
+        run: npx nx run-many -t build typecheck lint test
