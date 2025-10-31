@@ -1,0 +1,165 @@
+"""
+Test schema for gqlb - covering all features with minimal complexity
+"""
+
+scalar DateTime
+
+enum Role {
+  ADMIN
+  USER
+  GUEST
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+type Query {
+  """Simple scalar query"""
+  hello: String!
+  
+  """Query with required argument"""
+  user(id: ID!): User
+  
+  """Query with optional arguments"""
+  users(limit: Int, offset: Int): [User!]!
+  
+  """Query with complex filter argument"""
+  searchUsers(filter: UserFilter): [User!]!
+  
+  """Query returning nullable type"""
+  post(id: ID!): Post
+  
+  """Query with nested result"""
+  search(query: String!): SearchResult!
+}
+
+type Mutation {
+  """Simple mutation"""
+  deleteUser(id: ID!): Boolean!
+  
+  """Mutation with input object"""
+  createUser(input: CreateUserInput!): User!
+  
+  """Mutation with nullable input"""
+  updateUser(id: ID!, input: UpdateUserInput!): User
+}
+
+"""User type with nested relationships"""
+type User {
+  id: ID!
+  name: String!
+  email: String
+  age: Int
+  role: Role!
+  status: Status!
+  createdAt: DateTime!
+  posts(limit: Int): [Post!]!
+  profile: UserProfile
+}
+
+"""User profile with additional details"""
+type UserProfile {
+  bio: String
+  avatar: String
+  location: Location
+}
+
+"""Location with nested structure"""
+type Location {
+  city: String!
+  country: String!
+  coordinates: Coordinates
+}
+
+"""Geographic coordinates"""
+type Coordinates {
+  lat: Float!
+  lng: Float!
+}
+
+"""Post type"""
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  published: Boolean!
+  author: User!
+  tags: [String!]!
+  createdAt: DateTime!
+}
+
+"""Search result with mixed types"""
+type SearchResult {
+  totalCount: Int!
+  items: [SearchItem!]!
+}
+
+"""Union type for search results"""
+union SearchItem = User | Post
+
+"""Input for user filtering"""
+input UserFilter {
+  name: StringFilter
+  age: IntFilter
+  role: Role
+  status: Status
+}
+
+"""String filter operations"""
+input StringFilter {
+  eq: String
+  contains: String
+  startsWith: String
+}
+
+"""Int filter operations"""
+input IntFilter {
+  eq: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+}
+
+"""Input for creating a user"""
+input CreateUserInput {
+  name: String!
+  email: String
+  age: Int
+  role: Role!
+  profile: ProfileInput
+}
+
+"""Input for updating a user"""
+input UpdateUserInput {
+  name: String
+  email: String
+  age: Int
+  role: Role
+  status: Status
+  profile: ProfileInput
+}
+
+"""Profile input"""
+input ProfileInput {
+  bio: String
+  avatar: String
+  location: LocationInput
+}
+
+"""Location input"""
+input LocationInput {
+  city: String!
+  country: String!
+  coordinates: CoordinatesInput
+}
+
+"""Coordinates input"""
+input CoordinatesInput {
+  lat: Float!
+  lng: Float!
+}
+

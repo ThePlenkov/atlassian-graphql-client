@@ -6,18 +6,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./typed": {
-      "import": "./dist/typed-builder.js",
-      "types": "./dist/typed-builder.d.ts"
-    },
-    "./codegen": {
-      "import": "./dist/codegen-utils.js",
-      "types": "./dist/codegen-utils.d.ts"
-    },
+    ".": "./dist/index.js",
+    "./codegen-utils": "./dist/codegen-utils.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -25,6 +15,11 @@
     "README.md",
     "LICENSE"
   ],
+  "scripts": {
+    "test:codegen": "graphql-codegen --config tests/schema/codegen.ts",
+    "test:typecheck": "tsc --noEmit -p tests/tsconfig.json",
+    "test:run": "npx tsx --test tests/index.test.ts"
+  },
   "keywords": [
     "graphql",
     "query-builder",
@@ -47,5 +42,6 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.1.2"
-  }
+  },
+  "module": "./dist/index.js"
 }

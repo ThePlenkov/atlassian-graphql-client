@@ -56,13 +56,17 @@ const config: CodegenConfig = {
         enumsAsTypes: true,
         // Generate field argument types (e.g., QueryjiraArgs, JiraQueryissueByKeyArgs)
         addUnderscoreToArgsType: false,
-        fieldWrapperValue: '(T extends undefined ? never : T) | null | undefined'
+        fieldWrapperValue: '(T extends undefined ? never : T) | null | undefined',
+        futureProofEnums: true,
+        futureProofUnions: true
       }
     },
-    // Generate Args type map for optimal tree-shaking
-    // Only includes Args types present in the pruned schema
-    'src/generated/args-map.ts': {
-      plugins: ['graphql-codegen-args-map']
+    // Generate field types for fully typed query builder
+    'src/generated/field-types.ts': {
+      plugins: ['gqlb-codegen/field-types'],
+      config: {
+        schemaTypesImportPath: './schema-types.js'
+      }
     }
   }
 };

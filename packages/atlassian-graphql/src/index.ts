@@ -55,11 +55,8 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { buildSchema } from 'graphql';
 import { createQueryBuilder as createGqlbBuilder } from 'gqlb';
-import type { TypedQueryBuilder } from 'gqlb';
-import type { QueryFields, MutationFields } from './types.js';
-
-// Placeholder type for Subscription (not yet included in pruned schema)
-type SubscriptionFields = Record<string, never>;
+import type { QueryBuilder } from 'gqlb';
+import type { QueryFields, MutationFields } from './generated/field-types.js';
 
 /**
  * Re-export gqlb utilities for building queries
@@ -69,18 +66,14 @@ export type {
   QueryBuilder, 
   SelectionFn, 
   FieldSelection, 
-  Variable,
-  TypedQueryBuilder,
-  FieldFn,
-  Selection,
-  Scalar
+  Variable
 } from 'gqlb';
 
 /**
  * Re-export generated types for external use
  */
-export type * from './types.js';
-export type { QueryFields, MutationFields } from './types.js';
+export type * from './generated/schema-types.js';
+export type { QueryFields, MutationFields } from './generated/field-types.js';
 
 /**
  * Load the filtered Atlassian GraphQL schema
@@ -122,9 +115,8 @@ const schema = buildSchema(schemaSDL);
  * //                  result.jira.issueByKey.summaryField.text is string
  * ```
  */
-export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return createGqlbBuilder(schema) as any as TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
+export function createQueryBuilder(): QueryBuilder<QueryFields, MutationFields> {
+  return createGqlbBuilder<QueryFields, MutationFields>(schema);
 }
 
 /**
@@ -136,4 +128,4 @@ export function createQueryBuilder(): TypedQueryBuilder<QueryFields, MutationFie
  * const builder: AtlassianQueryBuilder = createQueryBuilder();
  * ```
  */
-export type AtlassianQueryBuilder = TypedQueryBuilder<QueryFields, MutationFields, SubscriptionFields>;
+export type AtlassianQueryBuilder = QueryBuilder;

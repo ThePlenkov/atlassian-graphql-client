@@ -1,0 +1,22 @@
+{
+  "name": "gqlb-comparison",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Real-world comparison of GraphQL query builder approaches",
+  "scripts": {
+    "gen:gqlb": "cd gqlb-approach && npm run gen",
+    "gen:typed-builder": "cd typed-builder-approach && npm run gen",
+    "gen:all": "npm run gen:gqlb && npm run gen:typed-builder",
+    "build:gqlb": "cd gqlb-approach && npm run build",
+    "build:typed-builder": "cd typed-builder-approach && npm run build",
+    "build:all": "npm run build:gqlb && npm run build:typed-builder",
+    "compare:size": "tsx scripts/measure-generated.ts && tsx scripts/measure-bundles.ts",
+    "compare:build": "tsx scripts/measure-build.ts",
+    "compare:all": "npm run compare:size && npm run compare:build",
+    "compare:report": "tsx scripts/generate-report.ts",
+    "clean": "rm -rf gqlb-approach/src/generated gqlb-approach/dist typed-builder-approach/src/generated typed-builder-approach/dist results",
+    "full-comparison": "npm run clean && npm run gen:all && npm run build:all && npm run compare:all && npm run compare:report"
+  }
+}
+

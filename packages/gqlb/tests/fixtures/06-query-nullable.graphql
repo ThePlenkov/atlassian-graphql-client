@@ -1,0 +1,16 @@
+query {
+  post(id: "456") {
+    id
+    title
+    author {
+      id
+      name
+      email
+      profile {
+        bio
+        avatar
+      }
+    }
+  }
+}
+

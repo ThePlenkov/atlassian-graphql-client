@@ -54,6 +54,7 @@ const query = builder.query('GetUser', q => [
 - ✨ **Minimal code generation** - Small type files instead of massive builders
 - 🎯 **Full type safety** - Complete TypeScript autocomplete
 - 🚀 **Dynamic queries** - Build queries at runtime
+- 🌟 **Auto-expand fields** - Select all scalars with `...user['*']` or `user.profile`
 - 📦 **Optimized bundles** - Especially beneficial for large schemas
 - ⚡ **Fast IDE** - Smooth performance even with complex schemas
 - 🔄 **Any schema** - Works with any GraphQL API
@@ -295,6 +296,32 @@ const stats = countOperations(config);
 ```
 
 ## Advanced Usage
+
+### Wildcard Field Selection
+
+**NEW!** Select all scalar fields without listing them:
+
+```typescript
+// Quick prototyping - get everything!
+const query = builder.query(q => [
+  q.user({ id: '123' }, user => [
+    ...user['*'],  // All user scalars (id, name, email, age, etc.)
+    user.profile   // All profile scalars + nested location scalars
+  ])
+]);
+
+// CLI tools - let users control what they want
+function buildQuery(includeProfile: boolean) {
+  return builder.query(q => [
+    q.user({ id: userId }, user => [
+      ...user['*'],
+      ...(includeProfile ? [user.profile] : [])
+    ])
+  ]);
+}
+```
+
+**This feature is unique to gqlb!** Other query builders force you to list every field explicitly.
 
 ### Dynamic Field Selection
 
@@ -545,7 +572,6 @@ MIT
 - [Issue Tracker](https://github.com/gqlb/gqlb/issues)
 - [Documentation](../../docs)
 - [Innovation Deep Dive](../../docs/INNOVATION.md)
-- [Blog Post](../../docs/media/BLOG_POST.md)
 
 ---
 

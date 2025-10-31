@@ -10,12 +10,12 @@ The primary example showing gqlb's value proposition:
 - Full type safety
 - Simple, clean syntax
 
-**Used in:** README.md, INNOVATION.md, media/BLOG_POST.md
+**Used in:** README.md, INNOVATION.md
 
 ### [the-problem.md](./the-problem.md)
 Canonical explanation of the GraphQL TypeScript client problem.
 
-**Used in:** INNOVATION.md, media/BLOG_POST.md, COMPARISON.md, media/PRESENTATION.md
+**Used in:** INNOVATION.md, COMPARISON.md
 
 ## Usage
 

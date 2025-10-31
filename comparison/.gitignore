@@ -1,0 +1,13 @@
+# Generated code
+gqlb-approach/src/generated/
+typed-builder-approach/src/generated/
+
+# Build output
+gqlb-approach/dist/
+typed-builder-approach/dist/
+
+# Results
+results/
+
+# Node modules (handled by root)
+node_modules/

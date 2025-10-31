@@ -1,0 +1,16 @@
+mutation($input: CreateUserInput!) {
+  createUser(input: $input) {
+    id
+    name
+    email
+    role
+    profile {
+      bio
+      location {
+        city
+        country
+      }
+    }
+  }
+}
+

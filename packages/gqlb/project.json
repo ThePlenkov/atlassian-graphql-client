@@ -4,7 +4,49 @@
   "sourceRoot": "packages/gqlb/src",
   "projectType": "library",
   "targets": {
-    "build": {}
+    "build": {},
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rm -rf dist",
+          "rm -rf tests/schema/generated"
+        ],
+        "cwd": "packages/gqlb",
+        "parallel": false
+      }
+    },
+    "test:codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:codegen",
+        "cwd": "packages/gqlb"
+      }
+    },
+    "test:typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:typecheck",
+        "cwd": "packages/gqlb"
+      },
+      "dependsOn": ["test:codegen"]
+    },
+    "test:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run test:run",
+        "cwd": "packages/gqlb"
+      },
+      "dependsOn": ["build", "test:typecheck"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [],
+        "parallel": false
+      },
+      "dependsOn": ["test:codegen", "test:typecheck", "test:run"]
+    }
   }
 }
 

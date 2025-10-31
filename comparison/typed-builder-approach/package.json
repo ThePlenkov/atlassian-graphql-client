@@ -1,0 +1,16 @@
+{
+  "name": "comparison-typed-builder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "typed-graphql-builder approach",
+  "scripts": {
+    "gen": "typed-graphql-builder --schema ../shared/schema.graphql --output src/generated/builder.ts",
+    "build": "tsc && node --experimental-strip-types build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "graphql": "^16.11.0"
+  }
+}
+

@@ -310,6 +310,7 @@ See our [documentation](./docs) and the [atlassian-graphql package](./packages/a
 
 - **[Innovation Deep Dive](./docs/INNOVATION.md)** - Complete technical explanation
 - **[Comparison Guide](./docs/COMPARISON.md)** - Detailed comparison vs other solutions
+- **[Real-World Comparison](./comparison/README.md)** - Actual measurements with both approaches
 - **[Development Guide](./docs/DEVELOPMENT.md)** - Setup, building, testing, contributing
 
 ### Technical Architecture

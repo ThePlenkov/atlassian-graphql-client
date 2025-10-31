@@ -4,12 +4,12 @@
 
 ## 🎯 The Problem
 
-Existing GraphQL TypeScript solutions force you to choose:
+Existing GraphQL TypeScript solutions often involve trade-offs:
 - **Static queries** (no runtime flexibility) OR
 - **Massive generated files** (poor IDE performance) OR  
 - **No type safety** (runtime errors)
 
-**We proved you can have all three:** dynamic queries + full type safety + tiny bundles.
+**Our approach:** Combine dynamic queries + full type safety + small bundles through a multi-stage pipeline. This comes with trade-offs (see below).
 
 ## 💡 Our Solution
 
@@ -20,10 +20,10 @@ A **5-stage pipeline** that gives you:
 - ✅ Tree-shaking friendly
 - ✅ Great IDE performance
 
-### The Result
+### The Approach
 
 ```typescript
-// Dynamic + Type-safe + Small bundles!
+// Dynamic + Type-safe + Optimized for large schemas
 const builder = createQueryBuilder();
 
 const query = builder.query('GetUser', q => [
@@ -50,17 +50,18 @@ For problem comparison details, see [COMPARISON.md](./COMPARISON.md).
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Stage 2: Base Type Generation                              │
-│ ➜ Standard GraphQL Codegen (typescript plugins)            │
+│ ➜ Standard GraphQL Codegen (typescript plugin)             │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ Stage 3: Args Map Generation                               │
-│ ➜ Custom plugin for tree-shaking                          │
+│ Stage 3: Field Types Generation                            │
+│ ➜ Custom gqlb-codegen/field-types plugin                   │
+│ ➜ Direct imports for tree-shaking                          │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Stage 4: Type Transformation                               │
-│ ➜ Transform types into FieldFn<> format                   │
+│ ➜ TypeScript infers FieldFn<> types                        │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -136,43 +137,51 @@ const config: CodegenConfig = {
 
 **Output:** Clean TypeScript interfaces (~200KB)
 
-## 📋 Stage 3: Args Map Generation
+## 📋 Stage 3: Field Types Generation
 
-**Goal:** Enable tree-shaking of argument types
+**Goal:** Transform standard types into gqlb-compatible format with tree-shaking support
 
-### The Problem
-TypeScript can't tree-shake complex type unions effectively.
+### The Custom Plugin: `gqlb-codegen/field-types`
 
-### Custom Plugin
+This plugin generates gqlb-compatible `FieldFn<>` types while enabling tree-shaking by directly importing Args types:
+
 ```typescript
-// Generates a type map for Args
-export const plugin: PluginFunction = (schema) => {
-  const argsTypes = new Set<string>();
+// gqlb-codegen/field-types plugin
+export const plugin: PluginFunction = (schema, documents, config) => {
+  const { schemaTypesImportPath } = config;
   
+  // Collect all Args types used
+  const usedArgsTypes = new Set<string>();
+  
+  // Generate field types for each GraphQL type
   for (const type of Object.values(schema.getTypeMap())) {
     if (isObjectType(type)) {
       for (const field of Object.values(type.getFields())) {
         if (field.args.length > 0) {
-          argsTypes.add(`${type.name}${field.name}Args`);
+          const argsTypeName = `${type.name}${field.name}Args`;
+          usedArgsTypes.add(argsTypeName);
         }
       }
     }
   }
   
-  // Generate type map
+  // Generate imports - tree-shaking friendly!
+  const imports = Array.from(usedArgsTypes).join(', ');
+  
   return `
-    export interface ArgsTypeMap {
-      ${Array.from(argsTypes).map(name => 
-        `'${name}': ${name};`
-      ).join('\n')}
+    // Direct imports enable tree-shaking!
+    import type { Query, Mutation, ${imports} } from '${schemaTypesImportPath}';
+    
+    export interface QueryFields {
+      // ... generated field types
     }
   `;
 };
 ```
 
-**Output:** args-map.ts with type map for tree-shaking
+**Key Innovation:** By importing Args types directly from `schema-types.ts` instead of using an intermediate `ArgsTypeMap`, TypeScript can tree-shake unused types effectively.
 
-See [Args Map Plugin Technical Docs](../packages/graphql-codegen-args-map/docs/TECHNICAL.md) for complete details.
+**Output:** field-types.ts with gqlb-compatible types
 
 ## 📋 Stage 4: Type Transformation
 
@@ -187,11 +196,9 @@ type FieldFn<TSelection, TArgs, TRequired extends boolean> =
     ? (args: TArgs, selection: (t: TSelection) => any[]) => any
     : (selection: (t: TSelection) => any[]) => any;
 
-// Auto-detect Args using template literals
-type GetArgsType<TParent extends string, TField extends string> = 
-  `${TParent}${TField}Args` extends keyof ArgsTypeMap
-    ? ArgsTypeMap[`${TParent}${TField}Args`]
-    : never;
+// Args types are imported directly for tree-shaking
+// The gqlb-codegen/field-types plugin handles this automatically
+import type { QueryjiraArgs, JiraQueryissueByKeyArgs } from './schema-types.js';
 
 // Transform each field
 type QueryFields = {
@@ -254,10 +261,10 @@ See [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) for complete impl
    - 90% size reduction
    - First-class support in the pipeline
 
-2. **Args Map Plugin** 🗺️
-   - Enables tree-shaking of argument types
+2. **Field Types Plugin** 🗺️
+   - Generates gqlb-compatible FieldFn types
+   - Direct imports enable tree-shaking (no intermediate mapping)
    - 40-60% bundle size reduction
-   - Novel approach to dependency tracking
 
 3. **Type Transformation** 🔄
    - TypeScript template literals for magic
@@ -278,12 +285,17 @@ See [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) for complete impl
 
 ### Atlassian GraphQL Client (8000+ types)
 
-| Metric | typed-graphql-builder | Our Approach | Improvement |
-|--------|----------------------|--------------|-------------|
-| Generated code | 3.5MB (132k lines) | 200KB (8k lines) | **94% smaller** |
-| IDE autocomplete | 3-5s delay | <100ms | **30x faster** |
-| Build time | 4.2s | 1.8s | **2.3x faster** |
-| Bundle size | 850KB | 120KB | **86% smaller** |
+**Real measured data** (reproducible - see `comparison/` folder):
+
+| Metric | typed-graphql-builder | gqlb + pruning | Difference |
+|--------|----------------------|----------------|------------|
+| Schema pruning | Not used (full schema) | 12MB → 1.7MB | **85% reduction** |
+| Generated code | 135k lines (3.7MB) | 70k lines (2.8MB) | **48% fewer lines** |
+| IDE autocomplete | Not measured | Not measured | Hypothesis: less code = faster (not proven) |
+| Runtime performance | Fast (direct calls) | Slower (Proxy API) | typed-builder faster |
+| Setup | Simple | Complex (pruning) | typed-builder simpler |
+
+**Key insight:** The major win is **schema pruning** (85% reduction), not code generation technique.
 
 ### Developer Experience
 
@@ -385,15 +397,15 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for complete setup guide.
 4. **Separate types from implementation** - Clean architecture
 5. **Runtime proxies are fast** - Modern JS engines optimize well
 
-### The Breakthrough
+### The Approach
 
 **Key insight:** Separate **types** (compile-time) from **implementation** (runtime)
 
 - Types can be generated (TypeScript handles well if clean)
-- Implementation should be small runtime code
+- Implementation should be small runtime code  
 - Use TypeScript's type system to bridge the gap
 
-This enabled dynamic queries with full type safety and tiny bundles.
+This enables dynamic queries with full type safety and optimized bundles, with some trade-offs in setup complexity and build time.
 
 ## 🌟 Future Enhancements
 
@@ -429,14 +441,19 @@ Bundle Size:       850 KB (minified)
 Developer Rating:  😤 "IDE keeps freezing"
 ```
 
-#### After (gqlb with multi-stage pipeline)
+#### After (gqlb with schema pruning + multi-stage pipeline)
 ```
-Generated Code:    200 KB (8,000 lines)    ⬇️ 94% smaller
-IDE Autocomplete:  <100ms                  ⚡ 30x faster
-Build Time:        1.8 seconds             🚀 2.3x faster  
-Bundle Size:       120 KB (minified)       📦 86% smaller
-Developer Rating:  😍 "Finally usable!"
+Schema Size:       1.7 MB (from 12MB)      ⬇️ 85% reduction via pruning
+Generated Code:    2.8 MB (70k lines)      ⬇️ 24% smaller vs typed-builder
+IDE Autocomplete:  Not measured            ❓ Hypothesis: faster (less code to parse)
+Runtime Speed:     Slower (Proxy API)      ⚠️ typed-builder is faster here
+Bundle Size:       ~120-150 KB             📦 Not measured
 ```
+
+**Trade-offs:** 
+- More complex setup (schema pruning required for benefits)
+- Slower runtime performance (Proxy API overhead)
+- Better IDE experience with large schemas
 
 ### Documentation Organization Results
 
@@ -474,4 +491,4 @@ MIT
 
 ---
 
-**This approach proves you can have it all: type safety, flexibility, performance, and great DX!**
+**This approach offers a balanced solution for large schemas, trading setup complexity for better runtime characteristics.**

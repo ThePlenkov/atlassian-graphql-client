@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { createQueryBuilder, $$, type QueryFields, type MutationFields } from '@atlassian-tools/gql';
+import { createQueryBuilder, $$ } from '@atlassian-tools/gql';
 import { print } from 'graphql';
 import { getValidToken, loadConfig } from '../../auth/config.js';
 import { ATLASSIAN_DEFAULTS } from '../../constants.js';
@@ -17,6 +17,9 @@ interface LinkIssuesOptions {
   url?: string;
   logger?: Logger;
 }
+
+// 🎉 No manual type annotations needed!
+// The query builder automatically infers result types from selections!
 
 /**
  * Link two or more Jira issues together
@@ -84,7 +87,7 @@ export async function linkIssues(
     
     // Build query to get source issue ID
     const sourceKeyVar = $$<string>('sourceKey');
-    const sourceQuery = builder.query('GetSourceIssue', (q: QueryFields) => [
+    const sourceQuery = builder.query('GetSourceIssue', q => [
       q.jira(jira => [
         jira.issueByKey({ cloudId: cloudIdVar, key: sourceKeyVar }, issue => [
           issue.issueId,
@@ -94,18 +97,23 @@ export async function linkIssues(
     ]);
 
     logger.info('   Fetching source issue ID...');
+    // ✨ Automatic type inference! TypeScript knows the exact response structure
     const sourceResult = await client.request(sourceQuery, {
       cloudId: config.cloudId,
       sourceKey: sourceIssueKey
     });
 
-    const sourceIssueId = sourceResult.jira.issueByKey.issueId;
+    // TypeScript knows issueByKey is nullable per the schema
+    const sourceIssueId = sourceResult.jira?.issueByKey?.issueId;
+    if (!sourceIssueId) {
+      throw new Error(`Source issue ${sourceIssueKey} not found`);
+    }
     logger.info(`   ✓ Source issue: ${sourceIssueKey} → ${sourceIssueId}`);
 
     // Build query to get target issue IDs
     const targetQueries = targetIssueKeys.map((targetKey, index) => {
       const keyVar = $$<string>(`targetKey${index}`);
-      return builder.query(`GetTargetIssue${index}`, (q: QueryFields) => [
+      return builder.query(`GetTargetIssue${index}`, q => [
         q.jira(jira => [
           jira.issueByKey({ cloudId: cloudIdVar, key: keyVar }, issue => [
             issue.issueId,
@@ -116,6 +124,7 @@ export async function linkIssues(
     });
 
     logger.info('   Fetching target issue IDs...');
+    // ✨ Automatic type inference for all target queries!
     const targetResults = await Promise.all(
       targetQueries.map((query, index) => 
         client.request(query, {
@@ -126,7 +135,10 @@ export async function linkIssues(
     );
 
     const targetIssueIds = targetResults.map((result, index) => {
-      const issueId = result.jira.issueByKey.issueId;
+      const issueId = result.jira?.issueByKey?.issueId;
+      if (!issueId) {
+        throw new Error(`Target issue ${targetIssueKeys[index]} not found`);
+      }
       logger.info(`   ✓ Target issue: ${targetIssueKeys[index]} → ${issueId}`);
       return issueId;
     });
@@ -136,58 +148,21 @@ export async function linkIssues(
     // Step 2: Determine link type ID
     logger.info('📋 Step 2: Determining link type...\n');
     
-    let linkTypeId = options.linkTypeId;
+    const linkTypeId = options.linkTypeId;
     
     if (!linkTypeId) {
-      // Default to "Relates" link type - we'll need to query for the ID
-      logger.info('   No link type specified, using default "Relates" type');
-      
-      // Query for available link types
-      const linkTypesQuery = builder.query('GetLinkTypes', (q: QueryFields) => [
-        q.jira(jira => [
-          jira.issueByKey({ cloudId: cloudIdVar, key: sourceKeyVar }, issue => [
-            // @ts-expect-error - issueLinkTypeRelations field exists but may not be in types
-            issue.issueLinkTypeRelations((linkTypes: any) => [
-              linkTypes.edges((edge: any) => [
-                edge.node((node: any) => [
-                  node.id,
-                  node.linkTypeId,
-                  node.linkTypeName,
-                  node.inwards,
-                  node.outwards
-                ])
-              ])
-            ])
-          ])
-        ])
-      ]);
-
-      const linkTypesResult = await client.request(linkTypesQuery, {
-        cloudId: config.cloudId,
-        sourceKey: sourceIssueKey
-      });
-
-      const linkTypes = linkTypesResult.jira.issueByKey.issueLinkTypeRelations.edges;
-      
-      // Find "Relates" link type or use the first available
-      const relatesLink = linkTypes.find((edge: any) => 
-        edge.node.linkTypeName.toLowerCase().includes('relate')
-      );
-      
-      if (relatesLink) {
-        linkTypeId = relatesLink.node.linkTypeId;
-        logger.info(`   ✓ Found link type: ${relatesLink.node.linkTypeName} (${linkTypeId})`);
-      } else if (linkTypes.length > 0) {
-        linkTypeId = linkTypes[0].node.linkTypeId;
-        logger.info(`   ✓ Using link type: ${linkTypes[0].node.linkTypeName} (${linkTypeId})`);
-      } else {
-        logger.error('   ❌ No link types found for this issue');
-        logger.error('\n💡 Tip: Specify a link type ID with --link-type-id option');
-        process.exit(1);
-      }
+      logger.error('❌ Error: Link type ID is required');
+      logger.error('\n💡 Use --linkTypeId option to specify a link type ID');
+      logger.error('   Common link type IDs:');
+      logger.error('     - "10000" (Relates - most common)');
+      logger.error('     - "10001" (Blocks)');
+      logger.error('     - "10002" (Clones)');
+      logger.error('     - "10003" (Duplicates)');
+      logger.error('   \n   Note: The exact link type ID depends on your Jira instance configuration\n');
+      process.exit(1);
     }
-
-    logger.info('');
+    
+    logger.info(`   Using link type ID: ${linkTypeId}\n`);
 
     // Step 3: Create the links
     logger.info('📋 Step 3: Creating issue links...\n');
@@ -196,27 +171,27 @@ export async function linkIssues(
     const directionVar = $$<string>('direction');
     const sourceIssueIdVar = $$<string>('sourceIssueId');
     const linkTypeIdVar = $$<string>('linkTypeId');
-    const targetIssueIdsVar = $$<any>('targetIssueIds');
+    const targetIssueIdsVar = $$<string[]>('targetIssueIds');
 
-    const linkMutation = builder.mutation('CreateIssueLinks', (m: MutationFields) => [
+    const linkMutation = builder.mutation('CreateIssueLinks', m => [
       m.jira(jira => [
         jira.createIssueLinks(
           { 
             cloudId: cloudIdVar, 
             input: {
-              sourceIssueId: sourceIssueIdVar as any,
-              issueLinkTypeId: linkTypeIdVar as any,
-              targetIssueIds: targetIssueIdsVar as any,
-              direction: directionVar as any
+              sourceIssueId: sourceIssueIdVar,
+              issueLinkTypeId: linkTypeIdVar,
+              targetIssueIds: targetIssueIdsVar,
+              direction: directionVar
             }
           },
           payload => [
             payload.success,
-            (payload.errors as any)((error: any) => [
+            payload.errors(error => [
               error.message
             ]),
-            (payload.issueLinkEdges as any)((edge: any) => [
-              edge.node((node: any) => [
+            payload.issueLinkEdges(edge => [
+              edge.node(node => [
                 node.id,
                 node.issueLinkId
               ])
@@ -234,6 +209,7 @@ export async function linkIssues(
 
     logger.info('🚀 Executing mutation...\n');
 
+    // ✨ Automatic type inference! TypeScript knows the exact response structure
     const linkResult = await client.request(linkMutation, {
       cloudId: config.cloudId,
       sourceIssueId: sourceIssueId,
@@ -248,31 +224,46 @@ export async function linkIssues(
       console.log(JSON.stringify(linkResult, null, 2));
     } else {
       // Human-friendly mode
-      if (linkResult.jira.createIssueLinks.success) {
+      // TypeScript knows the exact structure from the mutation selections!
+      if (linkResult.jira?.createIssueLinks?.success) {
         logger.log('✅ Success! Issue links created:\n');
         
+        // TypeScript infers the array type too!
         const links = linkResult.jira.createIssueLinks.issueLinkEdges || [];
-        links.forEach((edge: any, index: number) => {
+        links.forEach((edge, index) => {
           logger.log(`   ${index + 1}. ${sourceIssueKey} ${direction === 'OUTWARD' ? '→' : '←'} ${targetIssueKeys[index]}`);
-          logger.log(`      Link ID: ${edge.node.issueLinkId}`);
+          logger.log(`      Link ID: ${edge?.node?.issueLinkId}`);
         });
         logger.log('');
       } else {
         logger.error('❌ Failed to create issue links\n');
-        const errors = linkResult.jira.createIssueLinks.errors || [];
-        errors.forEach((error: any) => {
+        const errors = linkResult.jira?.createIssueLinks?.errors || [];
+        errors.forEach((error) => {
           logger.error(`   - ${error.message}`);
         });
         process.exit(1);
       }
     }
 
-  } catch (error: any) {
-    logger.error('\n❌ Error:', error.message || error);
-    if (error.response?.errors) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error('\n❌ Error:', errorMessage);
+    
+    // Type-safe error handling
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'errors' in error.response &&
+      Array.isArray(error.response.errors)
+    ) {
       logger.error('\nGraphQL Errors:');
-      error.response.errors.forEach((err: any) => {
-        logger.error(`  - ${err.message}`);
+      error.response.errors.forEach((err: unknown) => {
+        if (err && typeof err === 'object' && 'message' in err) {
+          logger.error(`  - ${String(err.message)}`);
+        }
       });
     }
     process.exit(1);

@@ -1,6 +1,17 @@
 {
-  "name": "graphql",
+  "name": "atlassian-graphql",
   "targets": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rm -rf dist",
+          "rm -rf src/generated"
+        ],
+        "cwd": "packages/atlassian-graphql",
+        "parallel": false
+      }
+    },
     "gen:schema": {
       "executor": "nx:run-commands",
       "options": {
@@ -19,7 +30,7 @@
     },
     "gen:codegen": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:schema", "argsmap:build"],
+      "dependsOn": ["gen:schema", "^build"],
       "options": {
         "command": "graphql-codegen --config codegen.ts",
         "cwd": "packages/atlassian-graphql"
@@ -30,7 +41,7 @@
       ],
       "outputs": [
         "{projectRoot}/src/generated/schema-types.ts",
-        "{projectRoot}/src/generated/args-map.ts"
+        "{projectRoot}/src/generated/field-types.ts"
       ],
       "cache": true
     },
@@ -78,7 +89,7 @@
         "^default",
         "{projectRoot}/src/generated/**",
         "{projectRoot}/tsdown.config.ts",
-        "{workspaceRoot}/tsdown.config.mjs"
+        "{workspaceRoot}/tsdown.config.ts"
       ],
       "outputs": [
         "{projectRoot}/dist"
@@ -87,7 +98,6 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
-      "dependsOn": ["gen:codegen", "gen:codegen-full"],
       "options": {
         "command": "tsc --build --emitDeclarationOnly",
         "cwd": "packages/atlassian-graphql"

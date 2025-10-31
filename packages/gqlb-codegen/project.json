@@ -1,0 +1,39 @@
+{
+  "name": "gqlb-codegen",
+  "targets": {
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rm -rf dist",
+          "rm -rf tests/schema/generated"
+        ],
+        "cwd": "packages/gqlb-codegen",
+        "parallel": false
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsdown",
+        "cwd": "packages/gqlb-codegen"
+      },
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint .",
+        "cwd": "packages/gqlb-codegen"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/gqlb-codegen"
+      }
+    }
+  }
+}
+

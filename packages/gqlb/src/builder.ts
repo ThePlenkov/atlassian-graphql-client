@@ -57,8 +57,24 @@ function createOperationProxy(
 
 /**
  * Create a query builder for a GraphQL schema
+ * 
+ * @template TQueryFields - Optional type for Query fields (for full type safety)
+ * @template TMutationFields - Optional type for Mutation fields (for full type safety)
+ * 
+ * @example Untyped usage:
+ * ```typescript
+ * const builder = createQueryBuilder(schema);
+ * ```
+ * 
+ * @example Typed usage:
+ * ```typescript
+ * import type { QueryFields, MutationFields } from './generated/field-types';
+ * const builder = createQueryBuilder<QueryFields, MutationFields>(schema);
+ * ```
  */
-export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
+export function createQueryBuilder<TQueryFields = any, TMutationFields = any>(
+  schema: GraphQLSchema
+): QueryBuilder<TQueryFields, TMutationFields> {
   const context: BuildContext = {
     schema,
     variables: new Map(),
@@ -69,48 +85,121 @@ export function createQueryBuilder(schema: GraphQLSchema): QueryBuilder {
     query: createOperationProxy('query', () => schema.getQueryType()!, context),
     mutation: createOperationProxy('mutation', () => schema.getMutationType()!, context),
     subscription: createOperationProxy('subscription', () => schema.getSubscriptionType()!, context),
-  };
+  } as QueryBuilder<TQueryFields, TMutationFields>;
+}
+
+
+/**
+ * Convert array-based selections to internal FieldSelection array
+ * Supports:
+ * - q.user.id - path-based selection
+ * - q.user({ id: '123' }, ...) - selection with args
+ * 
+ * Groups selections by root field and builds nested structure
+ */
+function normalizeArraySelections(selectionsArray: any[]): FieldSelection[] {
+  const groupedByField = new Map<string, FieldSelection[]>();
+  
+  for (const selection of selectionsArray) {
+    // Extract field selection
+    let fieldSelection: FieldSelection;
+    
+    // If it's a callable with __fieldSelection marker (property access or path)
+    if (selection && typeof selection === 'function' && selection.__fieldSelection) {
+      fieldSelection = selection.__fieldSelection;
+    }
+    // If it's already a FieldSelection object
+    else if (selection && typeof selection === 'object' && 'name' in selection) {
+      fieldSelection = selection;
+    } else {
+      throw new Error(`Invalid selection in array: ${selection}`);
+    }
+    
+    // Group by root field name
+    const rootField = fieldSelection.name;
+    if (!groupedByField.has(rootField)) {
+      groupedByField.set(rootField, []);
+    }
+    groupedByField.get(rootField)!.push(fieldSelection);
+  }
+  
+  // Merge grouped selections
+  const merged: FieldSelection[] = [];
+  for (const [fieldName, fieldSelections] of groupedByField) {
+    if (fieldSelections.length === 1) {
+      // Single selection for this field
+      merged.push(fieldSelections[0]);
+    } else {
+      // Multiple selections - merge them
+      const first = fieldSelections[0];
+      const allSubSelections: FieldSelection[] = [];
+      
+      for (const fs of fieldSelections) {
+        if (fs.selection) {
+          allSubSelections.push(...fs.selection);
+        }
+      }
+      
+      merged.push({
+        name: fieldName,
+        args: first.args,
+        selection: allSubSelections.length > 0 ? allSubSelections : undefined
+      });
+    }
+  }
+  
+  return merged;
 }
 
 /**
- * Normalize selections array: extract FieldSelection from callable objects
- * Supports both:
- * - search.totalCount (returns callable with __fieldSelection marker)
- * - search.totalCount() (returns FieldSelection directly)
+ * Convert object-based selection to internal FieldSelection array
+ * Supports:
+ * - { id: user.id } - simple field
+ * - { user: user(...) } - nested object
+ * - { myUser: user(...) } - aliased field
  */
-function normalizeSelections(selections: any[]): FieldSelection[] {
-  return selections.map(sel => {
+function normalizeSelections(selectionsObj: Record<string, any>): FieldSelection[] {
+  const selections: FieldSelection[] = [];
+  
+  for (const [key, value] of Object.entries(selectionsObj)) {
+    // Extract the actual field selection
+    let fieldSelection: FieldSelection;
+    
     // If it's a callable with __fieldSelection marker (property access)
-    if (sel && typeof sel === 'function' && sel.__fieldSelection) {
-      const fieldSelection = sel.__fieldSelection;
-      // Recursively normalize nested selections
-      if (fieldSelection.selection) {
-        fieldSelection.selection = normalizeSelections(fieldSelection.selection);
-      }
-      return fieldSelection;
+    if (value && typeof value === 'function' && value.__fieldSelection) {
+      fieldSelection = value.__fieldSelection;
     }
-    // If it's already a FieldSelection (function call)
-    if (sel && typeof sel === 'object' && 'name' in sel) {
-      // Recursively normalize nested selections
-      if (sel.selection) {
-        sel.selection = normalizeSelections(sel.selection);
-      }
-      return sel;
+    // If it's already a FieldSelection object
+    else if (value && typeof value === 'object' && 'name' in value) {
+      fieldSelection = value;
+    } else {
+      throw new Error(`Invalid selection for key "${key}": ${value}`);
     }
-    throw new Error(`Invalid selection: ${sel}`);
-  });
+    
+    // Check if this is an alias (key !== field name)
+    if (key !== fieldSelection.name) {
+      fieldSelection = { ...fieldSelection, alias: key };
+    }
+    
+    // Note: nested selections are already normalized in createFieldSelection
+    // No need to normalize them again here!
+    
+    selections.push(fieldSelection);
+  }
+  
+  return selections;
 }
 
 /**
  * Build a GraphQL operation (query/mutation/subscription)
  */
-function buildOperation(
+function buildOperation<TResult = any>(
   operationType: 'query' | 'mutation' | 'subscription',
   rootType: GraphQLObjectType,
-  selectionFn: SelectionFn,
+  selectionFn: SelectionFn<any, TResult>,
   context: BuildContext,
   operationName?: string
-): TypedDocumentNode<any, any> {
+): TypedDocumentNode<TResult, any> {
   // Reset variables for this operation
   context.variables.clear();
 
@@ -118,10 +207,12 @@ function buildOperation(
   const proxy = createTypeProxy(rootType, context);
 
   // Execute selection function to collect fields
-  const rawSelections = selectionFn(proxy);
+  const selectionsResult = selectionFn(proxy);
 
-  // Normalize selections: extract FieldSelection from callable objects (property access)
-  const selections = normalizeSelections(rawSelections);
+  // Detect if it's an array or object and normalize accordingly
+  const selections = Array.isArray(selectionsResult)
+    ? normalizeArraySelections(selectionsResult)
+    : normalizeSelections(selectionsResult as Record<string, any>);
 
   // Build the operation string
   const operationString = buildOperationString(operationType, selections, context, operationName);
@@ -129,22 +220,42 @@ function buildOperation(
   // Parse into a DocumentNode
   const documentNode = parse(operationString);
 
-  // Return as TypedDocumentNode
-  return documentNode as TypedDocumentNode<any, any>;
+  // Return as TypedDocumentNode with inferred result type
+  return documentNode as TypedDocumentNode<TResult, any>;
 }
 
 /**
  * Create a Proxy for a GraphQL type that intercepts field access
  * Supports both object types and interface types
+ * Now with PATH TRACKING for nested property access (q.user.id)
+ * 
+ * NEW: Support for "select all scalars" via:
+ * - user['*'] - explicit wildcard
+ * - user - returning object proxy selects all scalars automatically
  */
-function createTypeProxy(type: GraphQLObjectType | GraphQLInterfaceType, context: BuildContext): any {
+function createTypeProxy(
+  type: GraphQLObjectType | GraphQLInterfaceType, 
+  context: BuildContext,
+  parentPath: string[] = []
+): any {
   const fields = type.getFields();
 
   return new Proxy({} as any, {
     get(target, prop: string) {
+      // Handle wildcard '*' for "select all scalars"
+      if (prop === '*') {
+        return createSelectAllScalars(type, context);
+      }
+
       // Ignore symbols and built-in properties
-      if (typeof prop === 'symbol' || prop.startsWith('_')) {
-        return undefined;
+      if (typeof prop === 'symbol' || prop.startsWith('_') || prop === '__fieldSelection') {
+        return target[prop];
+      }
+
+      // Ignore common built-in Object properties
+      const builtinProps = ['toString', 'valueOf', 'toLocaleString', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
+      if (builtinProps.includes(prop)) {
+        return target[prop];
       }
 
       const field = fields[prop];
@@ -152,26 +263,181 @@ function createTypeProxy(type: GraphQLObjectType | GraphQLInterfaceType, context
         throw new Error(`Field "${prop}" does not exist on type "${type.name}"`);
       }
 
-      // Check if field is a scalar (leaf type - no sub-selections needed)
+      const currentPath = [...parentPath, prop];
       const fieldType = getNamedType(field.type);
       const isScalar = isScalarType(fieldType) || isEnumType(fieldType);
 
-      // For scalar fields, return a callable object that can be used as both:
-      // - Property: search.totalCount
-      // - Function: search.totalCount()
+      // For scalar fields with no args
       if (isScalar && field.args.length === 0) {
-        const selection = createFieldSelection(prop, field, [], context);
-        // Create a callable object
+        const selection = createFieldSelectionFromPath(currentPath, fields, context);
         const callable = (() => selection) as any;
-        callable.__fieldSelection = selection; // Marker for property access
+        callable.__fieldSelection = selection;
         return callable;
       }
 
-      // For non-scalar fields or fields with args, return a function
+      // For object fields, return a proxy that supports BOTH:
+      // 1. Function call: q.user({ id: '123' }, ...)
+      // 2. Property access: q.user.id
+      // 3. NEW: Direct reference: user.profile → selects all scalars in profile
+      if (isObjectType(fieldType) || isInterfaceType(fieldType)) {
+        const nestedProxy = createTypeProxy(
+          fieldType as GraphQLObjectType | GraphQLInterfaceType,
+          context,
+          currentPath  // Pass the path down!
+        );
+        
+        // For path-based access, create the field selection with expanded scalars
+        const pathFieldSelection = createFieldSelectionFromPath(
+          currentPath, 
+          fields, 
+          context, 
+          true // expandScalars flag
+        );
+        
+        // Make it callable for function-style access
+        const callableProxy = new Proxy(
+          (...args: any[]) => createFieldSelection(prop, field, args, context),
+          {
+            get(target, nestedProp) {
+              // Return __fieldSelection if requested
+              if (nestedProp === '__fieldSelection') {
+                return pathFieldSelection;
+              }
+              // Delegate other property access to nested proxy
+              return nestedProxy[nestedProp];
+            },
+            apply(target, thisArg, args) {
+              // Handle function calls
+              return createFieldSelection(prop, field, args, context);
+            }
+          }
+        );
+        
+        return callableProxy;
+      }
+
+      // For scalar fields with args, return a function
       return (...args: any[]): FieldSelection => {
         return createFieldSelection(prop, field, args, context);
       };
     },
+  });
+}
+
+/**
+ * Create a field selection from a path (for q.user.id style access)
+ * 
+ * @param expandScalars - If true, expand all scalar fields at the leaf node
+ */
+function createFieldSelectionFromPath(
+  path: string[],
+  rootFields: Record<string, GraphQLField<any, any>>,
+  context: BuildContext,
+  expandScalars = false
+): FieldSelection {
+  if (path.length === 0) {
+    throw new Error('Path cannot be empty');
+  }
+
+  // Build nested structure from path
+  const [fieldName, ...rest] = path;
+  const field = rootFields[fieldName];
+  
+  if (!field) {
+    throw new Error(`Field "${fieldName}" not found`);
+  }
+
+  if (rest.length === 0) {
+    // Leaf node
+    const fieldType = getNamedType(field.type);
+    
+    // If expandScalars is true and this is an object type, expand all its scalars
+    if (expandScalars && (isObjectType(fieldType) || isInterfaceType(fieldType))) {
+      const objectType = fieldType as GraphQLObjectType | GraphQLInterfaceType;
+      const scalarSelections = expandAllScalarFields(objectType, context);
+      
+      return {
+        name: fieldName,
+        args: undefined,
+        selection: scalarSelections
+      };
+    }
+    
+    // Otherwise, just return the field
+    return {
+      name: fieldName,
+      args: undefined,
+      selection: undefined
+    };
+  }
+
+  // Has nested path - recursively build
+  const fieldType = getNamedType(field.type);
+  if (isObjectType(fieldType) || isInterfaceType(fieldType)) {
+    const nestedFields = (fieldType as GraphQLObjectType | GraphQLInterfaceType).getFields();
+    const nestedSelection = createFieldSelectionFromPath(rest, nestedFields, context, expandScalars);
+    
+    return {
+      name: fieldName,
+      args: undefined,
+      selection: [nestedSelection]
+    };
+  }
+
+  throw new Error(`Cannot access path ${path.join('.')} - ${fieldName} is not an object type`);
+}
+
+/**
+ * Expand all scalar fields (and enums) from a GraphQL type
+ * Returns an array of field selections for all scalars
+ */
+function expandAllScalarFields(
+  type: GraphQLObjectType | GraphQLInterfaceType,
+  context: BuildContext
+): FieldSelection[] {
+  const fields = type.getFields();
+  const selections: FieldSelection[] = [];
+
+  for (const [fieldName, field] of Object.entries(fields)) {
+    // Skip fields with required arguments (can't auto-select them)
+    const hasRequiredArgs = field.args.some(arg => isNonNullType(arg.type));
+    if (hasRequiredArgs) {
+      continue;
+    }
+
+    const fieldType = getNamedType(field.type);
+    
+    // Only include scalars and enums (leaf types)
+    if (isScalarType(fieldType) || isEnumType(fieldType)) {
+      selections.push({
+        name: fieldName,
+        args: undefined,
+        selection: undefined
+      });
+    }
+  }
+
+  return selections;
+}
+
+/**
+ * Create a callable that selects all scalars (for user['*'] syntax)
+ */
+function createSelectAllScalars(
+  type: GraphQLObjectType | GraphQLInterfaceType,
+  context: BuildContext
+): any {
+  const scalarSelections = expandAllScalarFields(type, context);
+  
+  // Return the selections wrapped in a way that the normalization can handle
+  const callable = (() => scalarSelections) as any;
+  
+  // Mark each scalar selection as a proper field selection
+  // This allows spreading: [...user['*'], user.extraField]
+  return scalarSelections.map(sel => {
+    const c = (() => sel) as any;
+    c.__fieldSelection = sel;
+    return c;
   });
 }
 
@@ -213,7 +479,12 @@ function createFieldSelection(
     // Support both object types and interface types (interfaces also have fields)
     if (isObjectType(fieldType) || isInterfaceType(fieldType)) {
       const nestedProxy = createTypeProxy(fieldType as GraphQLObjectType | GraphQLInterfaceType, context);
-      nestedSelections = selectionFn(nestedProxy);
+      const nestedSelectionsResult = selectionFn(nestedProxy);
+      
+      // Handle both array and object returns
+      nestedSelections = Array.isArray(nestedSelectionsResult)
+        ? normalizeArraySelections(nestedSelectionsResult)
+        : normalizeSelections(nestedSelectionsResult as Record<string, any>);
     }
   }
 

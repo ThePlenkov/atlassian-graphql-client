@@ -11,18 +11,11 @@
     "LICENSE"
   ],
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./utils/logger": {
-      "import": "./dist/utils/logger.js",
-      "types": "./dist/utils/logger.d.ts"
-    },
-    "./auth/config": {
-      "import": "./dist/auth/config.js",
-      "types": "./dist/auth/config.d.ts"
-    }
+    ".": "./dist/index.js",
+    "./auth/config": "./dist/auth/config.js",
+    "./cli": "./dist/cli.js",
+    "./jira-cli": "./dist/jira-cli.js",
+    "./package.json": "./package.json"
   },
   "bin": {
     "atlassian": "./dist/cli.js",
@@ -48,6 +41,6 @@
   "dependencies": {
     "@atlassian-tools/gql": "*",
     "cli-oauth": "*"
-  }
+  },
+  "module": "./dist/index.js"
 }
-

@@ -1,9 +1,9 @@
 import { defineConfig } from 'tsdown';
-import baseConfig from '../../tsdown.config.mjs';
+import baseConfig from '../../tsdown.config.ts';
 
 export default defineConfig({
   ...baseConfig,
-  entry: ['src/index.ts', 'src/typed-builder.ts', 'src/codegen-utils.ts'],
+  entry: ['src/index.ts', 'src/codegen-utils.ts'],
   outDir: 'dist',
 });
 

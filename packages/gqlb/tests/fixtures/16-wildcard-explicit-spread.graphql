@@ -1,0 +1,20 @@
+query {
+  user(id: "123") {
+    id
+    name
+    email
+    age
+    role
+    status
+    createdAt
+    profile {
+      bio
+      avatar
+      location {
+        city
+        country
+      }
+    }
+  }
+}
+
