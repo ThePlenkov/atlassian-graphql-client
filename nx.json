@@ -53,8 +53,8 @@
   "release": {
     "versionPlans": true,
     "projectsRelationship": "independent",
-    "version": {
-      "conventionalCommits": true,
+    "version": {      
+      "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"           
     },
     "conventionalCommits": {
