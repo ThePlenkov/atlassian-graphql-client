@@ -205,3 +205,4 @@ Show the error and suggest:
 - Provide clear, actionable feedback to the user
 - Handle errors gracefully with helpful suggestions
 - The GitHub workflows (`.github/workflows/*.yml`) will handle CI and auto-publishing
+
