@@ -89,8 +89,13 @@ date +%Y-%m-%d
 
 Check if a PR already exists from this branch:
 ```bash
-gh pr list --head <branch-name> --base main --json number,url
+gh pr list --head <branch-name> --base main --json number,url,state,statusCheckRollup
 ```
+
+**Important:** If PR exists, check its state:
+- If `state` is `MERGED` or `CLOSED` → Inform user PR is already merged/closed, stop workflow
+- If CI checks are failing → Report the failures, DO NOT proceed with auto-merge
+- Only proceed if PR is `OPEN` and checks are passing or pending
 
 ### Step 4: Create or Update PR
 
@@ -135,9 +140,22 @@ gh pr edit <pr-number> --body "<original-description>
 🔄 **Release re-triggered by:** @<username> on <date>"
 ```
 
-### Step 5: Enable Auto-merge
+### Step 5: Verify CI Status Before Auto-merge
 
-After creating/updating the PR, enable auto-merge:
+**CRITICAL: Check CI status before enabling auto-merge:**
+
+```bash
+gh pr view <pr-number> --json statusCheckRollup
+```
+
+Parse the response and check:
+- If any check has `conclusion: "FAILURE"` → **STOP** and report the failure
+- If checks are `PENDING` or `SUCCESS` → Proceed with auto-merge
+- If no checks have run yet → Wait or inform user checks need to run first
+
+**Only if CI checks are passing or pending:**
+
+Enable auto-merge:
 ```bash
 gh pr merge <pr-number> --auto --squash
 ```
@@ -146,6 +164,17 @@ If this fails (e.g., branch protection requires reviews), inform the user that a
 - Add required reviewers
 - Enable auto-merge manually
 - Adjust branch protection settings
+
+**If CI checks are FAILING:**
+
+```
+❌ Cannot enable auto-merge: CI checks are failing
+
+Failed checks:
+- <list failed checks with links>
+
+Please fix the failing checks before proceeding with the release.
+```
 
 ### Step 6: Report Status to User
 

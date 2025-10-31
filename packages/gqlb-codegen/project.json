@@ -32,7 +32,14 @@
       "options": {
         "command": "tsc --noEmit",
         "cwd": "packages/gqlb-codegen"
-      }
+      },
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/tsconfig.json",
+        "{workspaceRoot}/tsconfig.base.json"
+      ],
+      "cache": true
     }
   }
 }

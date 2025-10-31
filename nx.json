@@ -51,11 +51,13 @@
     }
   },
   "release": {
-    "versionPlans": true,
     "projectsRelationship": "independent",
     "version": {
-      "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk"           
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk",
+        "updateDependents": "auto"
+      }
     },
     "conventionalCommits": {
       "types": {
@@ -66,7 +68,7 @@
     },
     "changelog": {
       "automaticFromRef": true,
-      "projectChangelogs":true      
+      "projectChangelogs": true
     }
   },
   "nxCloudId": "68fe37fdf3953438877ebdcb",
@@ -84,6 +86,7 @@
     },
     {
       "plugin": "@nx/eslint/plugin",
+      "exclude": ["comparison/**/*"],
       "options": {
         "targetName": "lint",
         "extensions": ["ts", "tsx", "js", "jsx"]

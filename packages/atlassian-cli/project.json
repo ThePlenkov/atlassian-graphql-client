@@ -2,7 +2,7 @@
   "name": "atlassian-cli",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/atlassian-cli/src",
-  "projectType": "application",
+  "projectType": "library",
   "targets": {
     "build": {},
     "clean": {}

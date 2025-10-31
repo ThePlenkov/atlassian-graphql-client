@@ -10,6 +10,10 @@ const config: CodegenConfig = {
         enumsAsTypes: false,
         scalars: {
           DateTime: 'string'
+        },
+        namingConvention: {
+          typeNames: 'keep',
+          enumValues: 'keep'
         }
       }
     },
