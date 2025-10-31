@@ -18,10 +18,20 @@
     },
     "test:codegen": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
         "command": "npm run test:codegen",
         "cwd": "packages/gqlb"
-      }
+      },
+      "inputs": [
+        "{projectRoot}/tests/schema/schema.graphql",
+        "{projectRoot}/tests/schema/codegen.ts",
+        "^default"
+      ],
+      "outputs": [
+        "{projectRoot}/tests/schema/generated"
+      ],
+      "cache": true
     },
     "test:typecheck": {
       "executor": "nx:run-commands",
@@ -29,7 +39,14 @@
         "command": "npm run test:typecheck",
         "cwd": "packages/gqlb"
       },
-      "dependsOn": ["test:codegen"]
+      "dependsOn": ["test:codegen"],
+      "inputs": [
+        "default",
+        "{projectRoot}/tests/schema/generated/**",
+        "{projectRoot}/tests/tsconfig.json",
+        "{workspaceRoot}/tsconfig.base.json"
+      ],
+      "cache": true
     },
     "test:run": {
       "executor": "nx:run-commands",
@@ -37,7 +54,13 @@
         "command": "npm run test:run",
         "cwd": "packages/gqlb"
       },
-      "dependsOn": ["build", "test:typecheck"]
+      "dependsOn": ["build", "test:typecheck"],
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/tests/**/*.test.ts"
+      ],
+      "cache": true
     },
     "test": {
       "executor": "nx:run-commands",

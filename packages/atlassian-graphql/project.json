@@ -37,7 +37,8 @@
       },
       "inputs": [
         "{projectRoot}/src/generated/schema.graphql",
-        "{projectRoot}/codegen.ts"
+        "{projectRoot}/codegen.ts",
+        "^default"
       ],
       "outputs": [
         "{projectRoot}/src/generated/schema-types.ts",
@@ -54,7 +55,8 @@
       },
       "inputs": [
         "{projectRoot}/src/generated/schema.full.graphql",
-        "{projectRoot}/codegen.full.ts"
+        "{projectRoot}/codegen.full.ts",
+        "^default"
       ],
       "outputs": [
         "{projectRoot}/src/generated/schema-types.full.ts"
