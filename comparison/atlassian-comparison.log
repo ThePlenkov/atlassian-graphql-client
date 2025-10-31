@@ -1,0 +1,92 @@
+
+> gqlb-comparison@1.0.0 full-comparison
+> npm run clean && npm run gen:all && npm run build:all && npm run compare:all && npm run compare:report
+
+
+> gqlb-comparison@1.0.0 clean
+> rm -rf gqlb-approach/src/generated gqlb-approach/dist typed-builder-approach/src/generated typed-builder-approach/dist results
+
+
+> gqlb-comparison@1.0.0 gen:all
+> npm run gen:gqlb && npm run gen:typed-builder
+
+
+> gqlb-comparison@1.0.0 gen:gqlb
+> cd gqlb-approach && npm run gen
+
+
+> comparison-gqlb@1.0.0 gen
+> graphql-codegen --config codegen.ts
+
+❯ Parse Configuration
+✔ Parse Configuration
+❯ Generate outputs
+❯ Generate to src/generated/schema-types.ts
+❯ Generate to src/generated/field-types.ts
+❯ Load GraphQL schemas
+❯ Load GraphQL schemas
+✔ Load GraphQL schemas
+✔ Load GraphQL schemas
+❯ Load GraphQL documents
+❯ Load GraphQL documents
+✔ Load GraphQL documents
+✔ Load GraphQL documents
+❯ Generate
+❯ Generate
+✔ Generate
+✔ Generate to src/generated/schema-types.ts
+✔ Generate
+✔ Generate to src/generated/field-types.ts
+✔ Generate outputs
+
+> gqlb-comparison@1.0.0 gen:typed-builder
+> cd typed-builder-approach && npm run gen
+
+
+> comparison-typed-builder@1.0.0 gen
+> typed-graphql-builder --schema ../shared/atlassian-schema.graphql --output src/generated/builder.ts
+
+node:internal/fs/promises:642
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open 'src/generated/builder.ts'
+    at async open (node:internal/fs/promises:642:25)
+    at async Object.writeFile (node:internal/fs/promises:1249:14)
+    at async $689271979300e60b$export$ef7acd7185315e22 (/mnt/wsl/workspace/ubuntu/atlassian-graphql-client/node_modules/typed-graphql-builder/dist/cli.js:499:10)
+    at async $53d878d34ed32e28$var$main (/mnt/wsl/workspace/ubuntu/atlassian-graphql-client/node_modules/typed-graphql-builder/dist/cli.js:582:9) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'src/generated/builder.ts'
+}
+
+Node.js v24.10.0
+npm error Lifecycle script `gen` failed with error:
+npm error code 1
+npm error path /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison/typed-builder-approach
+npm error workspace comparison-typed-builder@1.0.0
+npm error location /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison/typed-builder-approach
+npm error command failed
+npm error command sh -c typed-graphql-builder --schema ../shared/atlassian-schema.graphql --output src/generated/builder.ts
+npm error Lifecycle script `gen:typed-builder` failed with error:
+npm error code 1
+npm error path /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error workspace gqlb-comparison@1.0.0
+npm error location /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error command failed
+npm error command sh -c cd typed-builder-approach && npm run gen
+npm error Lifecycle script `gen:all` failed with error:
+npm error code 1
+npm error path /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error workspace gqlb-comparison@1.0.0
+npm error location /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error command failed
+npm error command sh -c npm run gen:gqlb && npm run gen:typed-builder
+npm error Lifecycle script `full-comparison` failed with error:
+npm error code 1
+npm error path /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error workspace gqlb-comparison@1.0.0
+npm error location /mnt/wsl/workspace/ubuntu/atlassian-graphql-client/comparison
+npm error command failed
+npm error command sh -c npm run clean && npm run gen:all && npm run build:all && npm run compare:all && npm run compare:report

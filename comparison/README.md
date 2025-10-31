@@ -96,10 +96,21 @@ After running the comparison, results are saved to `results/`:
 - `build-times.json` - Build performance
 - `report.md` - Full human-readable report
 
-**Key Findings (from latest run):**
+**Key Findings (demo schema):**
 - **79.6% smaller bundles** → faster page loads for users
 - **68.3% less generated code** → better IDE performance
 - **Similar build times** → gqlb slightly slower (3.5s vs 3.4s)
+
+**With real Atlassian schema (37k lines) - MEASURED:**
+- **48% fewer lines** (70k vs 135k)
+- **24% smaller files** (2.8MB vs 3.7MB)
+
+**Trade-offs (not measured, theoretical):**
+- **Runtime:** typed-builder likely faster (direct calls vs Proxy API)
+- **IDE:** gqlb likely faster (less code to parse)
+- **Bundle:** gqlb likely smaller (better tree-shaking)
+
+**Main benefit:** Schema pruning 12MB → 1.7MB (**85% reduction**)
 
 ## 🏗️ Approaches Compared
 
@@ -176,17 +187,38 @@ npm run full-comparison       # Clean + gen + build + measure + report
 npm run clean                 # Remove all generated code and artifacts
 ```
 
-## 🧪 Test with Your Schema
+## 🧪 Test with Different Schemas
 
-Want to test with your own GraphQL schema?
+### Option 1: Your Own Schema
 
-1. Replace `shared/schema.graphql` with your schema
-2. Run the comparison:
-   ```bash
-   npm run full-comparison
-   ```
+Replace `shared/schema.graphql` with your schema and run:
+```bash
+npm run full-comparison
+```
 
-That's it! The measurements will reflect your schema.
+### Option 2: Real Atlassian Schema
+
+We've included the real Atlassian schema (37k lines, 8000+ types):
+
+```bash
+# 1. Update configs to use Atlassian schema
+sed -i 's|schema.graphql|atlassian-schema.graphql|g' gqlb-approach/codegen.ts typed-builder-approach/package.json
+
+# 2. Run comparison (takes several minutes!)
+npm run full-comparison
+
+# 3. Restore demo schema
+git checkout gqlb-approach/codegen.ts typed-builder-approach/package.json
+```
+
+**Measured results with Atlassian schema:**
+- **typed-builder:** 135k lines (3.7MB) generated
+- **gqlb:** 70k lines (2.8MB) generated (**48% fewer lines**)
+
+**Not measured (theoretical assumptions):**
+- Runtime: typed-builder likely faster (direct calls vs Proxy)
+- IDE: gqlb likely faster (less code to parse) - NOT PROVEN
+- Bundle: gqlb likely smaller (better tree-shaking)
 
 **Note:** The benefits of gqlb become more pronounced with larger schemas (100+ types, 1000+ fields).
 

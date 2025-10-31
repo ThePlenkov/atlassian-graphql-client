@@ -15,7 +15,7 @@ export function exampleQueries() {
       user.id,
       user.username,
       user.email,
-      user.name
+      user.name,
     ])
   ]);
   

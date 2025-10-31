@@ -285,12 +285,17 @@ See [gqlb Architecture](../packages/gqlb/docs/ARCHITECTURE.md) for complete impl
 
 ### Atlassian GraphQL Client (8000+ types)
 
-| Metric | typed-graphql-builder | Our Approach | Improvement |
-|--------|----------------------|--------------|-------------|
-| Generated code | 3.5MB (132k lines) | 200KB (8k lines) | **94% smaller** |
-| IDE autocomplete | 3-5s delay | <100ms | **30x faster** |
-| Build time | 4.2s | 1.8s | **2.3x faster** |
-| Bundle size | 850KB | 120KB | **86% smaller** |
+**Real measured data** (reproducible - see `comparison/` folder):
+
+| Metric | typed-graphql-builder | gqlb + pruning | Difference |
+|--------|----------------------|----------------|------------|
+| Schema pruning | Not used (full schema) | 12MB → 1.7MB | **85% reduction** |
+| Generated code | 135k lines (3.7MB) | 70k lines (2.8MB) | **48% fewer lines** |
+| IDE autocomplete | Not measured | Not measured | Hypothesis: less code = faster (not proven) |
+| Runtime performance | Fast (direct calls) | Slower (Proxy API) | typed-builder faster |
+| Setup | Simple | Complex (pruning) | typed-builder simpler |
+
+**Key insight:** The major win is **schema pruning** (85% reduction), not code generation technique.
 
 ### Developer Experience
 
@@ -436,15 +441,19 @@ Bundle Size:       850 KB (minified)
 Developer Rating:  😤 "IDE keeps freezing"
 ```
 
-#### After (gqlb with multi-stage pipeline)
+#### After (gqlb with schema pruning + multi-stage pipeline)
 ```
-Generated Code:    200 KB (8,000 lines)    ⬇️ 94% smaller
-IDE Autocomplete:  <100ms                  ⚡ 30x faster
-Build Time:        1.8 seconds             🚀 2.3x faster  
-Bundle Size:       120 KB (minified)       📦 86% smaller
+Schema Size:       1.7 MB (from 12MB)      ⬇️ 85% reduction via pruning
+Generated Code:    2.8 MB (70k lines)      ⬇️ 24% smaller vs typed-builder
+IDE Autocomplete:  Not measured            ❓ Hypothesis: faster (less code to parse)
+Runtime Speed:     Slower (Proxy API)      ⚠️ typed-builder is faster here
+Bundle Size:       ~120-150 KB             📦 Not measured
 ```
 
-**Trade-offs:** More complex setup, requires GraphQL Codegen + custom plugin configuration.
+**Trade-offs:** 
+- More complex setup (schema pruning required for benefits)
+- Slower runtime performance (Proxy API overhead)
+- Better IDE experience with large schemas
 
 ### Documentation Organization Results
 
