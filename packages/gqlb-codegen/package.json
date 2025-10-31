@@ -37,10 +37,6 @@
     "gqlb",
     "field-types"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "peerDependencies": {},
   "peerDependenciesMeta": {
     "@graphql-codegen/plugin-helpers": {
