@@ -16,20 +16,19 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: lts/*
+          cache: 'npm'          
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Configure Git
         run: |
@@ -39,6 +38,5 @@ jobs:
       - name: Run Nx Release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx nx release --yes
+          npx nx release publish
