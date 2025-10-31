@@ -1,6 +1,6 @@
 {
   "name": "@atlassian-tools/gql",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Typed GraphQL client for Atlassian APIs (Jira, Confluence)",
   "type": "module",
   "main": "./dist/index.js",

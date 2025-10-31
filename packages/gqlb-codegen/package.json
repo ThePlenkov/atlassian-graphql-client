@@ -1,6 +1,6 @@
 {
   "name": "gqlb-codegen",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "GraphQL Code Generator plugins for gqlb - runtime proxy-based query builder",
   "type": "module",
   "main": "./dist/index.js",
